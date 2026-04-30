@@ -1,0 +1,12 @@
+# Dependencias
+node_modules/
+
+# Entorno y variables secretas
+.env
+
+# Archivos compilados de TypeScript (lo que generará tsc después)
+dist/
+build/
+
+# Logs de errores de npm
+npm-debug.log*
