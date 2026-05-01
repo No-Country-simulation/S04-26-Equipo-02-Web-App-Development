@@ -12,9 +12,9 @@ const port = process.env.PORT || 8000;
 app.use(cors()); // clave del front
 app.use(express.json()); 
 
-app.get('/hello', (req:Request, res: Response) => {
+app.get('/hello', (_req: Request, res: Response) => {
   res.send('todo ok');
-})
+});
 
 
 app.listen(port, () => {
