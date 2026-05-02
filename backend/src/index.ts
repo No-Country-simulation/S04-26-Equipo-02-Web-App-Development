@@ -16,6 +16,9 @@ app.get('/hello', (_req: Request, res: Response) => {
   res.send('todo ok');
 });
 
+app.get('/hello-two', (_req: Request, res: Response) => {
+  res.send('todo ok dos');
+});
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
