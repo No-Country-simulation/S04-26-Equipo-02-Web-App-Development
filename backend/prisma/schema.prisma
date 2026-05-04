@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PROFESSIONAL
+  COMPANY
+  ADMIN
+}
+
+enum SkillCategory {
+  DIGITAL
+  COGNITIVE
+  SOCIOEMOTIONAL
+}
+
+enum CourseStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum PreselectionStatus {
+  INTERESTED
+  CONTACTED
+  INTERVIEWING
+  HIRED
+  REJECTED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(PROFESSIONAL)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  professionalProfile ProfessionalProfile?
+  companyProfile      CompanyProfile?
+  diagnosticResults   DiagnosticResult[]
+  courseProgress      CourseProgress[]
+}
+
+model ProfessionalProfile {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id])
+  
+  firstName       String
+  lastName        String
+  slug            String    @unique // Para /api/perfil/:slug
+  phone           String?
+  location        String?
+  bio             String?
+  avatarUrl       String?
+  completionScore Int       @default(0)
+
+  experience      WorkExperience[]
+  education       Education[]
+  skills          ProfileSkill[]
+  preselections   Preselection[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model CompanyProfile {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id])
+  
+  companyName   String
+  industry      String?
+  description   String?
+  website       String?
+  logoUrl       String?
+
+  preselections Preselection[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Skill {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  category    SkillCategory
+  description String?
+
+  profileSkills     ProfileSkill[]
+  diagnosticResults DiagnosticResult[]
+}
+
+model DiagnosticResult {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  skillId     String
+  skill       Skill    @relation(fields: [skillId], references: [id])
+  score       Int      // Puntaje obtenido (1-5 o 1-100)
+  assessedAt  DateTime @default(now())
+}
+
+model LearningPath {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  isActive    Boolean  @default(true)
+  courses     Course[]
+}
+
+model Course {
+  id             String           @id @default(uuid())
+  learningPathId String
+  learningPath   LearningPath     @relation(fields: [learningPathId], references: [id])
+  title          String
+  description    String
+  order          Int
+  progress       CourseProgress[]
+}
+
+model CourseProgress {
+  id        String       @id @default(uuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  courseId  String
+  course    Course       @relation(fields: [courseId], references: [id])
+  status    CourseStatus @default(PENDING)
+  updatedAt DateTime     @updatedAt
+}
+
+model ProfileSkill {
+  id          String              @id @default(uuid())
+  profileId   String
+  profile     ProfessionalProfile @relation(fields: [profileId], references: [id])
+  skillId     String
+  skill       Skill               @relation(fields: [skillId], references: [id])
+  isVerified  Boolean             @default(false) // Si se activó por terminar un módulo
+}
+
+model WorkExperience {
+  id          String              @id @default(uuid())
+  profileId   String
+  profile     ProfessionalProfile @relation(fields: [profileId], references: [id])
+  company     String
+  role        String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+}
+
+model Education {
+  id          String              @id @default(uuid())
+  profileId   String
+  profile     ProfessionalProfile @relation(fields: [profileId], references: [id])
+  institution String
+  degree      String
+  year        Int
+}
+
+model Preselection {
+  id                    String              @id @default(uuid())
+  companyProfileId      String
+  company               CompanyProfile      @relation(fields: [companyProfileId], references: [id])
+  professionalProfileId String
+  professional          ProfessionalProfile @relation(fields: [professionalProfileId], references: [id])
+  status                PreselectionStatus  @default(INTERESTED)
+  notes                 String?
+  
+  feedback              MarketplaceFeedback?
+  createdAt             DateTime            @default(now())
+}
+
+model MarketplaceFeedback {
+  id             String       @id @default(uuid())
+  preselectionId String       @unique
+  preselection   Preselection @relation(fields: [preselectionId], references: [id])
+  rating         Int
+  comment        String?
+  createdAt      DateTime     @default(now())
+}
