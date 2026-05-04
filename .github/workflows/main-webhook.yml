@@ -1,0 +1,18 @@
+name: "Webhook para Cambios en Main"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notificar_cambio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Ejecutar script de aviso
+        run: |
+          echo "Se han detectado nuevos cambios en la rama main del proyecto S04-26-Equipo-02."
+          # Aquí podrías añadir comandos para desplegar el backend en Express o el frontend en Vite
