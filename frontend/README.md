@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# Frontend — Red de Bienestar Laboral
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositorio contiene el cliente web para la plataforma de empleabilidad de profesionales +45. El desarrollo se basa en una arquitectura modular para facilitar el trabajo en paralelo del equipo.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Inicio Rápido
 
-## React Compiler
+1. **Instalación:** Ejecutá `npm install` en la carpeta `frontend`.
+2. **Entorno:** Creá un archivo `.env` con `VITE_API_URL=http://localhost:3001` (o la URL del backend).
+3. **Servidor:** `npm run dev` para iniciar con hot-reload.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19 + TypeScript
+- Vite
+- React Router v7
+- TanStack React Query
+- Axios
+- Tailwind CSS v4
+- Redux Toolkit + React Redux
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Estructura
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── api/            # Axios + endpoints
+├── components/     # Componentes reutilizables
+├── context/        # Auth Context
+├── hooks/          # Custom hooks
+├── pages/          # Vistas
+├── store/          # Redux store
+└── types/          # TypeScript interfaces
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Comandos Útiles
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `npm run dev` — Levantar dev server
+- `npm run build` — Build producción
+- `npm run lint` — Lint
+- `npm run preview` — Previsualizar build
+
+---
+
+## Convenciones de Git
+
+Para mantener el historial de cambios ordenado, los mensajes de commit deben seguir el formato: `prefijo: descripción breve en minúsculas`.
+
+### Prefijos permitidos:
+
+- `feat:` Nueva funcionalidad (ej: `feat: agregar página de diagnóstico`).
+- `fix:` Corrección de un error (ej: `fix: corregir redirect tras login`).
+- `docs:` Cambios solo en la documentación (ej: `docs: actualizar readme`).
+- `refactor:` Cambio en el código que no corrige errores ni agrega funcionalidades (ej: `refactor: mover lógica de auth a hook`).
+- `chore:` Tareas de mantenimiento, actualización de dependencias, configuración de herramientas (ej: `chore: agregar tailwind`).
+- `style:` Cambios en estilos (ej: `style: actualizar colores del navbar`).
+
+**Nota:** Acordate de hacer el commit con cambios chicas, no hagas un commit con cambios de todo lo que hiciste en el día.
