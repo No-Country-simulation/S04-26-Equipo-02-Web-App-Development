@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
+import authRoutes from './routes/auth.route';
 
 dotenv.config();
 
@@ -29,7 +30,9 @@ app.use(cookieParser());
 
 // middleware
 app.use(cors()); // clave del front
-app.use(express.json()); 
+app.use(express.json());
+
+app.use('/api/v1/auth', authRoutes);
 
 app.get('/hello', (_req: Request, res: Response) => {
   res.send('todo ok');
