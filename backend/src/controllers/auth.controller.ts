@@ -73,7 +73,7 @@ export const loginController = async (req: Request<{}, {}, LoginBody>, res: Resp
         }
 
         return res.status(400).json({
-            message: 'Datos de login inválidos'
+            message: 'Datos de login inválidos: ' + error
         });
     }
 
