@@ -49,6 +49,29 @@ export const loginController = async (req: Request<{}, {}, LoginBody>, res: Resp
 
 
     } catch (error) {
+
+        if (error instanceof Error) {
+
+            if(error.message === 'USER_NOT_FOUND' || error.message === 'PROVIDER_MISMATCH') {
+                return res.status(404).json({
+                    message: 'Usuario no encontrado'
+                });
+            }
+
+            if(error.message === 'USER_INACTIVE') {
+                return res.status(404).json({
+                    message: 'Usuario no activo'
+                });
+            }
+
+            if(error.message === 'INVALID_PASSWORD') {
+                return res.status(401).json({
+                    message: 'Contraseña incorrecta'
+                });
+            }
+
+        }
+
         return res.status(400).json({
             message: 'Datos de login inválidos'
         });
