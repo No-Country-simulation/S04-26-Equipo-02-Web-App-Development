@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 /* Base styles */
-body {
-  @apply bg-gray-50 text-gray-800 antialiased;
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-800 antialiased m-0 font-sans;
+  }
 
-#root {
-  @apply min-h-screen flex flex-col;
+  #root {
+    @apply min-h-screen flex flex-col;
+  }
 }
 
 /* Componentes reutilizables */
 @layer components {
   /* Botón primario */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 h-10 rounded-md px-6 transition-all;
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 h-10 rounded-md px-6 transition-all no-underline border-none cursor-pointer;
   }
 
   .btn-primary:disabled {
@@ -24,7 +24,7 @@ body {
 
   /* Botón secundario */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900 h-10 rounded-md px-6 transition-all;
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900 h-10 rounded-md px-6 transition-all no-underline cursor-pointer;
   }
 
   /* Contenedor principal */
@@ -101,11 +101,74 @@ body {
   .spinner {
     @apply w-10 h-10 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin;
   }
+
+  /* Formularios */
+  .form-field {
+    @apply flex flex-col gap-2;
+  }
+
+  .form-label {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  .form-input {
+    @apply w-full h-10 px-3 rounded-md border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 transition-all;
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent;
+  }
+
+  .form-input:disabled {
+    @apply bg-gray-100 cursor-not-allowed;
+  }
+
+  .form-input-error {
+    @apply border-red-500 focus:ring-red-500;
+  }
+
+  .form-error {
+    @apply text-xs text-red-600 font-medium;
+  }
+
+  /* Formulario auth */
+  .auth-form {
+    @apply flex flex-col gap-6 w-full max-w-md mx-auto;
+  }
+
+  .auth-form .btn-primary {
+    @apply w-full mt-2;
+  }
+
+  /* Role selector */
+  .role-selector {
+    @apply flex gap-4 mb-6;
+  }
+
+  .role-option {
+    @apply flex-1 py-3 px-4 rounded-lg border-2 text-center cursor-pointer transition-all;
+  }
+
+  .role-option.selected {
+    @apply border-gray-900 bg-gray-50;
+  }
+
+  .role-option:not(.selected) {
+    @apply border-gray-200 hover:border-gray-400;
+  }
+
+  .role-option > div {
+    @apply flex flex-col items-center;
+  }
+
+  /* Links en container-center */
+  .container-center .btn-primary {
+    @apply w-full;
+  }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@layer utilities {
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
 
