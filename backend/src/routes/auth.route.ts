@@ -11,8 +11,8 @@ import {
 
 } from '../controllers/auth.controller';
 
-import { refreshToken } from '../middlewares/refresh.token';
-import { tokenMiddleware } from '../middlewares/token.middlewares';
+import { refreshToken } from '../middlewares/refresh.token.middleware';
+import { tokenMiddleware } from '../middlewares/token.middleware';
 
 router.post("/login", loginController);
 
