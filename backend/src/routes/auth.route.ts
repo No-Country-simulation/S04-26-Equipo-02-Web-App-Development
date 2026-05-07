@@ -4,10 +4,13 @@ const router = Router();
 
 import {
 
-    loginController
+    loginController,
+    registerController
 
 } from '../controllers/auth.controller';
 
-router.post("/login", loginController)
+router.post("/login", loginController);
+
+router.post("/register", registerController);
 
 export default router;
