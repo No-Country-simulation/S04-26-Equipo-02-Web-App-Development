@@ -36,8 +36,6 @@ export const loginService = async (email: string, password: string, provider: st
 
     const idRefreshToken = await generateId();
 
-    console.log('ID Refresh Token generado:', idRefreshToken);
-
     const { refreshToken, hashed } = generateRefreshToken();
 
     await prisma.userSession.create({
