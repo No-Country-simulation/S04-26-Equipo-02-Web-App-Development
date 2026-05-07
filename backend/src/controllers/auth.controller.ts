@@ -74,7 +74,7 @@ export const loginController = async (req: Request<{}, {}, LoginBody>, res: Resp
 
             if(error.message === 'USER_INACTIVE') {
                 return res.status(404).json({
-                    message: 'Usuario no activo'
+                    message: 'Usuario no verificado'
                 });
             }
 
