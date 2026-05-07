@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { Request, Response } from "express";
 import { 
     loginService,
-    registerService
+    registerService,
+    verifyEmailService
 } from '../services/auth.service';
 import { Role } from "@prisma/client";
 
@@ -120,4 +121,57 @@ export const registerController = async (req: Request<{}, {}, RegisterBody>, res
         });
     }
 
+}
+
+export const verifyEmailController = async (req: Request<{ token: string }>, res: Response) => {
+
+    const { token } = req.params;
+    const sanitizedToken = decodeURIComponent(token).trim();
+
+    if (!sanitizedToken) {
+        return res.status(400).json({
+            message: "Token inválido"
+        });
+    }
+
+    try {
+
+        const result = await verifyEmailService(sanitizedToken);
+
+        return res.status(200).json({
+            message: result
+        });
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+            if (error.message === 'INVALID_TOKEN') {
+                return res.status(400).json({
+                    message: "Token inválido o expirado"
+                });
+            }
+            if (error.message === 'USER_NOT_FOUND') {
+                return res.status(404).json({
+                    message: "Usuario no encontrado"
+                });
+            }
+            if (error.message === 'USER_ALREADY_VERIFIED') {
+                return res.status(400).json({
+                    message: "Email ya verificado"
+                });
+            }
+        }
+
+        return res.status(400).json({
+            message: "Error al verificar el email" + error
+        });
+
+    }
+
+}
+
+export const validateSessionController = async (_req: Request, res: Response) => {
+    res.status(200).json({
+        message: "Sesión válida"
+    });
 }
