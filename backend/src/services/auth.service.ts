@@ -1,10 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { validatePassword } from "../utils/validate.password";
 import { generateId } from "../utils/generate.id";
-import { generateToken, generateRefreshTokenJwt } from "../utils/generate.token";
+import { generateToken, generateRefreshTokenJwt, generateEmailVerificationToken } from "../utils/generate.token";
 import { generateRefreshToken } from "../utils/generate.refresh.token";
 import { hashPassword } from "../utils/hash.password";
 import { Role } from "@prisma/client";
+import { sendEmail } from "../config/nodemailer";
+import { validateEmailVerificationToken } from "../utils/validate.token";
 
 const prisma = new PrismaClient();
 
@@ -104,6 +106,61 @@ export const registerService = async (email: string, password: string, provider:
         })
     }
 
+    const emailVerificationToken = generateEmailVerificationToken({ userId: newUser?.id, email: newUser?.email });
+
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-email/${emailVerificationToken}`;
+
+    await sendEmail({
+        to: email,
+        subject: 'Verificación de correo electrónico',
+        html: `<p>Hola ${firstName},</p>
+               <p>Gracias por registrarte. Por favor, haz clic en el siguiente enlace para verificar tu correo electrónico:</p>
+               <a href="${verificationLink}">Verificar correo electrónico</a>
+               <p>Si no te registraste, puedes ignorar este correo.</p>`
+    });
+
     return 'Registro exitoso';
+
+}
+
+export const verifyEmailService = async (token: string) => {
+
+    const decoded = validateEmailVerificationToken(token);
+
+    if (!decoded) {
+        throw new Error('INVALID_TOKEN');
+    }
+
+    const checkUser = await prisma.user.findUnique({
+        where: {
+            id: decoded.userId
+        }
+    });
+
+    if (!checkUser) {
+        throw new Error('USER_NOT_FOUND');
+    }
+
+    if (checkUser.isActive) {
+        throw new Error('USER_ALREADY_VERIFIED');
+    }
+
+    await prisma.user.update({
+        where: {
+            id: checkUser.id
+        },
+        data: {
+            isActive: true
+        }
+    });
+
+    await sendEmail({
+        to: checkUser.email,
+        subject: 'Correo electrónico verificado',
+        html: `<p>Hola,</p>
+               <p>Tu correo electrónico ha sido verificado exitosamente. Ahora puedes iniciar sesión en tu cuenta.</p>`
+    });
+
+    return 'Email verificado exitosamente';
 
 }
