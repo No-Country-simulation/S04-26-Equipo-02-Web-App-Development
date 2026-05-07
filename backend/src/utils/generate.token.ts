@@ -19,3 +19,14 @@ export const generateRefreshTokenJwt = (payload: object) => {
 
     return jwt.sign(payload, secret, options);
 };
+
+export const generateEmailVerificationToken = (payload: object) => {
+    
+    const secret = process.env.JWT_EMAIL_VERIFICATION_SECRET || 'email_verification_secret';
+
+    const options: SignOptions = {
+        expiresIn: (process.env.JWT_EMAIL_VERIFICATION_EXPIRES_IN as SignOptions["expiresIn"]) || "1d",
+    };
+
+    return jwt.sign(payload, secret, options);
+}
