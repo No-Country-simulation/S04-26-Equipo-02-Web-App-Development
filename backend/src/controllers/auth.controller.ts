@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import { Request, Response } from "express";
 import { 
-    loginService
+    loginService,
+    registerService
 } from '../services/auth.service';
+import { Role } from "@prisma/client";
 
 const loginSchema = z.object({
     email: z.string().email(),
@@ -11,6 +13,18 @@ const loginSchema = z.object({
 });
 
 type LoginBody = z.infer<typeof loginSchema>;
+
+const registerSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+    provider: z.nativeEnum(Role),
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    location: z.string().min(1),
+    phone: z.string().min(1)
+});
+
+type RegisterBody = z.infer<typeof registerSchema>;
 
 export const loginController = async (req: Request<{}, {}, LoginBody>, res: Response) => {
 
@@ -74,6 +88,35 @@ export const loginController = async (req: Request<{}, {}, LoginBody>, res: Resp
 
         return res.status(400).json({
             message: 'Datos de login inválidos: ' + error
+        });
+    }
+
+}
+
+export const registerController = async (req: Request<{}, {}, RegisterBody>, res: Response) => {
+
+    try{
+        
+        const result = registerSchema.safeParse(req.body);
+
+        if (!result.success) {
+            return res.status(400).json({
+                message: 'Datos de registro inválidos',
+                errors: result.error.flatten()
+            });
+        }
+
+        const { email, password, provider, firstName, lastName, location, phone } = result.data;
+
+        const responseService = await registerService(email, password, provider, firstName, lastName, location, phone);
+
+        return res.status(200).json({
+            message: responseService
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            message: 'Datos de registro inválidos: ' + error
         });
     }
 
