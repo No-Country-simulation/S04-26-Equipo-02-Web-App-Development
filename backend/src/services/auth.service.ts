@@ -76,7 +76,7 @@ export const registerService = async (email: string, password: string, provider:
             email,
             passwordHash,
             role: provider,
-            isActive: true
+            isActive: false
         }
     });
 
