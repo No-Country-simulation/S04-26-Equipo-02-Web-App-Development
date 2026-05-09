@@ -2,14 +2,14 @@
 
 import Link from "next/link"
 import { useState, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -49,6 +49,7 @@ type RegisterValues = z.infer<typeof registerSchema>
 
 function RegisterForm() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const defaultTab = searchParams.get("type") === "company" ? "empresa" : "profesional"
   
   const [activeTab, setActiveTab] = useState(defaultTab)
@@ -68,12 +69,11 @@ function RegisterForm() {
 
     const payload = {
       ...values,
-      provider: activeTab === "profesional" ? "PROFESSIONAL" : "COMPANY",
+      role: activeTab === "profesional" ? "PROFESSIONAL" : "COMPANY",
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"
-      const response = await fetch(`${apiUrl}/auth/register`, {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +87,15 @@ function RegisterForm() {
         throw new Error(result.message || "Error al crear la cuenta")
       }
 
-      toast.success("¡Cuenta creada con éxito! Por favor verifica tu correo electrónico.")
+      toast.success(`¡Felicidades ${values.firstName}!`, {
+        description: `Tu cuenta como ${activeTab === "profesional" ? "Profesional" : "Empresa"} ha sido creada. Te enviamos un email de bienvenida.`,
+      })
+
+      // Pequeño delay para que lean el toast antes de redirigir
+      setTimeout(() => {
+        router.push("/auth/login")
+      }, 2000)
+
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Error de conexión")
     } finally {

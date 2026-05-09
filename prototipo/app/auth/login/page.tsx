@@ -7,7 +7,6 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
@@ -24,7 +23,6 @@ type LoginValues = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const router = useRouter()
   const setAuth = useAuthStore((state) => state.setAuth)
-  const [activeTab, setActiveTab] = useState("profesional")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -40,13 +38,12 @@ export default function LoginPage() {
     setIsLoading(true)
 
     const payload = {
-      ...values,
-      provider: activeTab === "profesional" ? "PROFESSIONAL" : "COMPANY",
+      email: values.email,
+      password: values.password,
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"
-      const response = await fetch(`${apiUrl}/auth/login`, {
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,87 +95,76 @@ export default function LoginPage() {
 
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Iniciar sesión
+              Bienvenido de nuevo
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Ingresa tus credenciales para acceder a tu cuenta
+              Ingresa tus credenciales para acceder a tu panel
             </p>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 h-11">
-              <TabsTrigger value="profesional" className="text-sm">
-                Profesional
-              </TabsTrigger>
-              <TabsTrigger value="empresa" className="text-sm">
-                Empresa
-              </TabsTrigger>
-            </TabsList>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Correo electrónico
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="tu@email.com"
+                {...register("email")}
+                disabled={isLoading}
+                className={errors.email ? "border-destructive" : "h-11"}
+              />
+              {errors.email && (
+                <p className="text-xs text-destructive font-medium">{errors.email.message}</p>
+              )}
+            </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Correo electrónico
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Contraseña
                 </Label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                >
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
+              <div className="relative">
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="tu@email.com"
-                  {...register("email")}
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
                   disabled={isLoading}
-                  className={errors.email ? "border-destructive" : "h-11"}
+                  className={errors.password ? "border-destructive pr-10" : "h-11 pr-10"}
                 />
-                {errors.email && (
-                  <p className="text-xs text-destructive font-medium">{errors.email.message}</p>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
+              {errors.password && (
+                <p className="text-xs text-destructive font-medium">{errors.password.message}</p>
+              )}
+            </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    Contraseña
-                  </Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="text-sm text-muted-foreground hover:text-foreground hover:underline"
-                  >
-                    ¿Olvidaste tu contraseña?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    {...register("password")}
-                    disabled={isLoading}
-                    className={errors.password ? "border-destructive pr-10" : "h-11 pr-10"}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-xs text-destructive font-medium">{errors.password.message}</p>
-                )}
-              </div>
-
-              <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Iniciando sesión...
-                  </>
-                ) : (
-                  "Iniciar sesión"
-                )}
-              </Button>
-            </form>
-          </Tabs>
+            <Button type="submit" className="w-full h-11" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Iniciando sesión...
+                </>
+              ) : (
+                "Iniciar sesión"
+              )}
+            </Button>
+          </form>
 
           <div className="mt-8 pt-8 border-t border-border">
             <p className="text-sm text-muted-foreground">

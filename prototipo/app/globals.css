@@ -142,3 +142,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .saas-card {
+    @apply bg-white border border-gray-100 rounded-3xl shadow-sm shadow-gray-200/50 hover:shadow-md hover:shadow-gray-200/60 transition-all duration-300;
+  }
+
+  .saas-badge-success {
+    @apply bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight;
+  }
+
+  .saas-badge-warning {
+    @apply bg-amber-50 text-amber-600 border border-amber-100 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight;
+  }
+
+  .saas-badge-error {
+    @apply bg-rose-50 text-rose-600 border border-rose-100 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight;
+  }
+}
