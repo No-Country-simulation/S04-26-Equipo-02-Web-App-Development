@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label"
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/authStore"
 
 const loginSchema = z.object({
@@ -21,7 +20,6 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
-  const router = useRouter()
   const setAuth = useAuthStore((state) => state.setAuth)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -62,11 +60,11 @@ export default function LoginPage() {
 
       toast.success("¡Inicio de sesión exitoso!")
 
-      // Redireccionar según el rol
+      // Redireccionar según el rol (usamos window.location para forzar recarga y actualizar el Layout/Sidebar)
       if (result.user.role === "PROFESSIONAL") {
-        router.push("/dashboard/profesional")
+        window.location.assign("/dashboard/profesional");
       } else {
-        router.push("/dashboard/empresa")
+        window.location.assign("/dashboard/empresa");
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Error de conexión")
@@ -154,7 +152,7 @@ export default function LoginPage() {
               )}
             </div>
 
-            <Button type="submit" className="w-full h-11" disabled={isLoading}>
+            <Button type="submit" className="w-full h-12 bg-brand-sage hover:bg-brand-olive text-white rounded-xl font-bold shadow-md" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -177,16 +175,16 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="hidden lg:flex lg:flex-1 bg-primary">
+      <div className="hidden lg:flex lg:flex-1 bg-black/95">
         <div className="flex flex-col justify-center px-12 py-24">
           <div className="max-w-md">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-foreground/60">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">
               Plataforma de Empleabilidad
             </p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-primary-foreground">
+            <h2 className="mt-4 text-4xl font-black tracking-tight text-white">
               Tu experiencia tiene valor
             </h2>
-            <p className="mt-4 text-primary-foreground/70">
+            <p className="mt-4 text-white/80 font-medium">
               Accede a tu ruta de aprendizaje personalizada, actualiza tu perfil profesional y conecta con empresas que valoran tu trayectoria.
             </p>
 
@@ -197,8 +195,8 @@ export default function LoginPage() {
                 { value: "3", label: "Áreas skills" },
               ].map((stat) => (
                 <div key={stat.label}>
-                  <p className="text-2xl font-semibold text-primary-foreground">{stat.value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-wider text-primary-foreground/60">
+                  <p className="text-3xl font-black text-white">{stat.value}</p>
+                  <p className="mt-1 text-xs font-bold uppercase tracking-wider text-brand-gold">
                     {stat.label}
                   </p>
                 </div>

@@ -257,7 +257,7 @@ function RegisterForm() {
                 )}
               </div>
 
-              <Button type="submit" className="w-full h-11" disabled={isLoading}>
+              <Button type="submit" className="w-full h-12 bg-brand-sage hover:bg-brand-olive text-white rounded-xl font-bold shadow-md" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -288,27 +288,27 @@ function RegisterForm() {
         </div>
       </div>
 
-      <div className="hidden lg:flex lg:flex-1 bg-primary">
+      <div className="hidden lg:flex lg:flex-1 bg-black/95">
         <div className="flex flex-col justify-start px-12 pt-40 pb-24">
           <div className="max-w-md">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-foreground/60">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">
               {activeTab === "profesional" ? "Para Profesionales" : "Para Empresas"}
             </p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-primary-foreground">
+            <h2 className="mt-4 text-4xl font-black tracking-tight text-white">
               {activeTab === "profesional"
-                ? "Inicia tu transformacion profesional"
-                : "Acceda a talento senior actualizado"}
+                ? "Inicia tu transformación profesional"
+                : "Accede a talento senior de alto nivel"}
             </h2>
-            <p className="mt-4 text-primary-foreground/70">
+            <p className="mt-4 text-white/80 font-medium">
               {activeTab === "profesional"
-                ? "Unete a mas de 650 profesionales que estan renovando su carrera."
-                : "Conecte con profesionales experimentados con habilidades actualizadas."}
+                ? "Únete a más de 650 profesionales que están renovando su carrera."
+                : "Conecta con profesionales experimentados con habilidades validadas."}
             </p>
 
             <ul className="mt-10 space-y-4">
               {benefits[activeTab as keyof typeof benefits].map((benefit) => (
-                <li key={benefit} className="flex items-center gap-3 text-primary-foreground">
-                  <span className="h-1 w-1 bg-primary-foreground" />
+                <li key={benefit} className="flex items-center gap-3 text-white font-medium">
+                  <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" />
                   {benefit}
                 </li>
               ))}

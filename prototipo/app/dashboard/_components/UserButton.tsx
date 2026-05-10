@@ -124,7 +124,7 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
            </DropdownMenuLabel> */}
            {/* <DropdownMenuSeparator className="mx-2 bg-white/5" /> */}
            
-           <Link href="/dashboard/perfil">
+           <Link href={user.role === "COMPANY" ? "/dashboard/empresa/perfil" : "/dashboard/profesional/perfil"}>
               <DropdownMenuItem className="rounded-xl p-3 flex items-center gap-3 cursor-pointer focus:bg-white/5 focus:text-white group">
                  <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center text-white/40 group-focus:text-blue-400 transition-all">
                     <Settings className="w-4 h-4" />

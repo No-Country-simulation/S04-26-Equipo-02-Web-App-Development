@@ -86,7 +86,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
         "h-20 flex items-center border-b border-white/5 transition-all duration-150",
         isCollapsed ? "justify-center px-0" : "justify-between px-6"
       )}>
-        <Link href="/dashboard" className="flex items-center gap-3 group">
+        <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-10 h-10 shrink-0 overflow-hidden rounded-full transition-transform group-hover:scale-105">
             <Image 
               src="/logo-espera.png" 

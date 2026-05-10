@@ -7,6 +7,9 @@ export const skillCategoryEnum = pgEnum("skill_category", ["DIGITAL", "SOCIOEMOC
 export const skillLevelEnum = pgEnum("skill_level", ["BASICO", "INTERMEDIO", "AVANZADO", "EXPERTO"]);
 export const learningStatusEnum = pgEnum("learning_status", ["NOT_STARTED", "IN_PROGRESS", "COMPLETED"]);
 export const contentTypeEnum = pgEnum("content_type", ["VIDEO", "ARTICULO", "QUIZ", "TALLER", "LECTURA"]);
+export const interactionActionEnum = pgEnum("interaction_action", ["VIEWED", "SAVED", "CONTACTED", "SHORTLISTED"]);
+export const applicationStatusEnum = pgEnum("application_status", ["APPLIED", "REVIEWING", "SHORTLISTED", "REJECTED", "HIRED"]);
+export const feedbackTypeEnum = pgEnum("feedback_type", ["INTERVIEW", "PROFILE_REVIEW", "GENERAL"]);
 
 // --- USER & AUTH TABLES (Better Auth Core) ---
 export const users = pgTable("user", {
@@ -101,9 +104,16 @@ export const companyProfiles = pgTable("company_profile", {
 export const jobPosts = pgTable("job_post", {
 	id: uuid("id").defaultRandom().primaryKey(),
 	userId: text("userId").notNull().references(() => users.id), // The company user who posted it
+	companyProfileId: uuid("company_profile_id").references(() => companyProfiles.id), // FK to company profile
 	title: text("title").notNull(),
 	description: text("description").notNull(),
 	requirements: text("requirements"),
+	skillsRequired: text("skills_required"), // JSON array of skills
+	modality: text("modality"), // remoto, presencial, hibrido
+	location: text("location"),
+	salaryRange: text("salary_range"),
+	experienceRequired: text("experience_required"),
+	applicationDeadline: timestamp("application_deadline"),
 	status: text("status").default("active"), 
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
@@ -192,3 +202,38 @@ export const eventRegistrations = pgTable("event_registration", {
 	attended: boolean("attended").default(false).notNull(),
 	registeredAt: timestamp("registered_at").notNull().defaultNow(),
 });
+
+// --- SPRINT 4: MARKETPLACE TABLES ---
+
+export const talentInteractions = pgTable("talent_interaction", {
+	id: uuid("id").defaultRandom().primaryKey(),
+	companyUserId: text("company_userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+	professionalUserId: text("professional_userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+	actionType: interactionActionEnum("action_type").notNull(),
+	notes: text("notes"),
+	createdAt: timestamp("createdAt").notNull().defaultNow(),
+});
+
+export const jobApplications = pgTable("job_application", {
+	id: uuid("id").defaultRandom().primaryKey(),
+	jobPostId: uuid("job_post_id").notNull().references(() => jobPosts.id, { onDelete: "cascade" }),
+	professionalUserId: text("professional_userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+	status: applicationStatusEnum("status").default("APPLIED").notNull(),
+	coverLetter: text("cover_letter"),
+	companyFeedback: text("company_feedback"),
+	feedbackAt: timestamp("feedback_at"),
+	appliedAt: timestamp("applied_at").notNull().defaultNow(),
+});
+
+export const feedback = pgTable("feedback", {
+	id: uuid("id").defaultRandom().primaryKey(),
+	fromUserId: text("from_userId").notNull().references(() => users.id, { onDelete: "cascade" }), // Empresa
+	toUserId: text("to_userId").notNull().references(() => users.id, { onDelete: "cascade" }), // Profesional
+	jobPostId: uuid("job_post_id").references(() => jobPosts.id, { onDelete: "set null" }),
+	type: feedbackTypeEnum("type").default("GENERAL").notNull(),
+	rating: integer("rating"), // 1-5
+	comment: text("comment"),
+	areasToImprove: text("areas_to_improve"), // JSON or text
+	createdAt: timestamp("createdAt").notNull().defaultNow(),
+});
+

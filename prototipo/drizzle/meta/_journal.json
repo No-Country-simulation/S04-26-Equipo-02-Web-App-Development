@@ -22,6 +22,13 @@
       "when": 1778371901955,
       "tag": "0002_deep_runaways",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778428477409,
+      "tag": "0003_abandoned_thena",
+      "breakpoints": true
     }
   ]
 }

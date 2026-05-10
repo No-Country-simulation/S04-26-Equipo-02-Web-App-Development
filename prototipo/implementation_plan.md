@@ -136,11 +136,11 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 > **Estado actual**: Página de búsqueda de talento para empresas = placeholder vacío. Marketplace de empleos para profesionales = placeholder vacío.
 
 ### 3.1 Para Empresas: Búsqueda y Preselección de Talento
-- [ ] **API de búsqueda de talento** (`/api/talent/search`)
+- [x] **API de búsqueda de talento** (`/api/talent/search`)
   - Filtros: área, industria, skills, disponibilidad, ubicación, experiencia
   - Paginación
   - Ranking por match con requisitos
-- [ ] **Implementar página de Talent Marketplace** (`/dashboard/empresa/talento`)
+- [x] **Implementar página de Talent Marketplace** (`/dashboard/empresa/talento`)
   - Barra de búsqueda con filtros avanzados
   - Cards de perfiles profesionales con:
     - Foto, nombre, headline
@@ -150,7 +150,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
     - Botón "Ver perfil completo"
     - Botón "Guardar" / "Contactar"
   - Vista de lista vs grid
-- [ ] **Crear tabla `talent_interactions`**:
+- [x] **Crear tabla `talent_interactions`**:
   ```
   - id, company_userId, professional_userId
   - action_type (viewed/saved/contacted/shortlisted)
@@ -162,12 +162,12 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
   - Estado del proceso (nuevo/en_revisión/preseleccionado/rechazado)
 
 ### 3.2 Para Empresas: Publicación de Vacantes
-- [ ] **API CRUD de vacantes** (`/api/jobs`)
+- [x] **API CRUD de vacantes** (`/api/jobs`)
   - POST: crear vacante
   - GET: listar vacantes (propias y todas las activas)
   - PUT: editar vacante
   - PATCH: cambiar estado
-- [ ] **Expandir tabla `job_posts`**:
+- [x] **Expandir tabla `job_posts`**:
   ```
   - skills_required (JSON)
   - modality (remoto/presencial/híbrido)
@@ -177,16 +177,16 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
   - application_deadline
   - company_profile_id (FK)
   ```
-- [ ] **Implementar formulario de publicación** (`/dashboard/empresa/publicaciones/nueva`)
-- [ ] **Implementar lista de vacantes con gestión** (`/dashboard/empresa/publicaciones`)
+- [x] **Implementar formulario de publicación** (`/dashboard/empresa/publicaciones/nueva`)
+- [x] **Implementar lista de vacantes con gestión** (`/dashboard/empresa/publicaciones`)
 
 ### 3.3 Para Profesionales: Exploración de Oportunidades
-- [ ] **Implementar marketplace de empleos** (`/dashboard/profesional/empleos`)
+- [x] **Implementar marketplace de empleos** (`/dashboard/profesional/empleos`)
   - Feed de vacantes activas
   - Filtros por área, modalidad, ubicación
   - Match score basado en perfil
   - Botón "Postularme"
-- [ ] **Crear tabla `job_applications`**:
+- [x] **Crear tabla `job_applications`**:
   ```
   - id, job_post_id, professional_userId
   - status (applied/reviewing/shortlisted/rejected/hired)
@@ -195,7 +195,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
   ```
 
 ### 3.4 Feedback Estructurado
-- [ ] **Crear tabla `feedback`**:
+- [x] **Crear tabla `feedback`**:
   ```
   - id, from_userId (empresa), to_userId (profesional)
   - job_post_id, type (interview/profile_review/general)
@@ -331,18 +331,19 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 4. ✅ Tracking de progreso (API `/api/learning/progress` GET + POST con start/complete)
 5. ✅ Tareas semanales dinámicas (API `/api/tasks` auto-genera basado en estado del usuario)
 
-### Sprint 3 — Perfil Dinámico (2-3 días)
-1. Expandir schema de perfil profesional
-2. Página de edición de perfil
-3. Vista pública del perfil ("CV Vivo")
-4. Score de empleabilidad
+### Sprint 3 — Perfil Dinámico ✅ COMPLETADO
+1. ✅ Expandir schema de perfil profesional (campos para "CV Vivo" como headline, certifications, workExperience, etc.)
+2. ✅ API GET/PUT `/api/professional/profile` y `/api/professional/public/[userId]`
+3. ✅ Página de edición de perfil (`/dashboard/profesional/perfil/editar`) con secciones dinámicas y validación.
+4. ✅ Vista pública del perfil ("CV Vivo") en `/perfil/[userId]` con integración de progreso de aprendizaje.
+5. ✅ Cálculo del Score de empleabilidad automático.
 
-### Sprint 4 — Marketplace (3-4 días)
-1. API y CRUD de vacantes
-2. Búsqueda de talento para empresas
-3. Marketplace de empleos para profesionales
-4. Sistema de postulaciones
-5. Feedback estructurado
+### Sprint 4 — Marketplace ✅ COMPLETADO
+1. ✅ API y CRUD de vacantes
+2. ✅ Búsqueda de talento para empresas
+3. ✅ Marketplace de empleos para profesionales
+4. ✅ Sistema de postulaciones
+5. ✅ Feedback estructurado (tablas en DB y bases)
 
 ### Sprint 5 — Admin & Eventos (2-3 días)
 1. CRUD real de eventos

@@ -111,6 +111,16 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  
+  /* Brand Design System Colors */
+  --color-brand-bg: #F5F0E8;
+  --color-brand-card: #EDE8DB;
+  --color-brand-accent: #D4C9A8;
+  --color-brand-sage: #7B9E6B;
+  --color-brand-olive: #8B9A6B;
+  --color-brand-gold: #C4A962;
+  --color-brand-coral: #D4826A;
+  --color-brand-sage-light: #A8B89E;
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
