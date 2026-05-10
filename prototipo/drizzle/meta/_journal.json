@@ -15,6 +15,13 @@
       "when": 1778299786612,
       "tag": "0001_icy_nuke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778371901955,
+      "tag": "0002_deep_runaways",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-# 🚀 Plan Maestro — MVP Red de Bienestar Laboral
+# Plan Maestro — MVP Red de Bienestar Laboral
 
 
 IMPORTANTE 
@@ -40,7 +40,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 
 ---
 
-## 🎯 PILAR 1: Learning Experience (Upskilling / Reskilling)
+## PILAR 1: Learning Experience (Upskilling / Reskilling)
 
 > **Estado actual**: Solo existe el diagnóstico inicial (onboarding). No hay rutas de aprendizaje reales ni contenido.
 
@@ -88,7 +88,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 
 ---
 
-## 🎯 PILAR 2: Perfil Profesional Dinámico ("CV Vivo")
+## PILAR 2: Perfil Profesional Dinámico ("CV Vivo")
 
 > **Estado actual**: Perfil básico muestra datos de sesión (nombre, email). Skills hardcoded. Sin edición.
 
@@ -131,7 +131,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 
 ---
 
-## 🎯 PILAR 3: Talent Marketplace
+## PILAR 3: Talent Marketplace
 
 > **Estado actual**: Página de búsqueda de talento para empresas = placeholder vacío. Marketplace de empleos para profesionales = placeholder vacío.
 
@@ -207,7 +207,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 
 ---
 
-## 🎯 PILAR 4: Gestión de Eventos y Publicaciones (Admin / Red de Bienestar Laboral)
+## PILAR 4: Gestión de Eventos y Publicaciones (Admin / Red de Bienestar Laboral)
 
 > **Estado actual**: Admin tiene tabla de eventos hardcoded. No hay CRUD real. No hay publicación de contenido como talleres/webinars.
 
@@ -256,7 +256,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 
 ---
 
-## 🎯 PILAR 5: Panel de Administración Completo
+## PILAR 5: Panel de Administración Completo
 
 > **Estado actual**: Métricas hardcoded. Usuarios hardcoded. Sin funcionalidad real.
 
@@ -284,7 +284,7 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 
 ---
 
-## 🎯 PILAR 6: Tareas Semanales Dinámicas
+## PILAR 6: Tareas Semanales Dinámicas
 
 > **Estado actual**: Tareas hardcoded en el dashboard profesional.
 
@@ -318,18 +318,18 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 
 ## 📋 Orden de Implementación Sugerido (Sprints)
 
-### Sprint 1 — Fundaciones (2-3 días)
-1. Crear tablas nuevas en DB (`learning_modules`, `user_learning_progress`, `professional_skills`, `event_registrations`)
-2. Migrations con Drizzle
-3. Middleware de protección de rutas
-4. API CRUD de eventos
+### Sprint 1 — Fundaciones ✅ COMPLETADO
+1. ✅ Crear tablas nuevas en DB (`learning_modules`, `user_learning_progress`, `professional_skills`, `event_registrations`)
+2. ✅ Migrations con Drizzle (0001_icy_nuke.sql)
+3. ✅ Middleware de protección de rutas (`proxy.ts` con role-based access)
+4. ✅ API CRUD de eventos (GET, POST, PUT, DELETE + registro de usuarios)
 
-### Sprint 2 — Learning Experience (3-4 días)
-1. Módulos de aprendizaje seed
-2. Lógica de generación de ruta personalizada
-3. Página de Ruta de Aprendizaje completa
-4. Tracking de progreso (API + UI)
-5. Tareas semanales dinámicas
+### Sprint 2 — Learning Experience ✅ COMPLETADO
+1. ✅ Módulos de aprendizaje seed (12 módulos: 4 DIGITAL, 4 SOCIOEMOCIONAL, 4 COGNITIVO)
+2. ✅ Lógica de generación de ruta personalizada (basada en diagnóstico del usuario)
+3. ✅ Página de Ruta de Aprendizaje completa (expandible, con progreso por categoría)
+4. ✅ Tracking de progreso (API `/api/learning/progress` GET + POST con start/complete)
+5. ✅ Tareas semanales dinámicas (API `/api/tasks` auto-genera basado en estado del usuario)
 
 ### Sprint 3 — Perfil Dinámico (2-3 días)
 1. Expandir schema de perfil profesional

@@ -69,10 +69,21 @@ export const professionalProfiles = pgTable("professional_profile", {
 	userId: text("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
 	bio: text("bio"),
 	title: text("title"),
+	headline: text("headline"), // Professional headline (e.g. "Director de RRHH con 20 años de experiencia")
+	summary: text("summary"), // Professional value proposition
 	experienceYears: integer("experience_years"),
 	skills: text("skills"), // Store as JSON string array
 	diagnosticResults: text("diagnostic_results"), // Store as JSON string
 	progress: integer("progress").default(0),
+	linkedinUrl: text("linkedin_url"),
+	portfolioUrl: text("portfolio_url"),
+	certifications: text("certifications"), // JSON: array of { name, issuer, year }
+	languages: text("languages"), // JSON: array of { language, level }
+	workExperience: text("work_experience"), // JSON: array of { company, role, startYear, endYear, description }
+	education: text("education"), // JSON: array of { institution, degree, field, year }
+	availabilityStatus: text("availability_status").default("disponible"), // disponible | en_proceso | no_disponible
+	salaryExpectation: text("salary_expectation"),
+	modalityPreference: text("modality_preference"), // remoto | presencial | hibrido
 	updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 });
 

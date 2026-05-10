@@ -9,9 +9,7 @@ import {
   Circle,
   ArrowRight,
   Calendar,
-  Video,
   Users,
-  Briefcase,
   Camera,
   Clock,
 } from "lucide-react";
@@ -77,6 +75,14 @@ interface Event {
   speaker?: string;
 }
 
+interface Task {
+  id: string;
+  title: string;
+  category: string;
+  isCompleted: boolean;
+  completedAt: string | null;
+}
+
 export default function ProfessionalDashboard() {
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -84,6 +90,8 @@ export default function ProfessionalDashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [weeklyTasks, setWeeklyTasks] = useState<Task[]>([]);
+  const [togglingTask, setTogglingTask] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -114,6 +122,20 @@ export default function ProfessionalDashboard() {
       }
     };
     fetchEvents();
+
+    // Fetch dynamic weekly tasks
+    const fetchTasks = async () => {
+      try {
+        const res = await fetch("/api/tasks");
+        if (res.ok) {
+          const data = await res.json();
+          setWeeklyTasks(data.tasks || []);
+        }
+      } catch (err) {
+        console.error("Error fetching tasks:", err);
+      }
+    };
+    fetchTasks();
   }, [user]);
 
   // Format date helper
@@ -126,12 +148,27 @@ export default function ProfessionalDashboard() {
   const diagnostic = profile?.diagnosticResults ? JSON.parse(profile.diagnosticResults) : null;
   const selectedSkills = (diagnostic?.skills as string[]) || [];
 
-  const weeklyTasks = [
-    { id: 1, title: "Completar perfil dinámico", completed: true, progress: 100 },
-    { id: 2, title: "Webinar: Lo que buscan las empresas", completed: false, progress: 0, date: "20 May", icon: Video },
-    { id: 3, title: "Revisar ruta de aprendizaje", completed: false, progress: 40, icon: Briefcase },
-    { id: 4, title: "Primer contacto con networking", completed: false, progress: 0, icon: Users },
-  ];
+  const toggleTask = async (taskId: string, currentCompleted: boolean) => {
+    setTogglingTask(taskId);
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskId, completed: !currentCompleted }),
+      });
+      if (res.ok) {
+        setWeeklyTasks((prev) =>
+          prev.map((t) =>
+            t.id === taskId ? { ...t, isCompleted: !currentCompleted } : t
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error toggling task:", err);
+    } finally {
+      setTogglingTask(null);
+    }
+  };
 
   // Determine user title from diagnostic
   const areaMap: Record<string, string> = {
@@ -299,43 +336,54 @@ export default function ProfessionalDashboard() {
           <div className="flex items-center justify-between mb-4">
              <h3 className="text-base font-bold text-[#1A1A1A]">Tareas de la Semana</h3>
              <span className="text-2xl font-black text-[#7B9E6B]">
-               {Math.round((weeklyTasks.filter(t => t.completed).length / weeklyTasks.length) * 100)}%
+               {weeklyTasks.length > 0 ? Math.round((weeklyTasks.filter(t => t.isCompleted).length / weeklyTasks.length) * 100) : 0}%
              </span>
-          </div>
+           </div>
 
-          {/* Progress bar */}
-          <div className="h-2 w-full bg-[#EDE8DB] rounded-full overflow-hidden mb-6">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: `${(weeklyTasks.filter(t => t.completed).length / weeklyTasks.length) * 100}%` }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="h-full rounded-full bg-gradient-to-r from-[#7B9E6B] via-[#8B9A6B] to-[#D4C36A]"
-            />
-          </div>
+           {/* Progress bar */}
+           <div className="h-2 w-full bg-[#EDE8DB] rounded-full overflow-hidden mb-6">
+             <motion.div 
+               initial={{ width: 0 }}
+               animate={{ width: `${weeklyTasks.length > 0 ? (weeklyTasks.filter(t => t.isCompleted).length / weeklyTasks.length) * 100 : 0}%` }}
+               transition={{ duration: 1, delay: 0.5 }}
+               className="h-full rounded-full bg-gradient-to-r from-[#7B9E6B] via-[#8B9A6B] to-[#D4C36A]"
+             />
+           </div>
 
-          <div className="space-y-2 flex-1">
-             {weeklyTasks.map((task) => (
-               <div key={task.id} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-[#F5F0E8] transition-all group">
+           <div className="space-y-2 flex-1">
+             {weeklyTasks.length > 0 ? weeklyTasks.map((task) => (
+               <button 
+                 key={task.id} 
+                 onClick={() => toggleTask(task.id, task.isCompleted)}
+                 disabled={togglingTask === task.id}
+                 className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-[#F5F0E8] transition-all group text-left"
+               >
                   <div className={cn(
                     "w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0",
-                    task.completed ? "bg-[#7B9E6B]/15 text-[#7B9E6B]" : "bg-[#EDE8DB] text-[#9B9B9B] group-hover:text-[#1A1A1A]"
+                    task.isCompleted ? "bg-[#7B9E6B]/15 text-[#7B9E6B]" : "bg-[#EDE8DB] text-[#9B9B9B] group-hover:text-[#1A1A1A]"
                   )}>
-                    {task.completed ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
+                    {togglingTask === task.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : task.isCompleted ? (
+                      <CheckCircle2 className="w-4 h-4" />
+                    ) : (
+                      <Circle className="w-4 h-4" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
-                     <h4 className={cn("font-semibold text-sm truncate", task.completed ? "text-[#9B9B9B] line-through" : "text-[#1A1A1A]")}>{task.title}</h4>
+                     <h4 className={cn("font-semibold text-sm truncate", task.isCompleted ? "text-[#9B9B9B] line-through" : "text-[#1A1A1A]")}>{task.title}</h4>
+                     <span className="text-[9px] font-bold uppercase text-[#9B9B9B] tracking-wider">{task.category}</span>
                   </div>
-                  {task.date && (
-                    <span className="text-[10px] font-bold text-[#9B9B9B] uppercase bg-[#EDE8DB] px-2 py-1 rounded-lg shrink-0">
-                      {task.date}
-                    </span>
-                  )}
-                  {task.completed && (
+                  {task.isCompleted && (
                     <CheckCircle2 className="w-5 h-5 text-[#7B9E6B] shrink-0" />
                   )}
+               </button>
+             )) : (
+               <div className="flex items-center justify-center py-6 text-[#9B9B9B] text-sm">
+                 <Loader2 className="w-4 h-4 animate-spin mr-2" /> Cargando tareas...
                </div>
-             ))}
-          </div>
+             )}
+           </div>
         </motion.div>
       </div>
 
