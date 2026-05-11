@@ -1,36 +1,37 @@
-import type { UseFormRegisterReturn } from 'react-hook-form';
+import type { UseFormRegisterReturn } from 'react-hook-form'
+import { FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 interface FormFieldProps {
-  label: string;
-  type: 'text' | 'email' | 'password';
-  placeholder?: string;
-  register: UseFormRegisterReturn;
-  error?: string;
-  disabled?: boolean;
+  label: string
+  type?: 'text' | 'email' | 'password' | 'tel' | 'number'
+  placeholder?: string
+  register: UseFormRegisterReturn
+  error?: string
+  disabled?: boolean
 }
 
 export function FormField({
   label,
-  type,
+  type = 'text',
   placeholder,
   register,
   error,
   disabled = false,
 }: FormFieldProps) {
   return (
-    <div className="form-field">
-      <label htmlFor={register.name} className="form-label">
-        {label}
-      </label>
-      <input
-        type={type}
-        id={register.name}
-        placeholder={placeholder}
-        className={`form-input ${error ? 'form-input-error' : ''}`}
-        disabled={disabled}
-        {...register}
-      />
-      {error && <span className="form-error">{error}</span>}
-    </div>
-  );
+    <FormItem>
+      <FormLabel>{label}</FormLabel>
+      <FormControl>
+        <Input
+          type={type}
+          placeholder={placeholder}
+          disabled={disabled}
+          aria-invalid={!!error}
+          {...register}
+        />
+      </FormControl>
+      <FormMessage>{error}</FormMessage>
+    </FormItem>
+  )
 }
