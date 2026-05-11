@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.route';
+import profileRoutes from './modules/profiles/profiles.routes';
+import diagnosticRoutes from './modules/diagnostic/diagnostic.routes';
 
 dotenv.config();
 
@@ -32,8 +34,8 @@ app.use(cors()); // clave del front
 app.use(express.json());
 
 app.use('/api/v1/auth', authRoutes);
-// app.use('/api/v1/profiles', profileRoutes);
-// app.use('/api/v1/diagnostic', diagnosticRoutes);
+app.use('/api/v1/profiles', profileRoutes);
+app.use('/api/v1/diagnostic', diagnosticRoutes);
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);

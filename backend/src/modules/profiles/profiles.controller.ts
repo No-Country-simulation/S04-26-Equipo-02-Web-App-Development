@@ -4,7 +4,7 @@ import { updateProfileSchema } from './profiles.schema';
 
 export const getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.userId; 
+    const userId = (req as any).user?.userId; 
     if (!userId) throw new Error('UNAUTHORIZED');
     
     const profile = await ProfileService.getProfileByUserId(userId);
@@ -22,7 +22,7 @@ export const getMyProfile = async (req: Request, res: Response, next: NextFuncti
 export const updateMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedData = updateProfileSchema.parse(req.body);
-    const userId = req.user?.userId;
+    const userId = (req as any).user?.userId;
     if (!userId) throw new Error('UNAUTHORIZED');
     
     const updatedProfile = await ProfileService.updateProfile(userId, validatedData);
