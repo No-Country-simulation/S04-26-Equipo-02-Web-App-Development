@@ -144,6 +144,8 @@ model ProfileSkill {
   skillId     String
   skill       Skill               @relation(fields: [skillId], references: [id])
   isVerified  Boolean             @default(false) // Si se activó por terminar un módulo
+
+  @@unique([profileId, skillId])
 }
 
 model WorkExperience {

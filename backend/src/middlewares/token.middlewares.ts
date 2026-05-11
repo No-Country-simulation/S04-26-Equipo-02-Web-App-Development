@@ -1,9 +1,9 @@
+import { Request, Response, NextFunction } from 'express';
+import { Role } from '@prisma/client';
 import { validateToken } from '../utils/validate.token'
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma';
 
-const prisma = new PrismaClient();
-
-export const tokenMiddleware = async (req: any, res: any, next: any) => {
+export const tokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
     const token = req.cookies.token;
 
@@ -12,10 +12,9 @@ export const tokenMiddleware = async (req: any, res: any, next: any) => {
     }
 
     try {
-
         const decoded = validateToken(token);
 
-        if(!decoded) {
+        if (!decoded) {
             return res.status(401).json({ message: "Token inválido" });
         }
 
@@ -34,6 +33,22 @@ export const tokenMiddleware = async (req: any, res: any, next: any) => {
         next();
 
     } catch (error) {
-        return res.status(401).json({ message: "Token inválido by token" });
+        return res.status(401).json({ message: "Token inválido" });
     }
+};
+
+export const authorize = (roles: Role[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const user = req.user;
+
+        if (!user || !roles.includes(user.role)) {
+            return res.status(403).json({
+                success: false,
+                data: null,
+                error: 'No tenés permisos para realizar esta acción',
+            });
+        }
+
+        return next();
+    };
 };
