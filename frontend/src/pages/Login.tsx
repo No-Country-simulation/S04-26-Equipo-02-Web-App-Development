@@ -1,107 +1,111 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
-import { loginSchema, type LoginFormData } from '../lib/schemas';
-import { FormField } from '../components/FormField';
-// import api from '../api/axios'; // Descomentar cuando el backend esté listo
-// import { useAuth } from '../hooks/useAuth'; // Descomentar cuando el backend esté listo
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Link } from 'react-router-dom'
+import { loginSchema, type LoginFormData } from '../lib/schemas'
+import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { FormField } from '@/components/FormField'
+import { PasswordInput } from '@/components/auth/PasswordInput'
+import { LoadingButton } from '@/components/auth/LoadingButton'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function Login() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  // const { login } = useAuth(); // Descomentar cuando el backend esté listo
-  // const navigate = useNavigate(); // Descomentar cuando el backend esté listo
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
     },
-  });
+  })
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
-    setSubmitError(null);
+    setIsSubmitting(true)
 
     try {
-      // TODO: Descomentar cuando el backend esté listo
-      // await login({ email: data.email, password: data.password });
-      // navigate('/dashboard');
-
-      // SIMULACIÓN - Eliminar cuando conectes el backend
-      console.log('📤 Datos enviados al backend:', data);
-      alert('Login simulado - conectar con backend cuando esté listo');
-      setIsSubmitting(false);
+      // TODO: Conectar con backend
+      console.log('📤 Login data:', data)
+      setIsSubmitting(false)
     } catch (err) {
-      console.error('Error en login:', err);
-      setSubmitError('Email o contraseña incorrectos');
-      setIsSubmitting(false);
+      console.error('Error en login:', err)
+      form.setError('root', { message: 'Email o contraseña incorrectos' })
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <div className="container-main py-24 lg:py-32">
-      <div className="container-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-          Iniciar sesión
-        </h1>
-        <p className="mt-4 text-gray-600">
-          Accedé a tu cuenta para continuar
-        </p>
+    <div className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Iniciar sesión</CardTitle>
+          <CardDescription>
+            Accedé a tu cuenta para continuar
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {form.formState.errors.root && (
+                <div className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-md">
+                  {form.formState.errors.root.message}
+                </div>
+              )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="auth-form mt-8">
-          {submitError && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm">
-              {submitError}
-            </div>
-          )}
+              <FormField
+                label="Email"
+                type="email"
+                placeholder="tu@email.com"
+                register={form.register('email')}
+                error={form.formState.errors.email?.message}
+                disabled={isSubmitting}
+              />
 
-          <FormField
-            label="Email"
-            type="email"
-            placeholder="tu@email.com"
-            register={register('email')}
-            error={errors.email?.message}
-            disabled={isSubmitting}
-          />
+              <FormItem>
+                <FormLabel>Contraseña</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    placeholder="••••••••"
+                    {...form.register('password')}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.password?.message}
+                </FormMessage>
+              </FormItem>
 
-          <FormField
-            label="Contraseña"
-            type="password"
-            placeholder="••••••••"
-            register={register('password')}
-            error={errors.password?.message}
-            disabled={isSubmitting}
-          />
+              <div className="text-right">
+                <Link 
+                  to="/forgot-password" 
+                  className="text-sm text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                >
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
 
-          <div className="text-right">
-            <Link to="/forgot-password" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </div>
+              <LoadingButton
+                type="submit"
+                className="w-full"
+                loading={isSubmitting}
+                loadingText="Iniciando sesión..."
+              >
+                Iniciar sesión
+              </LoadingButton>
 
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
-          </button>
-
-          <p className="text-center text-sm text-gray-600">
-            ¿No tenés cuenta?{' '}
-            <Link to="/register" className="text-gray-900 font-medium hover:underline">
-              Registrate aquí
-            </Link>
-          </p>
-        </form>
-      </div>
+              <p className="text-center text-sm text-muted-foreground">
+                ¿No tenés cuenta?{' '}
+                <Link 
+                  to="/register" 
+                  className="font-medium text-primary hover:underline"
+                >
+                  Registrate aquí
+                </Link>
+              </p>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }

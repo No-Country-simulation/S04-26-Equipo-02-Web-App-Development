@@ -1,23 +1,18 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
-import { registerSchema, type RegisterFormData } from '../lib/schemas';
-import { FormField } from '../components/FormField';
-// import api from '../api/axios'; // Descomentar cuando el backend esté listo
-// import { useAuth } from '../hooks/useAuth'; // Descomentar cuando el backend esté listo
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Link } from 'react-router-dom'
+import { registerSchema, type RegisterFormData } from '../lib/schemas'
+import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/auth/PasswordInput'
+import { LoadingButton } from '@/components/auth/LoadingButton'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function Register() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  // const { register: registerUser } = useAuth(); // Descomentar cuando el backend esté listo
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<RegisterFormData>({
+  const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: '',
@@ -27,149 +22,174 @@ export function Register() {
       role: 'professional',
       companyName: '',
     },
-  });
+  })
 
-  // Watching para conditionally render campos
-  const selectedRole = watch('role');
+  const selectedRole = form.watch('role')
 
   const onSubmit = async (data: RegisterFormData) => {
-    setIsSubmitting(true);
-    setSubmitError(null);
+    setIsSubmitting(true)
 
     try {
-      // TODO: Descomentar cuando el backend esté listo
-      // await registerUser({
-      //   name: data.name,
-      //   email: data.email,
-      //   password: data.password,
-      //   role: data.role,
-      //   ...(data.role === 'company' && { companyName: data.companyName }),
-      // });
-
-      // SIMULACIÓN - Eliminar cuando conectes el backend
-      console.log('📤 Datos de registro enviados:', data);
-      alert(`Registro simulado como ${data.role === 'company' ? 'empresa' : 'profesional'}`);
-      setIsSubmitting(false);
+      // TODO: Conectar con backend
+      console.log('📤 Register data:', data)
+      setIsSubmitting(false)
     } catch (err) {
-      console.error('Error en registro:', err);
-      setSubmitError('Error al crear la cuenta');
-      setIsSubmitting(false);
+      console.error('Error en registro:', err)
+      form.setError('root', { message: 'Error al crear la cuenta' })
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <div className="container-main py-24 lg:py-32">
-      <div className="container-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-          Crear cuenta
-        </h1>
-        <p className="mt-4 text-gray-600">
-          Unite a la Red de Bienestar Laboral
-        </p>
+    <div className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Crear cuenta</CardTitle>
+          <CardDescription>
+            Unite a la Red de Bienestar Laboral
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {form.formState.errors.root && (
+                <div className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-md">
+                  {form.formState.errors.root.message}
+                </div>
+              )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="auth-form mt-8">
-          {submitError && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm">
-              {submitError}
-            </div>
-          )}
-
-          {/* Selector de rol */}
-          <div className="role-selector">
-            <label
-              className={`role-option ${selectedRole === 'professional' ? 'selected' : ''}`}
-            >
-              <input
-                type="radio"
-                value="professional"
-                {...register('role')}
-                className="sr-only"
-              />
-              <div>
-                <div className="font-medium">Profesional</div>
-                <div className="text-xs text-gray-500">Busco empleo</div>
+              {/* Selector de rol */}
+              <div className="role-selector">
+                <label
+                  className={`role-option ${selectedRole === 'professional' ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    value="professional"
+                    {...form.register('role')}
+                    className="sr-only"
+                  />
+                  <div>
+                    <div className="font-medium">Profesional</div>
+                    <div className="text-xs text-muted-foreground">Busco empleo</div>
+                  </div>
+                </label>
+                <label
+                  className={`role-option ${selectedRole === 'company' ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    value="company"
+                    {...form.register('role')}
+                    className="sr-only"
+                  />
+                  <div>
+                    <div className="font-medium">Empresa</div>
+                    <div className="text-xs text-muted-foreground">Busco talento</div>
+                  </div>
+                </label>
               </div>
-            </label>
-            <label
-              className={`role-option ${selectedRole === 'company' ? 'selected' : ''}`}
-            >
-              <input
-                type="radio"
-                value="company"
-                {...register('role')}
-                className="sr-only"
-              />
-              <div>
-                <div className="font-medium">Empresa</div>
-                <div className="text-xs text-gray-500">Busco talento</div>
-              </div>
-            </label>
-          </div>
 
-          <FormField
-            label={selectedRole === 'company' ? 'Nombre del representante' : 'Nombre completo'}
-            type="text"
-            placeholder={selectedRole === 'company' ? 'Juan Pérez' : 'Juan Pérez'}
-            register={register('name')}
-            error={errors.name?.message}
-            disabled={isSubmitting}
-          />
+              <FormItem>
+                <FormLabel>
+                  {selectedRole === 'company' ? 'Nombre del representante' : 'Nombre completo'}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Juan Pérez"
+                    disabled={isSubmitting}
+                    {...form.register('name')}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.name?.message}
+                </FormMessage>
+              </FormItem>
 
-          <FormField
-            label="Email"
-            type="email"
-            placeholder="tu@email.com"
-            register={register('email')}
-            error={errors.email?.message}
-            disabled={isSubmitting}
-          />
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="tu@email.com"
+                    disabled={isSubmitting}
+                    {...form.register('email')}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.email?.message}
+                </FormMessage>
+              </FormItem>
 
-          {/* Solo mostrar companyName si es empresa */}
-          {selectedRole === 'company' && (
-            <FormField
-              label="Nombre de la empresa"
-              type="text"
-              placeholder="Acme Corporation"
-              register={register('companyName')}
-              error={errors.companyName?.message}
-              disabled={isSubmitting}
-            />
-          )}
+              {/* Solo mostrar companyName si es empresa */}
+              {selectedRole === 'company' && (
+                <FormItem>
+                  <FormLabel>Nombre de la empresa</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Acme Corporation"
+                      disabled={isSubmitting}
+                      {...form.register('companyName')}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors.companyName?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
 
-          <FormField
-            label="Contraseña"
-            type="password"
-            placeholder="••••••••"
-            register={register('password')}
-            error={errors.password?.message}
-            disabled={isSubmitting}
-          />
+              <FormItem>
+                <FormLabel>Contraseña</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    placeholder="••••••••"
+                    disabled={isSubmitting}
+                    {...form.register('password')}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.password?.message}
+                </FormMessage>
+              </FormItem>
 
-          <FormField
-            label="Confirmar contraseña"
-            type="password"
-            placeholder="••••••••"
-            register={register('confirmPassword')}
-            error={errors.confirmPassword?.message}
-            disabled={isSubmitting}
-          />
+              <FormItem>
+                <FormLabel>Confirmar contraseña</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    placeholder="••••••••"
+                    disabled={isSubmitting}
+                    {...form.register('confirmPassword')}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.confirmPassword?.message}
+                </FormMessage>
+              </FormItem>
 
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
-          </button>
+              <LoadingButton
+                type="submit"
+                className="w-full"
+                loading={isSubmitting}
+                loadingText="Creando cuenta..."
+              >
+                Crear cuenta
+              </LoadingButton>
 
-          <p className="text-center text-sm text-gray-600">
-            ¿Ya tenés cuenta?{' '}
-            <Link to="/login" className="text-gray-900 font-medium hover:underline">
-              Iniciá sesión
-            </Link>
-          </p>
-        </form>
-      </div>
+              <p className="text-center text-sm text-muted-foreground">
+                ¿Ya tenés cuenta?{' '}
+                <Link 
+                  to="/login" 
+                  className="font-medium text-primary hover:underline"
+                >
+                  Iniciá sesión
+                </Link>
+              </p>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
