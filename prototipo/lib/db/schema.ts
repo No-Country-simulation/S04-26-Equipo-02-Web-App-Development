@@ -10,6 +10,7 @@ export const contentTypeEnum = pgEnum("content_type", ["VIDEO", "ARTICULO", "QUI
 export const interactionActionEnum = pgEnum("interaction_action", ["VIEWED", "SAVED", "CONTACTED", "SHORTLISTED"]);
 export const applicationStatusEnum = pgEnum("application_status", ["APPLIED", "REVIEWING", "SHORTLISTED", "REJECTED", "HIRED"]);
 export const feedbackTypeEnum = pgEnum("feedback_type", ["INTERVIEW", "PROFILE_REVIEW", "GENERAL"]);
+export const publicationTypeEnum = pgEnum("publication_type", ["ARTICULO", "GUIA", "RECURSO", "NOTICIA"]);
 
 // --- USER & AUTH TABLES (Better Auth Core) ---
 export const users = pgTable("user", {
@@ -235,5 +236,19 @@ export const feedback = pgTable("feedback", {
 	comment: text("comment"),
 	areasToImprove: text("areas_to_improve"), // JSON or text
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
+});
+
+export const publications = pgTable("publication", {
+	id: uuid("id").defaultRandom().primaryKey(),
+	title: text("title").notNull(),
+	content: text("content").notNull(),
+	type: publicationTypeEnum("type").default("ARTICULO").notNull(),
+	authorUserId: text("author_userId").notNull().references(() => users.id),
+	image: text("image"),
+	tags: text("tags"), // JSON array of tags
+	status: text("status").default("draft"), // draft | published
+	publishedAt: timestamp("published_at"),
+	createdAt: timestamp("createdAt").notNull().defaultNow(),
+	updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 });
 

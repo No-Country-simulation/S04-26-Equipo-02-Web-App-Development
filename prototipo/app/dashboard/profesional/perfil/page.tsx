@@ -135,7 +135,7 @@ export default function PerfilPage() {
       {/* Header Perfil */}
       <div className="flex flex-col md:flex-row items-start md:items-end gap-6 pb-6 border-b border-[#EDE8DB]">
         <div className="relative group">
-          <Avatar className="w-24 h-24 rounded-3xl shadow-xl border-4 border-white">
+          <Avatar className="w-32 h-36 rounded-3xl shadow-xl border-4 border-white">
             {user.image && (
               <AvatarImage 
                 src={user.image} 
@@ -162,7 +162,8 @@ export default function PerfilPage() {
         
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">{user.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">{user.firstName} </h1>
+            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">{user.lastName}</h1>
             {profile?.availabilityStatus && (
               <Badge className={`border-0 font-bold text-xs ${
                 profile.availabilityStatus === "disponible" ? "bg-[#7B9E6B]/10 text-[#7B9E6B]" :

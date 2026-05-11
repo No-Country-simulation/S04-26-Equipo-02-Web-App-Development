@@ -28,9 +28,21 @@ export default function DashboardLayout({
   const user = session?.user as ExtendedUser;
   const mustChangePassword = user?.mustChangePassword;
   
-  // Redirección si el onboarding no está completado (Solo para Profesionales)
+  // Redirección de seguridad (Onboarding y Roles)
   useEffect(() => {
-    if (!isSessionPending && session) {
+    if (!isSessionPending) {
+      if (!session) {
+        router.push("/auth/login");
+        return;
+      }
+
+      // Si no tiene ningún rol definido, lo mandamos al home
+      if (!user?.role) {
+        router.push("/");
+        return;
+      }
+
+      // Redirección si el onboarding no está completado (Solo para Profesionales)
       if (user?.role === "PROFESSIONAL" && user?.onboardingCompleted === false) {
         router.push("/onboarding");
       }

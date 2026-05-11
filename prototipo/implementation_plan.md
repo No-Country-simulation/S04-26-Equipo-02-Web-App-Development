@@ -212,32 +212,32 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 > **Estado actual**: Admin tiene tabla de eventos hardcoded. No hay CRUD real. No hay publicación de contenido como talleres/webinars.
 
 ### 4.1 CRUD de Eventos (Admin)
-- [ ] **API CRUD de eventos** (`/api/events`)
+- [x] **API CRUD de eventos** (`/api/events`)
   - POST: crear evento (webinar, taller, networking, curso)
   - GET: listar eventos (con filtros por tipo y fecha)
   - PUT: editar evento
   - DELETE: eliminar/archivar evento
-- [ ] **Formulario de creación de evento** en admin (`/dashboard/admin/eventos/nuevo`)
+- [x] **Formulario de creación de evento** en admin (`/dashboard/admin/eventos/nuevo`)
   - Título, descripción, tipo, fecha, hora inicio/fin
   - Link de Zoom, link de registro
   - Imagen del evento
   - ¿Es gratuito?
-- [ ] **Implementar la gestión real** en `/dashboard/admin/eventos`
+- [x] **Implementar la gestión real** en `/dashboard/admin/eventos`
   - Tabla con datos reales de DB
   - Acciones: editar, eliminar, duplicar
   - Filtros por tipo y estado
 
 ### 4.2 Eventos para Profesionales
-- [ ] **Implementar lista de eventos real** en `/dashboard/profesional/eventos`
+- [x] **Implementar lista de eventos real** en `/dashboard/profesional/eventos`
   - Cards con imagen, fecha, tipo, speaker
   - Botón "Inscribirme"
   - Separación: próximos / pasados
-- [ ] **Crear tabla `event_registrations`**:
+- [x] **Crear tabla `event_registrations`**:
   ```
   - id, event_id, userId
   - registered_at, attended (boolean)
   ```
-- [ ] **Registrar asistencia** y vincular con `user_tasks` para tracking de progreso
+- [x] **Registrar asistencia** y vincular con `user_tasks` para tracking de progreso
 
 ### 4.3 Publicaciones / Contenido de la Red
 - [ ] **Crear tabla `publications`** para gestionar contenido de la comunidad:
@@ -261,23 +261,23 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 > **Estado actual**: Métricas hardcoded. Usuarios hardcoded. Sin funcionalidad real.
 
 ### 5.1 Métricas Reales
-- [ ] **API de métricas** (`/api/admin/metrics`)
+- [x] **API de métricas** (`/api/admin/metrics`)
   - Total de usuarios por rol
   - Usuarios nuevos por período
   - Eventos creados / asistidos
   - Módulos completados
   - Matches empresa-profesional
-- [ ] **Implementar dashboard de métricas real** (`/dashboard/admin/metricas`)
+- [x] **Implementar dashboard de métricas real** (`/dashboard/admin/metricas`)
   - Gráficos de crecimiento (Recharts)
   - KPIs en tiempo real
   - Exportación de datos
 
 ### 5.2 Gestión de Usuarios
-- [ ] **API de usuarios** (`/api/admin/users`)
+- [x] **API de usuarios** (`/api/admin/users`)
   - GET: listar usuarios con paginación y filtros
   - PUT: cambiar rol, estado de validación
   - DELETE: desactivar usuario
-- [ ] **Implementar gestión de usuarios real** (`/dashboard/admin/usuarios`)
+- [x] **Implementar gestión de usuarios real** (`/dashboard/admin/usuarios`)
   - Tabla con datos reales
   - Filtros por rol, estado
   - Acciones: validar, cambiar rol, desactivar
@@ -346,11 +346,11 @@ Plan completo de lo que **ya existe** vs. lo que **falta construir** para cumpli
 5. ✅ Feedback estructurado (tablas en DB y bases)
 
 ### Sprint 5 — Admin & Eventos (2-3 días)
-1. CRUD real de eventos
-2. Registro de asistencia
-3. Gestión de usuarios real
-4. Métricas en tiempo real
-5. Publicaciones/contenido de la red
+1. ✅ CRUD real de eventos
+2. ✅ Registro de asistencia
+3. ✅ Gestión de usuarios real
+4. ✅ Métricas en tiempo real
+5. ✅ Publicaciones/contenido de la red
 
 ---
 

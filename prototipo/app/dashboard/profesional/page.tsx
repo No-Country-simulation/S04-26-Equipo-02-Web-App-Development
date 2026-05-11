@@ -199,7 +199,7 @@ export default function ProfessionalDashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
            <h1 className="text-4xl md:text-5xl font-black text-[#1A1A1A] tracking-tight">
-             Hello, {user?.name?.split(' ')[0]}
+             Hola, {user?.firstName?.split(' ')[0]} 
            </h1>
            <p className="text-[#9B9B9B] font-medium text-sm uppercase tracking-widest">
              Tu espacio de crecimiento profesional
@@ -217,12 +217,12 @@ export default function ProfessionalDashboard() {
       {/* Row 1: Photo Card + Progress Chart + Tasks */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* USER PHOTO CARD — The Hero Card */}
+        {/* USER PHOTO CARD — Reduced size to avoid pixelation */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="lg:col-span-4 relative rounded-3xl overflow-hidden shadow-lg group cursor-pointer min-h-[320px]"
+          className="lg:col-span-4 relative rounded-3xl overflow-hidden shadow-lg group cursor-pointer min-h-[340px] max-h-[340px] min-w-[200px] max-w-[200px]"
         >
           {/* Background Image */}
           <div className="absolute inset-0">
@@ -239,17 +239,17 @@ export default function ProfessionalDashboard() {
 
           {/* Camera overlay for changing photo */}
           {!user?.image && (
-            <Link href="/dashboard/perfil" className="absolute top-4 right-4 z-20 p-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white/80 hover:text-white hover:bg-white/30 transition-all">
+            <Link href="/dashboard/profesional/perfil" className="absolute top-4 right-4 z-20 p-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white/80 hover:text-white hover:bg-white/30 transition-all">
               <Camera className="w-5 h-5" />
             </Link>
           )}
 
           {/* Name & Title Overlay */}
           <div className="absolute bottom-5 left-0 right-0 px-4 py-1 m-4 z-10 text-left rounded-2xl bg-white/30 backdrop-blur-xl border border-white/10">
-            <h2 className="text-2xl md:text-2xl font-black text-black/80 tracking-tight leading-tight">
+            <h2 className="text-sm font-black text-black/80 tracking-tight leading-tight">
               {user?.name?.split(' ')[0]} {user?.lastName}
             </h2>
-            <p className="text-black/70 font-semibold text-[10px] uppercase tracking-wider mt-1">
+            <p className="text-black/70 font-semibold text-[8px] uppercase tracking-wider mt-1">
               {userTitle}
             </p>
           </div>
@@ -267,7 +267,7 @@ export default function ProfessionalDashboard() {
              <p className="text-xs text-[#9B9B9B] font-medium">Tu avance en la plataforma</p>
           </div>
 
-          <div className="relative w-full aspect-square max-w-[200px] mx-auto">
+          <div className="relative w-full aspect-square max-w-[160px] mx-auto">
              <ChartContainer
                 config={chartConfig}
                 className="w-full h-full"
@@ -279,9 +279,9 @@ export default function ProfessionalDashboard() {
                     { category: "webinars", value: Math.min((profile?.stats?.webinars || 0) * 10, 100), fill: "var(--color-webinars)" },
                     { category: "skills", value: (selectedSkills.length / 18) * 100, fill: "var(--color-skills)" },
                   ]}
-                  innerRadius={25}
-                  outerRadius={80}
-                  barSize={8}
+                  innerRadius={20}
+                  outerRadius={70}
+                  barSize={6}
                 >
                   <ChartTooltip
                     cursor={false}
@@ -298,22 +298,22 @@ export default function ProfessionalDashboard() {
           </div>
 
           {/* Legend */}
-          <div className="w-full grid grid-cols-2 gap-2 mt-2">
+          <div className="w-full grid grid-cols-2 gap-1 mt-2">
              <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-[#7B9E6B]" />
-                <span className="text-[9px] font-bold uppercase text-[#9B9B9B]">Skills ({selectedSkills.length})</span>
+                <span className="text-[8px] font-bold uppercase text-[#9B9B9B]">Skills ({selectedSkills.length})</span>
              </div>
              <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-[#D4C36A]" />
-                <span className="text-[9px] font-bold uppercase text-[#9B9B9B]">Webinars ({profile?.stats?.webinars || 0})</span>
+                <span className="text-[8px] font-bold uppercase text-[#9B9B9B]">Webinars ({profile?.stats?.webinars || 0})</span>
              </div>
              <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-[#D4826A]" />
-                <span className="text-[9px] font-bold uppercase text-[#9B9B9B]">Talleres ({profile?.stats?.workshops || 0})</span>
+                <span className="text-[8px] font-bold uppercase text-[#9B9B9B]">Talleres ({profile?.stats?.workshops || 0})</span>
              </div>
              <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-[#8B9A6B]" />
-                <span className="text-[9px] font-bold uppercase text-[#9B9B9B]">Networking ({profile?.stats?.networking || 0})</span>
+                <span className="text-[8px] font-bold uppercase text-[#9B9B9B]">Networking ({profile?.stats?.networking || 0})</span>
              </div>
           </div>
           

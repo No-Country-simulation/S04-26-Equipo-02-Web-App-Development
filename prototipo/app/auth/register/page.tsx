@@ -30,7 +30,8 @@ const benefits = {
 
 const registerSchema = z.object({
   firstName: z.string().min(1, "El nombre es obligatorio"),
-  lastName: z.string().min(1, "El apellido es obligatorio"),
+  lastName: z.string().optional(),
+  companyName: z.string().optional(),
   location: z.string().min(1, "La ubicación es obligatoria"),
   phone: z
     .string()
@@ -43,7 +44,9 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, "Debe contener al menos una mayúscula")
     .regex(/[a-z]/, "Debe contener al menos una minúscula")
     .regex(/[0-9]/, "Debe contener al menos un número"),
-})
+}).refine(() => {
+    return true;
+});
 
 type RegisterValues = z.infer<typeof registerSchema>
 
@@ -65,6 +68,15 @@ function RegisterForm() {
   })
 
   const onSubmit = async (values: RegisterValues) => {
+    if (activeTab === "profesional" && !values.lastName) {
+        toast.error("El apellido es obligatorio para profesionales");
+        return;
+    }
+    if (activeTab === "empresa" && !values.companyName) {
+        toast.error("El nombre de la empresa es obligatorio");
+        return;
+    }
+
     setIsLoading(true)
 
     const payload = {
@@ -91,7 +103,6 @@ function RegisterForm() {
         description: `Tu cuenta como ${activeTab === "profesional" ? "Profesional" : "Empresa"} ha sido creada. Te enviamos un email de bienvenida.`,
       })
 
-      // Pequeño delay para que lean el toast antes de redirigir
       setTimeout(() => {
         router.push("/auth/login")
       }, 2000)
@@ -114,12 +125,6 @@ function RegisterForm() {
             <ArrowLeft className="h-4 w-4" />
             Volver al inicio
           </Link>
-
-          {/* <div className="mb-8">
-            <span className="text-base font-semibold tracking-tight text-foreground">
-              Red de Bienestar Laboral
-            </span>
-          </div> */}
 
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -158,18 +163,20 @@ function RegisterForm() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-medium">
+                  <Label htmlFor={activeTab === "profesional" ? "lastName" : "companyName"} className="text-sm font-medium">
                     {activeTab === "profesional" ? "Apellido" : "Nombre de la empresa"}
                   </Label>
                   <Input
-                    id="lastName"
+                    id={activeTab === "profesional" ? "lastName" : "companyName"}
                     placeholder={activeTab === "profesional" ? "Tu apellido" : "Empresa S.A."}
-                    {...register("lastName")}
+                    {...register(activeTab === "profesional" ? "lastName" : "companyName")}
                     disabled={isLoading}
-                    className={errors.lastName ? "border-destructive" : "h-11"}
+                    className={(activeTab === "profesional" ? errors.lastName : errors.companyName) ? "border-destructive" : "h-11"}
                   />
-                  {errors.lastName && (
-                    <p className="text-xs text-destructive font-medium">{errors.lastName.message}</p>
+                  {activeTab === "profesional" ? (
+                    errors.lastName && <p className="text-xs text-destructive font-medium">{errors.lastName.message}</p>
+                  ) : (
+                    errors.companyName && <p className="text-xs text-destructive font-medium">{errors.companyName.message}</p>
                   )}
                 </div>
               </div>
@@ -257,7 +264,7 @@ function RegisterForm() {
                 )}
               </div>
 
-              <Button type="submit" className="w-full h-12 bg-brand-sage hover:bg-brand-olive text-white rounded-xl font-bold shadow-md" disabled={isLoading}>
+              <Button type="submit" className="w-full h-12 bg-[#7B9E6B] hover:bg-[#6B8E5B] text-white rounded-xl font-bold shadow-md" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -308,7 +315,7 @@ function RegisterForm() {
             <ul className="mt-10 space-y-4">
               {benefits[activeTab as keyof typeof benefits].map((benefit) => (
                 <li key={benefit} className="flex items-center gap-3 text-white font-medium">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#C4A962]" />
                   {benefit}
                 </li>
               ))}

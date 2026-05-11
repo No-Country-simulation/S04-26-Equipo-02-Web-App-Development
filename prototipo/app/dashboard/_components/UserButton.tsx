@@ -74,7 +74,7 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
             "w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white/5 group relative outline-none",
             isCollapsed ? "justify-center" : "text-left"
           )}>
-             <Avatar className="h-9 w-9 shrink-0 rounded-lg border border-[#7B9E6B]/50 shadow-[0_0_10px_2px_rgba(123,158,107,0.4)]">
+             <Avatar className="h-9 w-9 shrink-0 rounded-xl border border-[#7B9E6B]/50 shadow-[0_0_10px_2px_rgba(123,158,107,0.4)]">
                 {user.image && <AvatarImage src={user.image} alt={user.name} className="object-cover" />}
                 <AvatarFallback className="bg-[#7B9E6B]/20 text-[#7B9E6B] text-[10px] font-bold rounded-lg">
                   {getInitials(user.name)}
@@ -89,7 +89,7 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
                    exit={{ opacity: 0, width: 0 }}
                    className="flex-1 min-w-0 overflow-hidden"
                  >
-                   <p className="text-sm font-bold text-white truncate tracking-tight">{user.name}</p>
+                   <p className="text-sm font-bold text-white truncate tracking-tight">{user?.firstName?.split(" ")[0]} {user?.lastName}</p>
                    <p className="text-[11px] font-medium text-white/40 truncate mt-0.5">{userRoleName}</p>
                  </motion.div>
                )}
@@ -124,7 +124,14 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
            </DropdownMenuLabel> */}
            {/* <DropdownMenuSeparator className="mx-2 bg-white/5" /> */}
            
-           <Link href={user.role === "COMPANY" ? "/dashboard/empresa/perfil" : "/dashboard/profesional/perfil"}>
+           {/* Perfil Link dinámico según Rol */}
+           <Link href={
+             user.role === "ADMIN" || user.role === "SUPER_ADMIN" 
+               ? "/dashboard/admin/perfil" 
+               : user.role === "COMPANY" 
+                 ? "/dashboard/empresa/perfil" 
+                 : "/dashboard/profesional/perfil"
+           }>
               <DropdownMenuItem className="rounded-xl p-3 flex items-center gap-3 cursor-pointer focus:bg-white/5 focus:text-white group">
                  <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center text-white/40 group-focus:text-blue-400 transition-all">
                     <Settings className="w-4 h-4" />

@@ -7,7 +7,7 @@ import { sendWelcomeEmail } from "@/lib/mail";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { firstName, lastName, email, password, phone, location, role } = body;
+    const { firstName, lastName, companyName, email, password, phone, location, role } = body;
 
     // 1. Validar campos básicos
     if (!email || !password || !role) {
@@ -17,15 +17,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 2. Determinar el Nombre para Better Auth
+    // Si es empresa, el nombre del usuario será el de la empresa.
+    // Si es profesional, será Nombre + Apellido.
+    const displayName = role === "COMPANY" 
+        ? companyName 
+        : `${firstName} ${lastName}`.trim();
+
     // 2. Crear usuario con Better Auth
-    // Nota: additionalFields se pasan directamente en el body
     const signUpResult = await auth.api.signUpEmail({
       body: { 
-        name: `${firstName} ${lastName}`.trim(), 
+        name: displayName, 
         email, 
         password,
         firstName,
-        lastName,
+        lastName: role === "COMPANY" ? "" : lastName, // Limpiamos lastName si es empresa
         phone,
         location,
         role 
@@ -45,17 +51,17 @@ export async function POST(request: NextRequest) {
     if (role === "PROFESSIONAL") {
       await db.insert(professionalProfiles).values({ 
         userId,
-        title: "Nuevo Profesional", // Título por defecto
+        title: "Nuevo Profesional",
       });
     } else if (role === "COMPANY") {
       await db.insert(companyProfiles).values({ 
         userId,
-        companyName: lastName || "Nueva Empresa", // Usamos lastName que es donde guardamos el nombre de empresa en el form
+        companyName: companyName || "Nueva Empresa",
       });
     }
 
     // 4. Enviar email de bienvenida
-    await sendWelcomeEmail(email, `${firstName} ${lastName}`.trim(), role);
+    await sendWelcomeEmail(email, displayName, role);
 
     return NextResponse.json({ 
       success: true, 
@@ -67,7 +73,6 @@ export async function POST(request: NextRequest) {
     const err = error as { message?: string };
     console.error("❌ Error en registro:", err);
     
-    // Manejo de errores específicos (ej: email duplicado)
     if (err.message?.includes("already exists")) {
       return NextResponse.json(
         { message: "El correo electrónico ya está registrado" },
