@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as DiagnosticController from './diagnostic.controller';
-import { tokenMiddleware, authorize } from '../../middlewares/token.middlewares';
+import { tokenMiddleware, authorize } from '../../middlewares/token.middleware';
 
 const router = Router();
 
