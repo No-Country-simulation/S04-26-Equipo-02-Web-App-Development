@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as ProfileController from './profiles.controller';
-import { tokenMiddleware } from '../../middlewares/token.middlewares';
+import { tokenMiddleware } from '../../middlewares/token.middleware';
 
 const router = Router();
 

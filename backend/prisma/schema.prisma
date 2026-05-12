@@ -33,6 +33,18 @@ enum PreselectionStatus {
   REJECTED
 }
 
+enum JobAvailability {
+  AVAILABLE
+  IN_PROCESS
+  NOT_AVAILABLE
+}
+
+enum JobModality {
+  REMOTE
+  ON_SITE
+  HYBRID
+}
+
 model User {
   id            String    @id @default(uuid())
   email         String    @unique
@@ -54,17 +66,30 @@ model ProfessionalProfile {
   userId          String    @unique
   user            User      @relation(fields: [userId], references: [id])
   
-  firstName       String
-  lastName        String
-  slug            String    @unique // Para /api/perfil/:slug
-  phone           String?
-  location        String?
-  bio             String?
-  avatarUrl       String?
-  completionScore Int       @default(0)
+  firstName         String
+  lastName          String
+  slug              String          @unique // Para /api/perfil/:slug
+  professionalTitle String?         // Ej: Director de RRHH
+  valueProposition  String?         // Propuesta de valor
+  yearsOfExperience Int?            @default(0)
+  phone             String?
+  location          String?
+  bio               String?         // Biografía breve
+  linkedinUrl       String?
+  portfolioUrl      String?
+  avatarUrl         String?
+  
+  // Preferencias Laborales
+  availability      JobAvailability @default(AVAILABLE)
+  preferredModality JobModality     @default(REMOTE)
+  salaryExpectation String?         // Ej: $800.000 - $1.200.000 ARS
+
+  completionScore   Int             @default(0)
 
   experience      WorkExperience[]
   education       Education[]
+  certifications  Certification[]
+  languages       Language[]
   skills          ProfileSkill[]
   preselections   Preselection[]
 
@@ -166,6 +191,24 @@ model Education {
   institution String
   degree      String
   year        Int
+}
+
+model Certification {
+  id          String              @id @default(uuid())
+  profileId   String
+  profile     ProfessionalProfile @relation(fields: [profileId], references: [id])
+  name        String
+  issuer      String
+  issueDate   DateTime?
+  url         String?
+}
+
+model Language {
+  id        String              @id @default(uuid())
+  profileId String
+  profile   ProfessionalProfile @relation(fields: [profileId], references: [id])
+  name      String              // Ej: Inglés
+  level     String              // Ej: B2 - Avanzado
 }
 
 model Preselection {
