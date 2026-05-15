@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as ProfileService from './profiles.service';
-import { updateProfileSchema, experienceSchema } from './profiles.schema';
+import { updateProfileSchema, experienceSchema, languageSchema } from './profiles.schema';
 
 export const getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -68,6 +68,44 @@ export const removeExperience = async (req: Request, res: Response, next: NextFu
     res.json({
       success: true,
       data: { message: 'Experiencia eliminada correctamente' },
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addLanguage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validatedData = languageSchema.parse(req.body);
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+
+    const language = await ProfileService.addLanguage(userId, validatedData);
+
+    res.status(201).json({
+      success: true,
+      data: language,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeLanguage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+
+    if (!id) throw new Error('LANGUAGE_ID_REQUIRED');
+
+    await ProfileService.deleteLanguage(userId, id as string);
+
+    res.json({
+      success: true,
+      data: { message: 'Idioma eliminado correctamente' },
       error: null,
     });
   } catch (error) {

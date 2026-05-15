@@ -25,5 +25,11 @@ export const experienceSchema = z.object({
   description: z.string().max(2000).optional(),
 });
 
+export const languageSchema = z.object({
+  name: z.string().min(2, 'El nombre del idioma es obligatorio'),
+  level: z.string().min(2, 'El nivel es obligatorio (Ej: B2 - Avanzado)'),
+});
+
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;
+export type LanguageInput = z.infer<typeof languageSchema>;

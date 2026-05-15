@@ -14,4 +14,8 @@ router.patch('/update', tokenMiddleware, ProfileController.updateMyProfile);
 router.post('/experience', tokenMiddleware, ProfileController.addExperience);
 router.delete('/experience/:id', tokenMiddleware, ProfileController.removeExperience);
 
+// Idiomas
+router.post('/languages', tokenMiddleware, ProfileController.addLanguage);
+router.delete('/languages/:id', tokenMiddleware, ProfileController.removeLanguage);
+
 export default router;
