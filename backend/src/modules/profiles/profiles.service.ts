@@ -1,5 +1,5 @@
 import { prisma } from '../../utils/prisma';
-import { UpdateProfileInput } from './profiles.schema';
+import { UpdateProfileInput, ExperienceInput } from './profiles.schema';
 
 export const getProfileByUserId = async (userId: string) => {
   return await prisma.professionalProfile.findUnique({
@@ -19,11 +19,6 @@ export const getProfileByUserId = async (userId: string) => {
 };
 
 export const updateProfile = async (userId: string, data: UpdateProfileInput) => {
-  const currentProfile = await prisma.professionalProfile.findUnique({
-    where: { userId },
-    select: { completionScore: true }
-  });
-
   let scoreBonus = 0;
   const keyFields: (keyof UpdateProfileInput)[] = ['professionalTitle', 'valueProposition', 'bio', 'linkedinUrl', 'location'];
 
@@ -57,6 +52,38 @@ export const getProfileBySlug = async (slug: string) => {
           skill: true
         }
       }
+    }
+  });
+};
+
+export const addExperience = async (userId: string, data: ExperienceInput) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  return await prisma.workExperience.create({
+    data: {
+      ...data,
+      profileId: profile.id
+    }
+  });
+};
+
+export const deleteExperience = async (userId: string, experienceId: string) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  return await prisma.workExperience.delete({
+    where: { 
+      id: experienceId,
+      profileId: profile.id
     }
   });
 };

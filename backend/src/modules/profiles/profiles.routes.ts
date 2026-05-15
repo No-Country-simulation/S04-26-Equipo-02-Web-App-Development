@@ -10,4 +10,8 @@ router.get('/me', tokenMiddleware, ProfileController.getMyProfile);
 // PATCH /api/v1/profiles/update
 router.patch('/update', tokenMiddleware, ProfileController.updateMyProfile);
 
+// Experiencia Laboral
+router.post('/experience', tokenMiddleware, ProfileController.addExperience);
+router.delete('/experience/:id', tokenMiddleware, ProfileController.removeExperience);
+
 export default router;
