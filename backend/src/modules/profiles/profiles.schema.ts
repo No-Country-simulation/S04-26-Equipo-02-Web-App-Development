@@ -30,6 +30,21 @@ export const languageSchema = z.object({
   level: z.string().min(2, 'El nivel es obligatorio (Ej: B2 - Avanzado)'),
 });
 
+export const educationSchema = z.object({
+  institution: z.string().min(2, 'La institución es obligatoria'),
+  degree: z.string().min(2, 'El título/grado es obligatorio'),
+  year: z.number().min(1950).max(new Date().getFullYear()),
+});
+
+export const certificationSchema = z.object({
+  name: z.string().min(2, 'El nombre de la certificación es obligatorio'),
+  issuer: z.string().min(2, 'La entidad emisora es obligatoria'),
+  issueDate: z.coerce.date().optional().nullable(),
+  url: z.string().url('URL de certificación inválida').optional().nullable().or(z.literal('')),
+});
+
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;
 export type LanguageInput = z.infer<typeof languageSchema>;
+export type EducationInput = z.infer<typeof educationSchema>;
+export type CertificationInput = z.infer<typeof certificationSchema>;

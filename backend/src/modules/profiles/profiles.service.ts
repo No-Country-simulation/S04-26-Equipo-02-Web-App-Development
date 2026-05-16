@@ -1,5 +1,5 @@
 import { prisma } from '../../utils/prisma';
-import { UpdateProfileInput, ExperienceInput, LanguageInput } from './profiles.schema';
+import { UpdateProfileInput, ExperienceInput, LanguageInput, EducationInput, CertificationInput } from './profiles.schema';
 
 export const getProfileByUserId = async (userId: string) => {
   return await prisma.professionalProfile.findUnique({
@@ -115,6 +115,70 @@ export const deleteLanguage = async (userId: string, languageId: string) => {
   return await prisma.language.delete({
     where: { 
       id: languageId,
+      profileId: profile.id
+    }
+  });
+};
+
+export const addEducation = async (userId: string, data: EducationInput) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  return await prisma.education.create({
+    data: {
+      ...data,
+      profileId: profile.id
+    }
+  });
+};
+
+export const deleteEducation = async (userId: string, educationId: string) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  return await prisma.education.delete({
+    where: { 
+      id: educationId,
+      profileId: profile.id
+    }
+  });
+};
+
+export const addCertification = async (userId: string, data: CertificationInput) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  return await prisma.certification.create({
+    data: {
+      ...data,
+      profileId: profile.id
+    }
+  });
+};
+
+export const deleteCertification = async (userId: string, certificationId: string) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  return await prisma.certification.delete({
+    where: { 
+      id: certificationId,
       profileId: profile.id
     }
   });

@@ -18,4 +18,12 @@ router.delete('/experience/:id', tokenMiddleware, ProfileController.removeExperi
 router.post('/languages', tokenMiddleware, ProfileController.addLanguage);
 router.delete('/languages/:id', tokenMiddleware, ProfileController.removeLanguage);
 
+// Educación
+router.post('/education', tokenMiddleware, ProfileController.addEducation);
+router.delete('/education/:id', tokenMiddleware, ProfileController.removeEducation);
+
+// Certificaciones
+router.post('/certifications', tokenMiddleware, ProfileController.addCertification);
+router.delete('/certifications/:id', tokenMiddleware, ProfileController.removeCertification);
+
 export default router;
