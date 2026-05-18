@@ -1,69 +1,95 @@
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
-import api from '../api/axios';
+import api, { ApiError } from '../api/axios';
+import { API_ENDPOINTS } from '../lib/constants';
 import type { AuthContextType, User, LoginCredentials, RegisterData } from '../types';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Funciones helper para parseo seguro
-const getStoredUser = (): User | null => {
-  try {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  } catch {
-    return null;
-  }
-};
-
-const getStoredToken = (): string | null => {
-  return localStorage.getItem('token');
-};
-
 export function AuthProvider({ children }: AuthProviderProps) {
-  // Lazy initialization - se ejecuta solo una vez al mount
-  const [user, setUser] = useState<User | null>(() => getStoredUser());
-  const [token, setToken] = useState<string | null>(() => getStoredToken());
-  const [isLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        await api.get(API_ENDPOINTS.auth.validateSession);
+        setUser({ id: '', email: '', name: '', role: 'PROFESSIONAL' });
+      } catch {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+  }, []);
 
   const login = async (credentials: LoginCredentials) => {
-    const response = await api.post('/auth/login', credentials);
-    const { user: userData, token: authToken } = response.data;
-
-    localStorage.setItem('token', authToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    setToken(authToken);
-    setUser(userData);
+    try {
+      await api.post(API_ENDPOINTS.auth.login, {
+        email: credentials.email,
+        password: credentials.password,
+        provider: credentials.provider,
+      });
+      setUser({ id: '', email: credentials.email, name: '', role: credentials.provider });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.status === 401) {
+          throw new Error('Credenciales incorrectas');
+        }
+        if (error.status === 0) {
+          throw new Error('Sin conexión al servidor');
+        }
+        throw new Error(error.message);
+      }
+      throw error;
+    }
   };
 
   const register = async (data: RegisterData) => {
-    const response = await api.post('/auth/register', data);
-    const { user: userData, token: authToken } = response.data;
-
-    localStorage.setItem('token', authToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    setToken(authToken);
-    setUser(userData);
+    try {
+      await api.post(API_ENDPOINTS.auth.register, {
+        email: data.email,
+        password: data.password,
+        provider: data.provider,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        location: data.location,
+        phone: data.phone,
+      });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.status === 422) {
+          throw new Error(error.message || 'El email ya está registrado');
+        }
+        if (error.status === 0) {
+          throw new Error('Sin conexión al servidor');
+        }
+        throw new Error(error.message);
+      }
+      throw error;
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
+  const logout = async () => {
+    try {
+      await api.post(API_ENDPOINTS.auth.logout);
+    } catch {
+      // Ignorar errores en logout
+    }
     setUser(null);
   };
 
   const value: AuthContextType = {
     user,
-    token,
     isLoading,
     login,
     register,
     logout,
-    isAuthenticated: !!token && !!user,
+    isAuthenticated: !!user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

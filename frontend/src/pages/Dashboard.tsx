@@ -1,5 +1,55 @@
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { ClipboardList, BookOpen, Briefcase, TrendingUp, Search, Users, Target, ArrowRight } from 'lucide-react';
+
+const professionalCards = [
+  {
+    title: 'Diagnóstico Inicial',
+    description: 'Completá tu evaluación para recibir tu ruta de aprendizaje personalizada',
+    icon: ClipboardList,
+    link: '/diagnostico',
+    color: 'bg-brand-sage',
+  },
+  {
+    title: 'Rutas de Aprendizaje',
+    description: 'Contenido en habilidades digitales, cognitivas y socioemocionales',
+    icon: BookOpen,
+    link: '/learning',
+    color: 'bg-brand-olive',
+  },
+  {
+    title: 'Bolsa de Trabajo',
+    description: 'Explorá oportunidades laborales adaptadas a tu perfil',
+    icon: Briefcase,
+    link: '/opportunities',
+    color: 'bg-brand-gold',
+  },
+  {
+    title: 'Mi Progreso',
+    description: 'Seguimiento de tu avance en las rutas de aprendizaje',
+    icon: TrendingUp,
+    link: '/progress',
+    color: 'bg-brand-coral',
+  },
+];
+
+const companyCards = [
+  {
+    title: 'Buscar Talento',
+    description: 'Explorá el pool de profesionales senior validados',
+    icon: Search,
+    link: '/talent-search',
+    color: 'bg-brand-sage',
+  },
+  {
+    title: 'Mis Postulaciones',
+    description: 'Gestioná los candidatos que has preseleccionado',
+    icon: Users,
+    link: '/candidates',
+    color: 'bg-brand-olive',
+  },
+];
 
 export function Dashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -8,92 +58,69 @@ export function Dashboard() {
     return null;
   }
 
-  const isProfessional = user.role === 'professional';
+  const isProfessional = user.role === 'PROFESSIONAL';
+  const cards = isProfessional ? professionalCards : companyCards;
 
   return (
-    <div className="dashboard-page">
-      <header className="dashboard-header">
-        <h1>Bienvenido, {user.name}</h1>
-        <p className="dashboard-subtitle">
-          {isProfessional
-            ? 'Tu centro de desarrollo profesional'
-            : 'Tu centro de gestión de talento'}
-        </p>
-      </header>
+    <main className="min-h-[calc(100vh-80px)] bg-background">
+      <div className="max-w-7xl mx-auto px-6 py-12 md:py-20">
+        <div className="mb-16">
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+            Hola, <span className="text-brand-sage">{user.name || 'Usuario'}</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl font-medium">
+            {isProfessional
+              ? 'Tu centro de desarrollo profesional'
+              : 'Tu centro de gestión de talento'}
+          </p>
+        </div>
 
-      {isProfessional ? (
-        <>
-          <section className="dashboard-cards">
-            <div className="dashboard-card">
-              <div className="card-icon">📋</div>
-              <h3>Tu Perfil Profesional</h3>
-              <p>Completá tu diagnóstico inicial para recibir tu ruta de aprendizaje personalizada</p>
-              <Link to="/diagnostico" className="btn btn-secondary">
-                Comenzar diagnóstico
-              </Link>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          {cards.map((card) => (
+            <Link key={card.link} to={card.link} className="group">
+              <Card className="saas-card overflow-hidden h-full hover:-translate-y-1">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className={`w-14 h-14 ${card.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                      <card.icon className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-brand-sage transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {card.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-6 flex items-center text-brand-sage font-bold">
+                    <span>Explorar</span>
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
 
-            <div className="dashboard-card">
-              <div className="card-icon">📚</div>
-              <h3>Rutas de Aprendizaje</h3>
-              <p>Accedé a contenidos en habilidades digitales, cognitivas y socioemocionales</p>
-              <Link to="/learning" className="btn btn-secondary">
-                Ver cursos
-              </Link>
+        {isProfessional && (
+          <div className="mt-16 p-8 bg-brand-bg rounded-3xl border border-brand-accent">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-brand-sage rounded-xl flex items-center justify-center text-white">
+                <Target className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Tu próximo paso</h3>
+                <p className="text-gray-600 font-medium">Recomendación personalizada</p>
+              </div>
             </div>
-
-            <div className="dashboard-card">
-              <div className="card-icon">💼</div>
-              <h3>Bolsa de Trabajo</h3>
-              <p>Explorá oportunidades laborales adaptadas a tu perfil</p>
-              <Link to="/opportunities" className="btn btn-secondary">
-                Ver oportunidades
-              </Link>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="card-icon">📊</div>
-              <h3>Mi Progreso</h3>
-              <p>Seguimiento de tu avance en las rutas de aprendizaje</p>
-              <Link to="/progress" className="btn btn-secondary">
-                Ver progreso
-              </Link>
-            </div>
-          </section>
-
-          <section className="dashboard-info">
-            <div className="info-box">
-              <h4>🎯 Tu próximo paso</h4>
-              <p>
-                Completá el diagnóstico inicial para recibir una ruta de aprendizaje
-                personalizada según tu perfil y experiencia.
-              </p>
-            </div>
-          </section>
-        </>
-      ) : (
-        <>
-          <section className="dashboard-cards">
-            <div className="dashboard-card">
-              <div className="card-icon">🔍</div>
-              <h3>Buscar Talento</h3>
-              <p>Explorá el pool de profesionales senior validados</p>
-              <Link to="/talent-search" className="btn btn-secondary">
-                Buscar candidatos
-              </Link>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="card-icon">📋</div>
-              <h3>Mis Postulaciones</h3>
-              <p>Gestioná los candidatos que has preseleccionado</p>
-              <Link to="/candidates" className="btn btn-secondary">
-                Ver candidatos
-              </Link>
-            </div>
-          </section>
-        </>
-      )}
-    </div>
+            <p className="text-gray-700 leading-relaxed ml-16">
+              Completá el diagnóstico inicial para recibir una ruta de aprendizaje
+              personalizada según tu perfil y experiencia.
+            </p>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

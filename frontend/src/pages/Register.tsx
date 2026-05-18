@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { registerSchema, type RegisterFormData } from '../lib/schemas'
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -11,16 +12,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const { register } = useAuth()
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
       role: 'professional',
-      companyName: '',
+      location: '',
+      phone: '',
     },
   })
 
@@ -30,14 +35,44 @@ export function Register() {
     setIsSubmitting(true)
 
     try {
-      // TODO: Conectar con backend
-      console.log('📤 Register data:', data)
-      setIsSubmitting(false)
-    } catch (err) {
-      console.error('Error en registro:', err)
-      form.setError('root', { message: 'Error al crear la cuenta' })
+      await register({
+        email: data.email,
+        password: data.password,
+        provider: data.role.toUpperCase() as 'PROFESSIONAL' | 'COMPANY',
+        firstName: data.firstName,
+        lastName: data.lastName,
+        location: data.location,
+        phone: data.phone,
+      })
+      setSuccess(true)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al crear la cuenta'
+      form.setError('root', { message })
       setIsSubmitting(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-green-600">¡Cuenta creada!</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-muted-foreground mb-4">
+              Te hemos enviado un correo electrónico para verificar tu cuenta.
+            </p>
+            <Link 
+              to="/login" 
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            >
+              Ir a iniciar sesión
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -90,22 +125,37 @@ export function Register() {
                 </label>
               </div>
 
-              <FormItem>
-                <FormLabel>
-                  {selectedRole === 'company' ? 'Nombre del representante' : 'Nombre completo'}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Juan Pérez"
-                    disabled={isSubmitting}
-                    {...form.register('name')}
-                  />
-                </FormControl>
-                <FormMessage>
-                  {form.formState.errors.name?.message}
-                </FormMessage>
-              </FormItem>
+              <div className="grid grid-cols-2 gap-4">
+                <FormItem>
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Juan"
+                      disabled={isSubmitting}
+                      {...form.register('firstName')}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors.firstName?.message}
+                  </FormMessage>
+                </FormItem>
+
+                <FormItem>
+                  <FormLabel>Apellido</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Pérez"
+                      disabled={isSubmitting}
+                      {...form.register('lastName')}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors.lastName?.message}
+                  </FormMessage>
+                </FormItem>
+              </div>
 
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -122,23 +172,35 @@ export function Register() {
                 </FormMessage>
               </FormItem>
 
-              {/* Solo mostrar companyName si es empresa */}
-              {selectedRole === 'company' && (
-                <FormItem>
-                  <FormLabel>Nombre de la empresa</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Acme Corporation"
-                      disabled={isSubmitting}
-                      {...form.register('companyName')}
-                    />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors.companyName?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
+              <FormItem>
+                <FormLabel>Ubicación</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Ciudad, País"
+                    disabled={isSubmitting}
+                    {...form.register('location')}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.location?.message}
+                </FormMessage>
+              </FormItem>
+
+              <FormItem>
+                <FormLabel>Teléfono</FormLabel>
+                <FormControl>
+                  <Input
+                    type="tel"
+                    placeholder="+54 9 11 1234 5678"
+                    disabled={isSubmitting}
+                    {...form.register('phone')}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.phone?.message}
+                </FormMessage>
+              </FormItem>
 
               <FormItem>
                 <FormLabel>Contraseña</FormLabel>

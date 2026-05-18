@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { loginSchema, type LoginFormData } from '../lib/schemas'
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { FormField } from '@/components/FormField'
@@ -11,12 +12,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { login } = useAuth()
+  const navigate = useNavigate()
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
+      provider: 'professional',
     },
   })
 
@@ -24,12 +28,15 @@ export function Login() {
     setIsSubmitting(true)
 
     try {
-      // TODO: Conectar con backend
-      console.log('📤 Login data:', data)
-      setIsSubmitting(false)
-    } catch (err) {
-      console.error('Error en login:', err)
-      form.setError('root', { message: 'Email o contraseña incorrectos' })
+      await login({
+        email: data.email,
+        password: data.password,
+        provider: data.provider.toUpperCase() as 'PROFESSIONAL' | 'COMPANY'
+      })
+      navigate('/dashboard')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Email o contraseña incorrectos'
+      form.setError('root', { message })
       setIsSubmitting(false)
     }
   }
@@ -51,6 +58,38 @@ export function Login() {
                   {form.formState.errors.root.message}
                 </div>
               )}
+
+              {/* Selector de rol */}
+              <div className="role-selector">
+                <label
+                  className={`role-option ${form.watch('provider') === 'professional' ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    value="professional"
+                    {...form.register('provider')}
+                    className="sr-only"
+                  />
+                  <div>
+                    <div className="font-medium">Profesional</div>
+                    <div className="text-xs text-muted-foreground">Busco empleo</div>
+                  </div>
+                </label>
+                <label
+                  className={`role-option ${form.watch('provider') === 'company' ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    value="company"
+                    {...form.register('provider')}
+                    className="sr-only"
+                  />
+                  <div>
+                    <div className="font-medium">Empresa</div>
+                    <div className="text-xs text-muted-foreground">Busco talento</div>
+                  </div>
+                </label>
+              </div>
 
               <FormField
                 label="Email"
