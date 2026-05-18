@@ -20,7 +20,7 @@ export const updateProfileSchema = z.object({
 export const experienceSchema = z.object({
   company: z.string().min(2, 'El nombre de la empresa es obligatorio'),
   role: z.string().min(2, 'El cargo es obligatorio'),
-  startDate: z.coerce.date(),
+  startDate: z.coerce.date({ invalid_type_error: 'Fecha de inicio inválida' }),
   endDate: z.coerce.date().optional().nullable(),
   description: z.string().max(2000).optional(),
 });
