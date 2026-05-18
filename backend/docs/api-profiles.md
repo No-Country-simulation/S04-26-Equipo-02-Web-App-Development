@@ -92,7 +92,7 @@ Usa este endpoint para los campos de "Información Personal" y "Preferencias Lab
 
 ---
 
-## 💡 Tips para Postman:
-1.  **Auth:** Asegurate de haber hecho login antes (`POST /auth/login`). Postman guardará la cookie automáticamente.
-2.  **Dates:** Usá formato `YYYY-MM-DD`. El backend las convertirá a Date automáticamente.
+## Tips para Postman:
+1.  **Auth:** Asegurate de haber hecho login antes (`POST /auth/login`).
+2.  **Dates:** Usá formato `YYYY-MM-DD`. Yo lo convierto a Date automáticamente.
 3.  **IDs:** Para los `DELETE`, primero hacé un `GET /me` para obtener los IDs de las experiencias o idiomas que quieras borrar.
