@@ -4,25 +4,28 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'professional' | 'company';
-  createdAt: string;
+  role: 'PROFESSIONAL' | 'COMPANY';
+  createdAt?: string;
 }
 
 export interface LoginCredentials {
   email: string;
   password: string;
+  provider: 'PROFESSIONAL' | 'COMPANY';
 }
 
 export interface RegisterData {
-  name: string;
   email: string;
   password: string;
-  role: 'professional' | 'company';
+  provider: 'PROFESSIONAL' | 'COMPANY';
+  firstName: string;
+  lastName: string;
+  location: string;
+  phone: string;
 }
 
 export interface AuthResponse {
-  user: User;
-  token: string;
+  message: string;
 }
 
 export interface ApiError {
@@ -33,7 +36,6 @@ export interface ApiError {
 // Tipos para el contexto de autenticación
 export interface AuthContextType {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;

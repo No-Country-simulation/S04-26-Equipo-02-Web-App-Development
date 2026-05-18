@@ -10,15 +10,20 @@ export const loginSchema = z.object({
     .string()
     .min(1, 'La contraseña es requerida')
     .min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  provider: z.enum(['professional', 'company']),
 });
 
 // Schema para registro (profesional o empresa)
 export const registerSchema = z
   .object({
-    name: z
+    firstName: z
       .string()
       .min(1, 'El nombre es requerido')
       .min(2, 'El nombre debe tener al menos 2 caracteres'),
+    lastName: z
+      .string()
+      .min(1, 'El apellido es requerido')
+      .min(2, 'El apellido debe tener al menos 2 caracteres'),
     email: z
       .string()
       .min(1, 'El email es requerido')
@@ -26,27 +31,19 @@ export const registerSchema = z
     password: z
       .string()
       .min(1, 'La contraseña es requerida')
-      .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .regex(/[A-Z]/, 'Debe tener al menos una mayúscula')
-      .regex(/[0-9]/, 'Debe tener al menos un número'),
+      .min(6, 'La contraseña debe tener al menos 6 caracteres'),
     confirmPassword: z.string().min(1, 'Confirmar contraseña es requerido'),
     role: z.enum(['professional', 'company']),
-    // Campos opcionales para empresa
-    companyName: z.string().optional(),
+    location: z
+      .string()
+      .min(1, 'La ubicación es requerida'),
+    phone: z
+      .string()
+      .min(1, 'El teléfono es requerido'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Las contraseñas no coinciden',
     path: ['confirmPassword'],
-  })
-  .refine((data) => {
-    // Si el rol es company, el nombre de empresa es requerido
-    if (data.role === 'company') {
-      return !!data.companyName && data.companyName.length > 0;
-    }
-    return true;
-  }, {
-    message: 'El nombre de empresa es requerido',
-    path: ['companyName'],
   });
 
 // Tipos inferidos de los schemas
