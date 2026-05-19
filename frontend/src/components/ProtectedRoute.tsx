@@ -1,20 +1,21 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner } from '@/components/ui/spinner';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  allowedRoles?: ('PROFESSIONAL' | 'COMPANY' | 'ADMIN')[];
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <Spinner className="h-8 w-8" />
-        <p>Cargando...</p>
+      <div className="loading-container flex flex-col items-center justify-center min-h-[60vh] gap-3">
+        <Spinner className="h-8 w-8 text-[#7B9E6B]" />
+        <p className="text-sm font-semibold text-gray-500">Cargando...</p>
       </div>
     );
   }
@@ -23,5 +24,9 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <>{children}</>;
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children ? <>{children}</> : <Outlet />;
 }

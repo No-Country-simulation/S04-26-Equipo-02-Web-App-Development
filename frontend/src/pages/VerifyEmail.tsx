@@ -7,27 +7,27 @@ import { Spinner } from '@/components/ui/spinner';
 
 export function VerifyEmail() {
   const { token } = useParams<{ token: string }>();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    token ? 'loading' : 'error'
+  );
+  const [message, setMessage] = useState(token ? '' : 'Token inválido');
 
   useEffect(() => {
+    if (!token) return;
+
     const verifyEmail = async () => {
       try {
-        const response = await api.patch(API_ENDPOINTS.auth.verifyEmail(token!));
+        const response = await api.patch(API_ENDPOINTS.auth.verifyEmail(token));
         setStatus('success');
         setMessage(response.data.message || 'Email verificado exitosamente');
-      } catch (err: any) {
+      } catch (err) {
+        const axiosError = err as { response?: { data?: { message?: string } } };
         setStatus('error');
-        setMessage(err.response?.data?.message || 'Error al verificar el email');
+        setMessage(axiosError.response?.data?.message || 'Error al verificar el email');
       }
     };
 
-    if (token) {
-      verifyEmail();
-    } else {
-      setStatus('error');
-      setMessage('Token inválido');
-    }
+    verifyEmail();
   }, [token]);
 
   return (

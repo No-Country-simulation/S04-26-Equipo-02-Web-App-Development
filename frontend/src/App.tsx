@@ -7,8 +7,13 @@ import { Register } from './pages/Register';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
 import { VerifyEmail } from './pages/VerifyEmail';
-import { Dashboard } from './pages/Dashboard';
 import { NotFound } from './pages/NotFound';
+
+// Dashboard imports
+import DashboardLayout from './components/dashboard/DashboardLayout';
+import GeneralDashboard from './pages/dashboard/GeneralDashboard';
+import Profile from './pages/dashboard/Profile';
+import UnderConstruction from './components/dashboard/UnderConstruction';
 
 function App() {
   return (
@@ -22,39 +27,47 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
-        {/* Rutas protegidas */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Placeholder para rutas futuras (protegidas) */}
-        <Route path="/diagnostico" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-        <Route path="/learning" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-        <Route path="/opportunities" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-        <Route path="/progress" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-        <Route path="/talent-search" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-        <Route path="/candidates" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
+      </Route>
+
+      {/* Rutas protegidas del Dashboard */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<GeneralDashboard />} />
+        <Route path="profile" element={<Profile />} />
+
+        {/* Rutas exclusivas para Profesionales */}
+        <Route element={<ProtectedRoute allowedRoles={['PROFESSIONAL']} />}>
+          <Route path="learning" element={<UnderConstruction title="Mi Ruta" />} />
+          <Route path="opportunities" element={<UnderConstruction title="Marketplace" />} />
+        </Route>
+
+        {/* Rutas exclusivas para Empresas */}
+        <Route element={<ProtectedRoute allowedRoles={['COMPANY']} />}>
+          <Route path="talent-search" element={<UnderConstruction title="Buscar Talento" />} />
+          <Route path="publications" element={<UnderConstruction title="Mis Publicaciones" />} />
+        </Route>
+
+        {/* Rutas exclusivas para Administradores */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+          <Route path="users" element={<UnderConstruction title="Usuarios" />} />
+          <Route path="metrics" element={<UnderConstruction title="Métricas" />} />
+        </Route>
+
+        {/* Rutas compartidas (Profesionales y Administradores) */}
+        <Route element={<ProtectedRoute allowedRoles={['PROFESSIONAL', 'ADMIN']} />}>
+          <Route path="events" element={<UnderConstruction title="Eventos" />} />
+        </Route>
       </Route>
     </Routes>
   );
 }
 
-// Componente temporal para rutas en desarrollo
-function ComingSoon() {
-  return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h2>🚧 En construcción</h2>
-      <p>Esta sección está en desarrollo. ¡Pronto estará disponible!</p>
-    </div>
-  );
-}
-
-export default App;
+export default App;

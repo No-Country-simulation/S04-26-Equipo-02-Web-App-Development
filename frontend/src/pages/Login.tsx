@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
@@ -22,6 +22,12 @@ export function Login() {
       password: '',
       provider: 'professional',
     },
+  })
+
+  const selectedProvider = useWatch({
+    control: form.control,
+    name: 'provider',
+    defaultValue: 'professional',
   })
 
   const onSubmit = async (data: LoginFormData) => {
@@ -62,7 +68,7 @@ export function Login() {
               {/* Selector de rol */}
               <div className="role-selector">
                 <label
-                  className={`role-option ${form.watch('provider') === 'professional' ? 'selected' : ''}`}
+                  className={`role-option ${selectedProvider === 'professional' ? 'selected' : ''}`}
                 >
                   <input
                     type="radio"
@@ -76,7 +82,7 @@ export function Login() {
                   </div>
                 </label>
                 <label
-                  className={`role-option ${form.watch('provider') === 'company' ? 'selected' : ''}`}
+                  className={`role-option ${selectedProvider === 'company' ? 'selected' : ''}`}
                 >
                   <input
                     type="radio"
@@ -98,6 +104,7 @@ export function Login() {
                 register={form.register('email')}
                 error={form.formState.errors.email?.message}
                 disabled={isSubmitting}
+                autoComplete="off"
               />
 
               <FormItem>
@@ -107,6 +114,7 @@ export function Login() {
                     placeholder="••••••••"
                     {...form.register('password')}
                     disabled={isSubmitting}
+                    autoComplete="new-password"
                   />
                 </FormControl>
                 <FormMessage>

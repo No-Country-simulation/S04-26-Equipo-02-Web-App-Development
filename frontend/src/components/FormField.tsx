@@ -9,6 +9,7 @@ interface FormFieldProps {
   register: UseFormRegisterReturn
   error?: string
   disabled?: boolean
+  autoComplete?: string
 }
 
 export function FormField({
@@ -18,6 +19,7 @@ export function FormField({
   register,
   error,
   disabled = false,
+  autoComplete,
 }: FormFieldProps) {
   return (
     <FormItem>
@@ -28,6 +30,7 @@ export function FormField({
           placeholder={placeholder}
           disabled={disabled}
           aria-invalid={!!error}
+          autoComplete={autoComplete}
           {...register}
         />
       </FormControl>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
@@ -29,7 +29,11 @@ export function Register() {
     },
   })
 
-  const selectedRole = form.watch('role')
+  const selectedRole = useWatch({
+    control: form.control,
+    name: 'role',
+    defaultValue: 'professional',
+  })
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsSubmitting(true)
