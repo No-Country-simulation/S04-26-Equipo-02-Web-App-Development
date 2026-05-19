@@ -30,7 +30,10 @@ app.use(limiter);
 app.use(cookieParser());
 
 // middleware
-app.use(cors()); // clave del front
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/api/v1/auth', authRoutes);
