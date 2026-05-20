@@ -46,6 +46,19 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
+// Schema para inicio de sesión de administrador (ADM)
+export const adminLoginSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'El email es requerido')
+    .email('Ingresa un email válido'),
+  password: z
+    .string()
+    .min(1, 'La contraseña es requerida')
+    .min(6, 'La contraseña debe tener al menos 6 caracteres'),
+});
+
 // Tipos inferidos de los schemas
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type AdminLoginFormData = z.infer<typeof adminLoginSchema>;

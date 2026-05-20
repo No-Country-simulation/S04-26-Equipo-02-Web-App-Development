@@ -149,6 +149,16 @@ export function Login() {
                   Registrate aquí
                 </Link>
               </p>
+
+              <div className="text-center text-xs text-muted-foreground pt-2 border-t border-gray-100">
+                ¿Sos administrador?{' '}
+                <Link 
+                  to="/admin/login" 
+                  className="font-semibold text-[#C4A962] hover:underline"
+                >
+                  Ingresá acá
+                </Link>
+              </div>
             </form>
           </Form>
         </CardContent>
