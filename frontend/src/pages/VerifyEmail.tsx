@@ -2,28 +2,37 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/axios';
 import { API_ENDPOINTS } from '../lib/constants';
+import { handleApiError } from '@/lib/errors';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+
+const VERIFY_ERROR_MESSAGES: Record<number, string> = {
+  400: 'El enlace de verificación ya no es válido o expiró.',
+  404: 'El enlace de verificación ya no es válido o expiró.',
+  409: 'Este email ya fue verificado. Podés iniciar sesión.',
+};
 
 export function VerifyEmail() {
   const { token } = useParams<{ token: string }>();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
     token ? 'loading' : 'error'
   );
-  const [message, setMessage] = useState(token ? '' : 'Token inválido');
+  const [message, setMessage] = useState(token ? '' : 'El enlace de verificación es inválido.');
 
   useEffect(() => {
     if (!token) return;
 
     const verifyEmail = async () => {
       try {
-        const response = await api.patch(API_ENDPOINTS.auth.verifyEmail(token));
+        await api.patch(API_ENDPOINTS.auth.verifyEmail(token));
         setStatus('success');
-        setMessage(response.data.message || 'Email verificado exitosamente');
+        setMessage('Email verificado exitosamente. Ya podés iniciar sesión.');
       } catch (err) {
-        const axiosError = err as { response?: { data?: { message?: string } } };
+        const apiError = handleApiError(err);
+        const message = VERIFY_ERROR_MESSAGES[apiError.status]
+          ?? (apiError.status >= 500 ? 'Error del servidor. Intentá de nuevo más tarde.' : 'No pudimos verificar tu email. El enlace podría haber expirado.');
         setStatus('error');
-        setMessage(axiosError.response?.data?.message || 'Error al verificar el email');
+        setMessage(message);
       }
     };
 

@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link } from 'react-router-dom';
 import { FormField } from '../components/FormField';
+import { toast } from 'sonner';
+import { handleApiError } from '@/lib/errors';
 // import api from '../api/axios'; // Descomentar cuando el backend esté listo
 
 // Schema para recuperación de contraseña
@@ -45,7 +47,7 @@ export function ForgotPassword() {
       setSubmitSuccess(true);
       setIsSubmitting(false);
     } catch (err) {
-      console.error('Error en recuperación:', err);
+      toast.error(handleApiError(err).message);
       setSubmitError('No pudimos encontrar una cuenta con ese email');
       setIsSubmitting(false);
     }

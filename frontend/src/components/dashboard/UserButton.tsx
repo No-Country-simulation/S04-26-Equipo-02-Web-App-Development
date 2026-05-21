@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
+import { toast } from 'sonner';
+import { handleApiError } from '@/lib/errors';
 import { LogOut, Settings, ChevronRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -39,7 +41,7 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
       await logout();
       navigate('/login');
     } catch (err) {
-      console.error('Logout error:', err);
+      toast.error(handleApiError(err).message);
     }
   };
 

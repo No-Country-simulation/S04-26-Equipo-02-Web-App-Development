@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FormField } from '../components/FormField';
+import { toast } from 'sonner';
+import { handleApiError } from '@/lib/errors';
 // import api from '../api/axios'; // Descomentar cuando el backend esté listo
 
 // Schema para reset de contraseña
@@ -79,7 +81,7 @@ export function ResetPassword() {
       setSubmitSuccess(true);
       setIsSubmitting(false);
     } catch (err) {
-      console.error('Error en reset password:', err);
+      toast.error(handleApiError(err).message);
       setSubmitError('No pudimos cambiar tu contraseña. Intenta de nuevo.');
       setIsSubmitting(false);
     }
