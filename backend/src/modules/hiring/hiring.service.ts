@@ -147,7 +147,7 @@ export const createOfferService = async (userId: string, parsedBody: any) => {
         throw new Error("COMPANY_PROFILE_NOT_FOUND");
     }
 
-    const offer = await prisma.jobOffer.create({
+    await prisma.jobOffer.create({
         data: {
             companyId: companyProfile.id,
             title,
@@ -160,5 +160,5 @@ export const createOfferService = async (userId: string, parsedBody: any) => {
         },
     });
 
-    return offer;
+    return "Oferta de trabajo creada";
 }
