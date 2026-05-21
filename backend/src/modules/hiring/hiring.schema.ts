@@ -66,3 +66,14 @@ export const createOfferSchema = z.object({
     education: z.string(),
     experience: z.string()
 });
+
+export const updateOfferSchema = z.object({
+    id: z.string(),
+    title: z.string().optional(),
+    salaryRange: z.string().optional(),
+    contractType: z.string().optional(),
+    modality: z.string().optional(),
+    description: z.string().optional(),
+    education: z.string().optional(),
+    experience: z.string().optional()
+});

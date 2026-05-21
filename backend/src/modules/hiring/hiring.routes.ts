@@ -11,4 +11,6 @@ router.get('/search-candidates', refreshToken, tokenMiddleware, HiringController
 
 router.post('/create-offer', refreshToken, tokenMiddleware, HiringController.createOffer);
 
+router.patch('/update-offer', refreshToken, tokenMiddleware, HiringController.updateOffer);
+
 export default router;

@@ -162,3 +162,32 @@ export const createOfferService = async (userId: string, parsedBody: any) => {
 
     return "Oferta de trabajo creada";
 }
+
+export const updateOfferService = async (userId: string, parsedBody: any) => {
+
+    const { id, title, salaryRange, contractType, modality, description, education, experience } = parsedBody;
+
+    const companyProfile = await prisma.companyProfile.findUnique({
+        where: { userId: userId }
+    });
+
+    if (!companyProfile) {
+        throw new Error("COMPANY_PROFILE_NOT_FOUND");
+    }
+
+    await prisma.jobOffer.update({
+        where: { id: id },
+        data: {
+            ...(title && { title }),
+            ...(salaryRange && { salaryRange }),
+            ...(contractType && { contractType }),
+            ...(modality && { modality }),
+            ...(description && { description }),
+            ...(education && { education }),
+            ...(experience && { experience }),
+            updatedAt: new Date()
+        },
+    });
+
+    return "Oferta de trabajo actualizada";
+}
