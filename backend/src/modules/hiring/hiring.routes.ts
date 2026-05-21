@@ -2,8 +2,13 @@ import { Router } from 'express';
 
 import * as HiringController from './hiring.controller';
 
+import { refreshToken } from '../../middlewares/refresh.token.middleware';
+import { tokenMiddleware } from '../../middlewares/token.middleware';
+
 const router = Router();
 
-router.get('/search-candidates', HiringController.searchCandidates);
+router.get('/search-candidates', refreshToken, tokenMiddleware, HiringController.searchCandidates);
+
+router.post('/create-offer', refreshToken, tokenMiddleware, HiringController.createOffer);
 
 export default router;

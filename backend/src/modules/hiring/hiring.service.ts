@@ -1,11 +1,9 @@
+import { z } from 'zod';
 import { prisma } from '../../utils/prisma';
 import { searchCandidatesSchema } from './hiring.schema';
 
-export const searchCandidatesService = async (query: Object) => {
+export const searchCandidatesService = async (parsed: z.infer<typeof searchCandidatesSchema>) => {
 
-    const parsed = searchCandidatesSchema.parse(query);
-
-    const { experience } = parsed;
 
     const candidates = await prisma.professionalProfile.findMany({
         where: {
@@ -104,6 +102,7 @@ export const searchCandidatesService = async (query: Object) => {
     });
 
     const filteredCandidates = candidates.filter(candidate => {
+        const experience = parsed.experience;
         const yearsRequired = experience?.years;
 
         if (!yearsRequired) return true;
@@ -135,3 +134,31 @@ export const searchCandidatesService = async (query: Object) => {
 
     return filteredCandidates;
 };
+
+export const createOfferService = async (userId: string, parsedBody: any) => {
+
+    const { title, salaryRange, contractType, modality, description, education, experience } = parsedBody;
+
+    const companyProfile = await prisma.companyProfile.findUnique({
+        where: { userId: userId }
+    });
+
+    if (!companyProfile) {
+        throw new Error("COMPANY_PROFILE_NOT_FOUND");
+    }
+
+    const offer = await prisma.jobOffer.create({
+        data: {
+            companyId: companyProfile.id,
+            title,
+            salaryRange,
+            contractType,
+            modality,
+            description,
+            education,
+            experience
+        },
+    });
+
+    return offer;
+}

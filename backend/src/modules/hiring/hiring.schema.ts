@@ -56,3 +56,13 @@ export const searchCandidatesSchema = z.object({
         .transform(val => Array.isArray(val) ? val : [val])
         .optional()
 });
+
+export const createOfferSchema = z.object({
+    title: z.string(),
+    salaryRange: z.string(),
+    contractType: z.string(),
+    modality: z.string(),
+    description: z.string(),
+    education: z.string(),
+    experience: z.string()
+});

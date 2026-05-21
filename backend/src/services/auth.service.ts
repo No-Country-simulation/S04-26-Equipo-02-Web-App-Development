@@ -22,11 +22,11 @@ export const loginService = async (email: string, password: string, provider: st
         throw new Error('USER_NOT_FOUND');
     }
 
-    if(checkUser.isActive === false) {
+    if (checkUser.isActive === false) {
         throw new Error('USER_INACTIVE');
     }
 
-    if(checkUser.role !== provider) {
+    if (checkUser.role !== provider) {
         throw new Error('PROVIDER_MISMATCH');
     }
 
@@ -89,7 +89,7 @@ export const registerService = async (email: string, password: string, provider:
         }
     });
 
-    if(provider === Role.PROFESSIONAL) {
+    if (provider === Role.PROFESSIONAL) {
         await prisma.professionalProfile.create({
             data: {
                 firstName,
