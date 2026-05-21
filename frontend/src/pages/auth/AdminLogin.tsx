@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldAlert, ArrowLeft, Info } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { adminLoginSchema, type AdminLoginFormData } from '../lib/schemas';
+import { useAuth } from '../../hooks/useAuth';
+import { adminLoginSchema, type AdminLoginFormData } from '../../lib/schemas';
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { FormField } from '@/components/FormField';
 import { PasswordInput } from '@/components/auth/PasswordInput';
@@ -42,7 +42,7 @@ export function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-[#F5F0E8] to-[#EDE8DB] relative overflow-hidden">
+    <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-brand-bg to-brand-card relative overflow-hidden">
       {/* Decorative background shapes */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-brand-sage/5 rounded-full filter blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-brand-gold/5 rounded-full filter blur-3xl pointer-events-none" />
@@ -58,7 +58,7 @@ export function AdminLogin() {
         </Link>
       </div>
 
-      <Card className="w-full max-w-md border border-[#D4C9A8] shadow-xl bg-white/90 backdrop-blur-sm relative z-10 transition-all duration-300 hover:shadow-2xl">
+      <Card className="w-full max-w-md border border-brand-accent shadow-xl bg-white/90 backdrop-blur-sm relative z-10 transition-all duration-300 hover:shadow-2xl">
         {/* Top security border */}
         <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-brand-gold to-brand-sage rounded-t-lg" />
 
@@ -126,7 +126,7 @@ export function AdminLogin() {
 
               <LoadingButton
                 type="submit"
-                className="w-full bg-[#2C2C2C] text-white hover:bg-black font-bold py-6 rounded-xl hover:shadow-lg transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 border border-black/10"
+                className="w-full bg-brand-charcoal text-white hover:bg-black font-bold py-6 rounded-xl hover:shadow-lg transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 border border-black/10"
                 loading={isSubmitting}
                 loadingText="Verificando identidad..."
               >

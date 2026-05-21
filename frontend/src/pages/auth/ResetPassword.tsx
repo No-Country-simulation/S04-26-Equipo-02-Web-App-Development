@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useSearchParams } from 'react-router-dom';
-import { FormField } from '../components/FormField';
+import { FormField } from '../../components/FormField';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/errors';
-// import api from '../api/axios'; // Descomentar cuando el backend esté listo
+// import api from '../../api/axios'; // Descomentar cuando el backend esté listo
 
 // Schema para reset de contraseña
 const resetPasswordSchema = z
@@ -77,7 +77,7 @@ export function ResetPassword() {
       // });
 
       // SIMULACIÓN - Eliminar cuando conectes el backend
-      console.log('📤 Reset password con token:', token, 'password:', data.password);
+      console.log('[ResetPassword] Reset password con token:', token, 'password:', data.password);
       setSubmitSuccess(true);
       setIsSubmitting(false);
     } catch (err) {

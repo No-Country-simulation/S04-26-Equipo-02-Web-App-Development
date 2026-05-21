@@ -80,26 +80,26 @@ export default function ProgressChart({ skillsLength, profilePercent }: Progress
 
       <div className="w-full grid grid-cols-2 gap-1.5 mt-2">
         <div className="flex items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#7B9E6B]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-sage" />
           <span className="text-[8px] font-bold uppercase text-gray-400">Habilidades ({skillsLength})</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#D4C36A]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
           <span className="text-[8px] font-bold uppercase text-gray-400">Webinars (4)</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#D4826A]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-coral" />
           <span className="text-[8px] font-bold uppercase text-gray-400">Talleres (2)</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#8B9A6B]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-olive" />
           <span className="text-[8px] font-bold uppercase text-gray-400">Networking (3)</span>
         </div>
       </div>
 
       <div className="w-full pt-4 border-t border-gray-100 flex items-center justify-between mt-4">
         <div className="flex items-center gap-1.5 text-gray-900 font-black text-xl">
-          <TrendingUp className="w-4 h-4 text-[#7B9E6B]" />
+          <TrendingUp className="w-4 h-4 text-brand-sage" />
           <span>{profilePercent}%</span>
         </div>
         <span className="text-[9px] font-bold uppercase text-gray-400 tracking-wider">Perfil Completo</span>

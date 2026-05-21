@@ -25,7 +25,7 @@ export default function CompanyProfileForm({
               type="text"
               value={companyForm.companyName}
               onChange={(e) => onChange('companyName', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
               required
             />
           </div>
@@ -37,7 +37,7 @@ export default function CompanyProfileForm({
             type="text"
             value={companyForm.industry}
             onChange={(e) => onChange('industry', e.target.value)}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             required
           />
         </div>
@@ -51,7 +51,7 @@ export default function CompanyProfileForm({
               placeholder="https://miempresa.com"
               value={companyForm.website}
               onChange={(e) => onChange('website', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             />
           </div>
         </div>
@@ -64,7 +64,7 @@ export default function CompanyProfileForm({
               type="text"
               value={companyForm.location}
               onChange={(e) => onChange('location', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             />
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function CompanyProfileForm({
               rows={4}
               value={companyForm.description}
               onChange={(e) => onChange('description', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             />
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function CompanyProfileForm({
         <button
           type="submit"
           disabled={saving}
-          className="px-8 py-3.5 bg-[#7B9E6B] hover:bg-[#6b8c5c] text-white font-bold rounded-xl transition-all shadow-md flex items-center gap-2"
+          className="px-8 py-3.5 bg-brand-sage hover:bg-brand-sage-hover text-white font-bold rounded-xl transition-all shadow-md flex items-center gap-2"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Guardar Perfil</>}
         </button>

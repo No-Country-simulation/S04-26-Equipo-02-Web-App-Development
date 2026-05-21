@@ -1,7 +1,7 @@
-import { useAuth } from '../../hooks/useAuth';
-import ProfessionalDashboard from './ProfessionalDashboard';
-import CompanyDashboard from './CompanyDashboard';
-import AdminDashboard from './AdminDashboard';
+import { useAuth } from '../../../hooks/useAuth';
+import ProfessionalDashboard from '../professional/ProfessionalDashboard';
+import CompanyDashboard from '../company/CompanyDashboard';
+import AdminDashboard from '../admin/AdminDashboard';
 
 export default function GeneralDashboard() {
   const { user } = useAuth();

@@ -109,7 +109,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
         {/* Toggle Button Desktop */}
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:flex p-1.5 hover:bg-white/10 rounded-lg text-white/40 hover:text-white self-center absolute -right-3 top-7 bg-[#2C2C2C] border border-white/10 shadow-sm z-50 transition-all"
+          className="hidden md:flex p-1.5 hover:bg-white/10 rounded-lg text-white/40 hover:text-white self-center absolute -right-3 top-7 bg-brand-charcoal border border-white/10 shadow-sm z-50 transition-all"
         >
           <motion.div
             animate={{ rotate: isCollapsed ? 180 : 0 }}
@@ -146,16 +146,16 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
               key={item.href}
               to={item.href}
               className={cn(
-                'group flex items-center rounded-xl transition-all font-semibold text-sm relative',
+                'group flex items-center rounded-xl transition-all duration-200 font-semibold text-sm relative',
                 isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
                 isActive 
                   ? 'bg-white/10 text-white shadow-sm' 
-                  : 'text-white/60 hover:bg-white/5 hover:text-white'
+                  : 'text-white/60 hover:bg-white/5 hover:text-white hover:scale-[1.02] active:scale-[0.98]'
               )}
             >
               <item.icon className={cn(
                 'w-5 h-5 shrink-0 transition-all duration-300',
-                isActive ? 'text-[#7B9E6B] drop-shadow-[0_0_6px_rgba(123,158,107,0.8)]' : 'text-white/40 group-hover:text-white/80'
+                isActive ? 'text-brand-sage drop-shadow-[0_0_6px_var(--color-brand-sage)]' : 'text-white/40 group-hover:text-white/80 group-hover:scale-110'
               )} />
               
               <AnimatePresence mode="wait">
@@ -182,7 +182,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
                 <motion.div 
                   layoutId="active-nav-indicator"
                   className={cn(
-                    'absolute top-1/2 -translate-y-1/2 w-1 h-2/5 bg-[#7B9E6B] rounded-full shadow-[0_0_8px_2px_rgba(123,158,107,0.6)]',
+                    'absolute top-1/2 -translate-y-1/2 w-1 h-2/5 bg-brand-sage rounded-full shadow-[0_0_8px_2px_var(--color-brand-sage)]',
                     isCollapsed ? 'right-0' : 'left-0'
                   )}
                 />

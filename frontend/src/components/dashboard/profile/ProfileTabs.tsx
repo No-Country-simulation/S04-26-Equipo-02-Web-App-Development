@@ -22,7 +22,7 @@ export default function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps
           onClick={() => onTabChange(tab.id)}
           className={`flex items-center gap-2 pb-4 px-1 font-bold text-sm border-b-2 transition-all whitespace-nowrap outline-none ${
             activeTab === tab.id
-              ? 'border-[#7B9E6B] text-[#7B9E6B]'
+              ? 'border-brand-sage text-brand-sage'
               : 'border-transparent text-gray-400 hover:text-gray-600'
           }`}
         >
