@@ -1,0 +1,58 @@
+import { z } from 'zod';
+
+export const searchCandidatesSchema = z.object({
+    professionalTitle: z.string().optional(),
+    yearsOfExperience: z.coerce.number().optional(),
+    location: z.string().optional(),
+    availability: z.string().optional(),
+    preferredModality: z.string().optional(),
+    salaryExpectation: z.number().optional(),
+    experience: z.union([
+        z.coerce.number(),
+        z.string(),
+        z.array(
+            z.union([
+                z.coerce.number(),
+                z.string()
+            ])
+        )
+    ])
+        .transform(val => {
+            const values = Array.isArray(val) ? val : [val];
+
+            return {
+                years: values.find(
+                    (v): v is number => typeof v === 'number'
+                ),
+                roles: values.filter(
+                    (v): v is string => typeof v === 'string'
+                )
+            };
+        })
+        .optional(),
+    education: z.union([
+        z.string(),
+        z.array(z.string())
+    ]).transform(val => {
+        const values = Array.isArray(val) ? val : [val];
+
+        return {
+            degrees: values.filter(v =>
+                !['graduated', 'in-progress'].includes(v)
+            )
+        };
+    })
+        .optional(),
+    certifications: z.union([z.string(), z.array(z.object({
+        name: z.string().optional(),
+        issuer: z.string().optional()
+    }))])
+        .transform(val => Array.isArray(val) ? val : [val])
+        .optional(),
+    languages: z.union([z.string(), z.array(z.string())])
+        .transform(val => Array.isArray(val) ? val : [val])
+        .optional(),
+    skills: z.union([z.string(), z.array(z.string())])
+        .transform(val => Array.isArray(val) ? val : [val])
+        .optional()
+});
