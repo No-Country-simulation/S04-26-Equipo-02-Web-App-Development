@@ -3,7 +3,7 @@ import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
-import { AdminLogin } from './pages/AdminLogin';
+import { AdminLogin } from './pages/admin/AdminLogin';
 import { Register } from './pages/Register';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
@@ -14,7 +14,9 @@ import { NotFound } from './pages/NotFound';
 import DashboardLayout from './components/dashboard/DashboardLayout';
 import GeneralDashboard from './pages/dashboard/GeneralDashboard';
 import Profile from './pages/dashboard/Profile';
+import CvPreview from './pages/dashboard/CvPreview';
 import UnderConstruction from './components/dashboard/UnderConstruction';
+import Diagnostic from './pages/professional/Diagnostic';
 
 function App() {
   return (
@@ -44,11 +46,13 @@ function App() {
       >
         <Route index element={<GeneralDashboard />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="cv-preview" element={<CvPreview />} />
 
         {/* Rutas exclusivas para Profesionales */}
         <Route element={<ProtectedRoute allowedRoles={['PROFESSIONAL']} />}>
           <Route path="learning" element={<UnderConstruction title="Mi Ruta" />} />
           <Route path="opportunities" element={<UnderConstruction title="Marketplace" />} />
+          <Route path="diagnostic" element={<Diagnostic />} />
         </Route>
 
         {/* Rutas exclusivas para Empresas */}

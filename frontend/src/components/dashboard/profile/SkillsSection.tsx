@@ -30,7 +30,7 @@ export default function SkillsSection({ skills }: SkillsSectionProps) {
         ) : (
           <div className="w-full text-center py-6">
             <p className="text-xs font-semibold text-gray-400">Completa el autodiagnóstico inicial para validar tus competencias y ver tus habilidades aquí.</p>
-            <Link to="/dashboard" className="inline-block mt-4 text-xs font-bold text-[#7B9E6B] hover:underline">Ir a Dashboard</Link>
+            <Link to="/dashboard/diagnostic" className="inline-block mt-4 text-xs font-bold text-[#7B9E6B] hover:underline">Realizar Autodiagnóstico</Link>
           </div>
         )}
       </div>

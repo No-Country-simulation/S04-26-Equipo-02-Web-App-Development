@@ -18,12 +18,12 @@ export async function login(credentials: LoginCredentials): Promise<void> {
     if (error instanceof ApiError) {
       const message = LOGIN_ERROR_MESSAGES[error.status]
         ?? (error.status >= 500 ? 'El servidor no está respondiendo. Intentá más tarde.' : error.message);
-      throw new Error(message);
+      throw new Error(message, { cause: error });
     }
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error('No pudimos conectar con el servidor. Revisá tu conexión a internet.');
+      throw new Error('No pudimos conectar con el servidor. Revisá tu conexión a internet.', { cause: error });
     }
-    throw new Error('Ocurrió un error al iniciar sesión. Intentá de nuevo.');
+    throw new Error('Ocurrió un error al iniciar sesión. Intentá de nuevo.', { cause: error });
   }
 }
 
@@ -40,12 +40,12 @@ export async function register(data: RegisterData): Promise<void> {
     if (error instanceof ApiError) {
       const message = REGISTER_ERROR_MESSAGES[error.status]
         ?? (error.status >= 500 ? 'El servidor no está respondiendo. Intentá más tarde.' : error.message);
-      throw new Error(message);
+      throw new Error(message, { cause: error });
     }
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error('No pudimos conectar con el servidor. Revisá tu conexión a internet.');
+      throw new Error('No pudimos conectar con el servidor. Revisá tu conexión a internet.', { cause: error });
     }
-    throw new Error('Ocurrió un error al registrarte. Intentá de nuevo.');
+    throw new Error('Ocurrió un error al registrarte. Intentá de nuevo.', { cause: error });
   }
 }
 

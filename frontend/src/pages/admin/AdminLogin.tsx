@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldAlert, ArrowLeft, Info } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { adminLoginSchema, type AdminLoginFormData } from '../lib/schemas';
+import { useAuth } from '../../hooks/useAuth';
+import { adminLoginSchema, type AdminLoginFormData } from '../../lib/schemas';
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { FormField } from '@/components/FormField';
 import { PasswordInput } from '@/components/auth/PasswordInput';
@@ -13,8 +13,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export function AdminLogin() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const form = useForm<AdminLoginFormData>({
     resolver: zodResolver(adminLoginSchema),

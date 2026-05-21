@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { registerSchema, type RegisterFormData } from '../lib/schemas'
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
@@ -13,7 +13,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
-  const { register } = useAuth()
+  const { register, isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),

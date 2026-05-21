@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
@@ -12,8 +12,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { login } = useAuth()
+  const { login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),

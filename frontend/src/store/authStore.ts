@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import * as authApi from '../api/auth';
-import api from '../api/axios';
-import { API_ENDPOINTS } from '../lib/constants';
+import { getMyProfile } from '../api/profiles';
 import type { User, LoginCredentials, RegisterData } from '../types';
 
 // ── Module-level idempotency guard ──────────────────────────────────────────
@@ -34,14 +33,45 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (credentials) => {
     await authApi.login(credentials);
 
-    // Construct user from credentials — the API establishes the session cookie.
-    // User details will be refined by checkSession() on next page load.
+    // Construct base user from credentials — the API establishes the session cookie.
     const user: User = {
       id: '',
       email: credentials.email,
       name: credentials.email.split('@')[0],
       role: credentials.provider,
     };
+
+    // Keep localStorage keys consistent with other components
+    localStorage.setItem('auth_user_email', credentials.email);
+    localStorage.setItem('auth_user_role', credentials.provider);
+
+    // Immediately attempt to fetch profile information for name enrichment
+    if (credentials.provider === 'PROFESSIONAL') {
+      try {
+        const profile = await getMyProfile();
+        if (profile) {
+          user.id = profile.id || user.id;
+          user.firstName = profile.firstName || user.firstName;
+          user.lastName = profile.lastName || user.lastName;
+          const fullName = [profile.firstName, profile.lastName]
+            .filter(Boolean)
+            .join(' ');
+          if (fullName) user.name = fullName;
+        }
+      } catch {
+        // Ignored — fallback to email-derived name is acceptable
+      }
+    } else if (credentials.provider === 'COMPANY') {
+      const storedCompany = localStorage.getItem('company');
+      if (storedCompany) {
+        try {
+          const companyData = JSON.parse(storedCompany);
+          user.name = companyData.companyName || user.name;
+        } catch {
+          // ignore
+        }
+      }
+    }
 
     set({ user, isAuthenticated: true });
     localStorage.setItem('user', JSON.stringify(user));
@@ -57,6 +87,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user: null, isAuthenticated: false });
     localStorage.removeItem('user');
     localStorage.removeItem('company');
+    localStorage.removeItem('auth_user_email');
+    localStorage.removeItem('auth_user_role');
   },
 
   updateUser: (fields) => {
@@ -85,12 +117,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (storedUser) {
         const user: User = JSON.parse(storedUser);
 
+        // Keep localStorage keys consistent
+        localStorage.setItem('auth_user_email', user.email);
+        localStorage.setItem('auth_user_role', user.role);
+
         // 3. Role-specific enrichment
         if (user.role === 'PROFESSIONAL') {
           // Fetch full profile for name enrichment
           try {
-            const profileRes = await api.get(API_ENDPOINTS.profiles + '/me');
-            const profile = profileRes.data;
+            const profile = await getMyProfile();
             if (profile) {
               user.id = profile.id || user.id;
               user.firstName = profile.firstName || user.firstName;
@@ -129,6 +164,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Session invalid, expired, or network error
       localStorage.removeItem('user');
       localStorage.removeItem('company');
+      localStorage.removeItem('auth_user_email');
+      localStorage.removeItem('auth_user_role');
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },

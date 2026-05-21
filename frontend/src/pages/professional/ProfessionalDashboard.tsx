@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import api from '../../api/axios';
-import { API_ENDPOINTS } from '../../lib/constants';
+import { getMyProfile } from '../../api/profiles';
 import { handleApiError, ApiError } from '@/lib/errors';
 import { ErrorDisplay } from '@/components/ui/error-display';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -75,10 +76,8 @@ export default function ProfessionalDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get(`${API_ENDPOINTS.profiles}/me`);
-      if (res.data && res.data.success) {
-        setProfile(res.data.data);
-      }
+      const data = await getMyProfile();
+      setProfile(data);
     } catch (err) {
       const apiErr = handleApiError(err);
       toast.error(apiErr.message);
@@ -89,7 +88,17 @@ export default function ProfessionalDashboard() {
   }, [user]);
 
   useEffect(() => {
-    fetchProfile();
+    let active = true;
+    const run = async () => {
+      await Promise.resolve();
+      if (active) {
+        fetchProfile();
+      }
+    };
+    run();
+    return () => {
+      active = false;
+    };
   }, [fetchProfile]);
 
   const toggleTask = (taskId: string) => {
@@ -180,6 +189,55 @@ export default function ProfessionalDashboard() {
         <ProgressChart skillsLength={selectedSkills.length} profilePercent={profilePercent} />
         <WeeklyTasks tasks={weeklyTasks} onToggle={toggleTask} tasksPercent={tasksPercent} />
       </div>
+
+      {/* Banner: Tu próximo paso */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="relative overflow-hidden bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6"
+      >
+        {/* Decorative elements */}
+        <div className="absolute right-0 top-0 w-32 h-32 bg-[#7B9E6B]/5 rounded-full blur-2xl -mr-10 -mt-10" />
+        <div className="absolute left-1/3 bottom-0 w-24 h-24 bg-[#C4A962]/5 rounded-full blur-xl -mb-8" />
+
+        <div className="flex items-start md:items-center gap-4 z-10">
+          <div className="w-12 h-12 bg-[#EDE8DB] rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#D4C9A8]/20">
+            <span className="text-2xl">🎯</span>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900">Tu próximo paso</h3>
+              <span className="bg-[#7B9E6B]/15 text-[#7B9E6B] text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                Recomendado
+              </span>
+            </div>
+            <p className="text-gray-500 text-sm font-medium">
+              {selectedSkills.length === 0
+                ? 'Completá el autodiagnóstico inicial para recibir una ruta de aprendizaje personalizada según tus necesidades.'
+                : 'Explorá tu ruta de aprendizaje personalizada y continuá potenciando tus habilidades.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="z-10 flex-shrink-0">
+          {selectedSkills.length === 0 ? (
+            <Link
+              to="/dashboard/diagnostic"
+              className="inline-flex items-center justify-center bg-[#7B9E6B] hover:bg-[#688859] text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-sm hover:shadow transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              Comenzar Diagnóstico
+            </Link>
+          ) : (
+            <Link
+              to="/dashboard/learning"
+              className="inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-sm hover:shadow transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              Ver Mi Ruta de Aprendizaje
+            </Link>
+          )}
+        </div>
+      </motion.div>
 
       {/* Row 2: Stats */}
       <StatsCards stats={stats} />

@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import api from '../../api/axios';
-import { API_ENDPOINTS } from '../../lib/constants';
+import * as profileApi from '../../api/profiles';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/errors';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye } from 'lucide-react';
 import type { ProfessionalProfile, BasicFormState, CompanyFormState } from '../../components/dashboard/profile/types';
 import CompanyProfileForm from '../../components/dashboard/profile/CompanyProfileForm';
 import ProfileTabs from '../../components/dashboard/profile/ProfileTabs';
@@ -16,6 +16,7 @@ import LanguagesSection from '../../components/dashboard/profile/LanguagesSectio
 import SkillsSection from '../../components/dashboard/profile/SkillsSection';
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'basic' | 'experience' | 'education' | 'languages'>('basic');
   const [loading, setLoading] = useState(true);
@@ -44,26 +45,23 @@ export default function Profile() {
     if (!user) return;
     try {
       if (user.role === 'PROFESSIONAL') {
-        const res = await api.get(`${API_ENDPOINTS.profiles}/me`);
-        if (res.data && res.data.success) {
-          const data = res.data.data as ProfessionalProfile;
-          setProfile(data);
-          setBasicForm({
-            firstName: data.firstName || '',
-            lastName: data.lastName || '',
-            professionalTitle: data.professionalTitle || '',
-            valueProposition: data.valueProposition || '',
-            yearsOfExperience: data.yearsOfExperience || 0,
-            phone: data.phone || '',
-            location: data.location || '',
-            bio: data.bio || '',
-            linkedinUrl: data.linkedinUrl || '',
-            portfolioUrl: data.portfolioUrl || '',
-            availability: data.availability || 'AVAILABLE',
-            preferredModality: data.preferredModality || 'REMOTE',
-            salaryExpectation: data.salaryExpectation || '',
-          });
-        }
+        const data = await profileApi.getMyProfile();
+        setProfile(data);
+        setBasicForm({
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          professionalTitle: data.professionalTitle || '',
+          valueProposition: data.valueProposition || '',
+          yearsOfExperience: data.yearsOfExperience || 0,
+          phone: data.phone || '',
+          location: data.location || '',
+          bio: data.bio || '',
+          linkedinUrl: data.linkedinUrl || '',
+          portfolioUrl: data.portfolioUrl || '',
+          availability: data.availability || 'AVAILABLE',
+          preferredModality: data.preferredModality || 'REMOTE',
+          salaryExpectation: data.salaryExpectation || '',
+        });
       }
     } catch (err) {
       toast.error(handleApiError(err).message);
@@ -88,8 +86,8 @@ export default function Profile() {
     try {
       if (user?.role === 'PROFESSIONAL') {
         const payload = { ...basicForm, yearsOfExperience: Number(basicForm.yearsOfExperience) };
-        const res = await api.patch(`${API_ENDPOINTS.profiles}/update`, payload);
-        if (res.data && res.data.success) {
+        const res = await profileApi.updateMyProfile(payload);
+        if (res.success) {
           toast.success('¡Información de perfil actualizada!');
           updateUser({ name: `${basicForm.firstName} ${basicForm.lastName}`.trim(), firstName: basicForm.firstName, lastName: basicForm.lastName });
           loadProfile();
@@ -109,7 +107,7 @@ export default function Profile() {
   const handleAddExperience = async (data: { company: string; role: string; startDate: string; endDate: string; isCurrent: boolean; description: string }) => {
     setSaving(true);
     try {
-      await api.post(`${API_ENDPOINTS.profiles}/experience`, {
+      await profileApi.addExperience({
         company: data.company,
         role: data.role,
         startDate: new Date(data.startDate).toISOString(),
@@ -129,7 +127,7 @@ export default function Profile() {
   const handleDeleteExperience = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar esta experiencia laboral?')) return;
     try {
-      await api.delete(`${API_ENDPOINTS.profiles}/experience/${id}`);
+      await profileApi.deleteExperience(id);
       toast.success('Experiencia eliminada correctamente');
       loadProfile();
     } catch (err) { toast.error(handleApiError(err).message); }
@@ -138,7 +136,7 @@ export default function Profile() {
   const handleAddEducation = async (data: { institution: string; degree: string; year: number }) => {
     setSaving(true);
     try {
-      await api.post(`${API_ENDPOINTS.profiles}/education`, {
+      await profileApi.addEducation({
         institution: data.institution,
         degree: data.degree,
         year: Number(data.year),
@@ -156,7 +154,7 @@ export default function Profile() {
   const handleDeleteEducation = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar esta formación educativa?')) return;
     try {
-      await api.delete(`${API_ENDPOINTS.profiles}/education/${id}`);
+      await profileApi.deleteEducation(id);
       toast.success('Educación eliminada correctamente');
       loadProfile();
     } catch (err) { toast.error(handleApiError(err).message); }
@@ -165,7 +163,7 @@ export default function Profile() {
   const handleAddCertification = async (data: { name: string; issuer: string; issueDate: string; url: string }) => {
     setSaving(true);
     try {
-      await api.post(`${API_ENDPOINTS.profiles}/certifications`, {
+      await profileApi.addCertification({
         name: data.name,
         issuer: data.issuer,
         issueDate: data.issueDate ? new Date(data.issueDate).toISOString() : null,
@@ -184,7 +182,7 @@ export default function Profile() {
   const handleDeleteCertification = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar esta certificación?')) return;
     try {
-      await api.delete(`${API_ENDPOINTS.profiles}/certifications/${id}`);
+      await profileApi.deleteCertification(id);
       toast.success('Certificación eliminada correctamente');
       loadProfile();
     } catch (err) { toast.error(handleApiError(err).message); }
@@ -193,7 +191,7 @@ export default function Profile() {
   const handleAddLanguage = async (data: { name: string; level: string }) => {
     setSaving(true);
     try {
-      await api.post(`${API_ENDPOINTS.profiles}/languages`, data);
+      await profileApi.addLanguage(data);
       toast.success('Idioma agregado correctamente');
       loadProfile();
     } catch (err) {
@@ -207,7 +205,7 @@ export default function Profile() {
   const handleDeleteLanguage = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar este idioma?')) return;
     try {
-      await api.delete(`${API_ENDPOINTS.profiles}/languages/${id}`);
+      await profileApi.deleteLanguage(id);
       toast.success('Idioma eliminado correctamente');
       loadProfile();
     } catch (err) { toast.error(handleApiError(err).message); }
@@ -243,9 +241,20 @@ export default function Profile() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 text-left">
-      <div className="space-y-1">
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Mi Perfil Profesional</h1>
-        <p className="text-gray-500 font-semibold text-xs uppercase tracking-widest">Completa tu portafolio para mejorar tus oportunidades y visibilidad</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Mi Perfil Profesional</h1>
+          <p className="text-gray-500 font-semibold text-xs uppercase tracking-widest">Completa tu portafolio para mejorar tus oportunidades y visibilidad</p>
+        </div>
+        {profile && (
+          <button
+            onClick={() => navigate('/dashboard/cv-preview', { state: { profile } })}
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-[#7B9E6B] hover:bg-[#6b8c5c] text-white font-bold rounded-xl shadow-sm hover:shadow-md transition-all text-sm self-start sm:self-auto shrink-0"
+          >
+            <Eye className="w-4 h-4" />
+            Ver CV Vivo
+          </button>
+        )}
       </div>
 
       <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />

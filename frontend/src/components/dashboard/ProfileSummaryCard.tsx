@@ -3,28 +3,8 @@ import { Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { User } from '@/types';
 
-export interface ProfileSkill {
-  id: string;
-  skillId: string;
-  isVerified: boolean;
-  skill: {
-    id: string;
-    name: string;
-    category: 'DIGITAL' | 'COGNITIVE' | 'SOCIOEMOTIONAL';
-  };
-}
-
-export interface ProfessionalProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  professionalTitle: string | null;
-  valueProposition: string | null;
-  yearsOfExperience: number | null;
-  location: string | null;
-  completionScore: number;
-  skills: ProfileSkill[];
-}
+import type { ProfessionalProfile } from './profile/types';
+export type { ProfessionalProfile };
 
 interface ProfileSummaryCardProps {
   profile: ProfessionalProfile | null;
