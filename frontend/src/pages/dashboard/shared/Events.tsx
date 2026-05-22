@@ -224,7 +224,7 @@ interface EventCardProps {
   index: number;
 }
 
-function EventCard({ event, index: _index }: EventCardProps) {
+function EventCard({ event }: EventCardProps) {
   const { day, month } = formatDateShort(event.date);
   const fillPercent = Math.round((event.registeredCount / event.capacity) * 100);
   const isHighDemand = fillPercent >= 80;

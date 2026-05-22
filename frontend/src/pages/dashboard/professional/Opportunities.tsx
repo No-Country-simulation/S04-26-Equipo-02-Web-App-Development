@@ -307,6 +307,7 @@ export default function Opportunities() {
 
   // Reset page when filters change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [searchQuery, selectedType, selectedModality, selectedLocation, sortBy]);
 
@@ -335,7 +336,7 @@ export default function Opportunities() {
 
   // ─── Filtering + Sorting ───
   const filteredOpportunities = useMemo(() => {
-    let result = mockOpportunities.filter((job) => {
+    const result = mockOpportunities.filter((job) => {
       // Search
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
