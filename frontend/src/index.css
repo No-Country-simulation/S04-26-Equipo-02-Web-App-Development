@@ -223,3 +223,11 @@ body::after {
   background-repeat: repeat;
   background-size: 256px 256px;
 }
+
+/* Hide default Microsoft Edge/Chrome password reveal & clear buttons */
+input::-ms-reveal,
+input::-ms-clear,
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
