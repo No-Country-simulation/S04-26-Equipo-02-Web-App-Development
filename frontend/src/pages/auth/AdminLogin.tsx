@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShieldAlert, ArrowLeft, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ShieldAlert, Info } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { adminLoginSchema, type AdminLoginFormData } from '../../lib/schemas';
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -53,16 +53,7 @@ export function AdminLogin() {
       <div className="absolute top-10 left-10 w-72 h-72 bg-brand-sage/5 rounded-full filter blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-brand-gold/5 rounded-full filter blur-3xl pointer-events-none" />
 
-      {/* Back button */}
-      <div className="mb-6 w-full max-w-md">
-        <Link
-          to="/login"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors font-medium group"
-        >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-          Volver al ingreso general
-        </Link>
-      </div>
+
 
       <Card className="w-full max-w-md border border-brand-accent shadow-xl bg-white/90 backdrop-blur-sm relative z-10 transition-all duration-300 hover:shadow-2xl">
         {/* Top security border */}
@@ -99,7 +90,7 @@ export function AdminLogin() {
                 register={form.register('email')}
                 error={form.formState.errors.email?.message}
                 disabled={isSubmitting}
-                autoComplete="off"
+                autoComplete="new-password"
               />
 
               <FormItem>
@@ -111,7 +102,7 @@ export function AdminLogin() {
                     placeholder="••••••••"
                     {...form.register('password')}
                     disabled={isSubmitting}
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-destructive mt-1">
