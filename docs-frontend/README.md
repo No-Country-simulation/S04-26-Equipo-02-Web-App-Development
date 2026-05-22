@@ -24,24 +24,42 @@ frontend/src/
 │   └── ui/               # Componentes de UI generales (Skeletons, Buttons, etc.)
 │
 ├── pages/                # Vistas de Páginas Completas
-│   ├── admin/            # Vistas exclusivas de Administrador
-│   │   ├── AdminDashboard.tsx
-│   │   └── AdminLogin.tsx
+│   ├── auth/             # Páginas de Autenticación (Login, Registro, etc.)
+│   │   ├── Login.tsx
+│   │   ├── Register.tsx
+│   │   ├── AdminLogin.tsx
+│   │   ├── ForgotPassword.tsx
+│   │   ├── ResetPassword.tsx
+│   │   └── VerifyEmail.tsx
 │   │
-│   ├── company/          # Vistas exclusivas de Empresas
-│   │   └── CompanyDashboard.tsx
+│   ├── dashboard/        # Panel de Control principal y subsecciones por rol
+│   │   ├── admin/        # Vistas exclusivas de Administrador
+│   │   │   ├── AdminDashboard.tsx
+│   │   │   ├── Metrics.tsx
+│   │   │   └── Users.tsx
+│   │   │
+│   │   ├── company/      # Vistas exclusivas de Empresas
+│   │   │   ├── CompanyDashboard.tsx
+│   │   │   ├── Publications.tsx
+│   │   │   └── TalentSearch.tsx
+│   │   │
+│   │   ├── professional/ # Vistas exclusivas de Profesionales (+45)
+│   │   │   ├── ProfessionalDashboard.tsx
+│   │   │   ├── Diagnostic.tsx
+│   │   │   ├── Learning.tsx
+│   │   │   └── Opportunities.tsx
+│   │   │
+│   │   ├── shared/       # Vistas compartidas o generales del Dashboard
+│   │   │   ├── GeneralDashboard.tsx  # Despachador de vistas según rol
+│   │   │   ├── Profile.tsx           # Vista general para configurar el Perfil
+│   │   │   └── Events.tsx            # Eventos compartidos
+│   │   │
+│   │   └── CvPreview.tsx # Vista de Previsualización del CV
 │   │
-│   ├── professional/     # Vistas exclusivas de Profesionales (+45)
-│   │   ├── ProfessionalDashboard.tsx
-│   │   └── Diagnostic.tsx
-│   │
-│   ├── dashboard/        # Vistas compartidas o generales del Dashboard
-│   │   ├── GeneralDashboard.tsx  # Despachador de vistas según rol
-│   │   └── Profile.tsx           # Vista general para configurar el Perfil
-│   │
-│   ├── Home.tsx          # Landing page del sitio
-│   ├── Login.tsx         # Login general
-│   └── Register.tsx      # Registro general
+│   └── public/           # Páginas Públicas sin autenticación
+│       ├── Home.tsx      # Landing page del sitio
+│       └── NotFound.tsx  # Página 404 / No Encontrado
+```,StartLine:12,TargetContent:
 ```
 
 ---
@@ -87,7 +105,8 @@ El sistema bloquea accesos directos por URL a apartados no autorizados utilizand
 
 {/* Rutas exclusivas para Empresas */}
 <Route element={<ProtectedRoute allowedRoles={['COMPANY']} />}>
-  <Route path="talent-search" element={<UnderConstruction title="Buscar Talento" />} />
+  <Route path="talent-search" element={<TalentSearch />} />
+  <Route path="publications" element={<Publications />} />
 </Route>
 ```
 

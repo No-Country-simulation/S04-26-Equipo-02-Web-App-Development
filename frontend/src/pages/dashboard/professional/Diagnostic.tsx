@@ -13,7 +13,7 @@ import {
   Award
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getDiagnosticSkills, submitDiagnosticAnswers, type Skill } from '../../api/diagnostic';
+import { getDiagnosticSkills, submitDiagnosticAnswers, type Skill } from '../../../api/diagnostic';
 
 const CATEGORY_META = {
   DIGITAL: {

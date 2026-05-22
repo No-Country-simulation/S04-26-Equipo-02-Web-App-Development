@@ -15,7 +15,7 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import GeneralDashboard from './pages/dashboard/shared/GeneralDashboard';
 import Profile from './pages/dashboard/shared/Profile';
 import CvPreview from './pages/dashboard/CvPreview';
-import Diagnostic from './pages/professional/Diagnostic';
+import Diagnostic from './pages/dashboard/professional/Diagnostic';
 import Learning from './pages/dashboard/professional/Learning';
 import Opportunities from './pages/dashboard/professional/Opportunities';
 import TalentSearch from './pages/dashboard/company/TalentSearch';
