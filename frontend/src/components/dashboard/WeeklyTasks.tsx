@@ -25,7 +25,7 @@ export default function WeeklyTasks({ tasks, onToggle, tasksPercent }: WeeklyTas
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-bold text-gray-900">Tareas de la Semana</h3>
-        <span className="text-2xl font-black text-[#7B9E6B]">
+        <span className="text-2xl font-black text-brand-sage">
           {tasksPercent}%
         </span>
       </div>
@@ -36,7 +36,7 @@ export default function WeeklyTasks({ tasks, onToggle, tasksPercent }: WeeklyTas
           initial={{ width: 0 }}
           animate={{ width: `${tasksPercent}%` }}
           transition={{ duration: 0.8 }}
-          className="h-full rounded-full bg-gradient-to-r from-[#7B9E6B] via-[#8B9A6B] to-[#D4C36A]"
+          className="h-full rounded-full bg-gradient-to-r from-brand-sage via-brand-olive to-brand-gold"
         />
       </div>
 
@@ -45,11 +45,11 @@ export default function WeeklyTasks({ tasks, onToggle, tasksPercent }: WeeklyTas
           <button
             key={task.id}
             onClick={() => onToggle(task.id)}
-            className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-[#F5F0E8] transition-all group text-left"
+            className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-brand-bg hover:shadow-sm transition-all duration-200 group text-left active:scale-[0.99]"
           >
             <div className={cn(
               'w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0',
-              task.isCompleted ? 'bg-[#7B9E6B]/15 text-[#7B9E6B]' : 'bg-gray-100 text-gray-400 group-hover:text-gray-900'
+              task.isCompleted ? 'bg-brand-sage/15 text-brand-sage' : 'bg-gray-100 text-gray-400 group-hover:text-gray-900'
             )}>
               {task.isCompleted ? (
                 <CheckCircle2 className="w-4 h-4" />

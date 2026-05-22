@@ -44,14 +44,14 @@ export default function EducationSection({
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2.5 bg-[#7B9E6B] text-white font-bold rounded-xl text-xs hover:bg-[#6b8c5c] transition-all flex items-center gap-1.5 shadow-md"
+          className="px-4 py-2.5 bg-brand-sage text-white font-bold rounded-xl text-xs hover:bg-brand-sage-hover transition-all flex items-center gap-1.5 shadow-md"
         >
           <Plus className="w-4 h-4" /> Agregar
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white border-2 border-[#7B9E6B]/30 rounded-3xl p-6 shadow-sm space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white border-2 border-brand-sage/30 rounded-3xl p-6 shadow-sm space-y-4">
           <h4 className="font-bold text-gray-800 text-xs">Nueva Formación</h4>
           <div className="space-y-3">
             <div className="space-y-1">
@@ -60,7 +60,7 @@ export default function EducationSection({
                 type="text"
                 value={form.institution}
                 onChange={(e) => setForm({ ...form, institution: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
@@ -70,7 +70,7 @@ export default function EducationSection({
                 type="text"
                 value={form.degree}
                 onChange={(e) => setForm({ ...form, degree: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
@@ -80,14 +80,14 @@ export default function EducationSection({
                 type="number"
                 value={form.year}
                 onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => { setShowForm(false); setForm(initialForm); }} className="px-3 py-1.5 text-xs text-gray-400">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-1.5 bg-[#7B9E6B] text-white font-bold rounded-xl text-xs">Guardar</button>
+            <button type="submit" disabled={saving} className="px-4 py-1.5 bg-brand-sage text-white font-bold rounded-xl text-xs">Guardar</button>
           </div>
         </form>
       )}

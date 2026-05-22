@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link } from 'react-router-dom';
-import { FormField } from '../components/FormField';
+import { FormField } from '../../components/FormField';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/errors';
-// import api from '../api/axios'; // Descomentar cuando el backend esté listo
+// import api from '../../api/axios'; // Descomentar cuando el backend esté listo
 
 // Schema para recuperación de contraseña
 const forgotPasswordSchema = z.object({
@@ -43,7 +43,7 @@ export function ForgotPassword() {
       // await api.post('/auth/forgot-password', { email: data.email });
 
       // SIMULACIÓN - Eliminar cuando conectes el backend
-      console.log('📤 Solicitud de recuperación:', data);
+      console.log('[ForgotPassword] Solicitud de recuperación:', data);
       setSubmitSuccess(true);
       setIsSubmitting(false);
     } catch (err) {

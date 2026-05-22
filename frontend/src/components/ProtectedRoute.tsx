@@ -14,7 +14,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   if (isLoading) {
     return (
       <div className="loading-container flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Spinner className="h-8 w-8 text-[#7B9E6B]" />
+        <Spinner className="h-8 w-8 text-brand-sage" />
         <p className="text-sm font-semibold text-gray-500">Cargando...</p>
       </div>
     );

@@ -13,7 +13,7 @@ import {
   ArrowUpRight, 
   HeartHandshake 
 } from 'lucide-react';
-import heroImage from '../assets/senior_professionals_meeting.png';
+import heroImage from '../../assets/senior_professionals_meeting.png';
 
 // Test Questions for the Interactive Diagnostic Sandbox
 interface MockQuestion {

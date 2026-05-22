@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import * as profileApi from '../../api/profiles';
+import { useAuth } from '../../../hooks/useAuth';
+import * as profileApi from '../../../api/profiles';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/errors';
 import { Loader2, Eye } from 'lucide-react';
-import type { ProfessionalProfile, BasicFormState, CompanyFormState } from '../../components/dashboard/profile/types';
-import CompanyProfileForm from '../../components/dashboard/profile/CompanyProfileForm';
-import ProfileTabs from '../../components/dashboard/profile/ProfileTabs';
-import BasicInfoForm from '../../components/dashboard/profile/BasicInfoForm';
-import ExperienceSection from '../../components/dashboard/profile/ExperienceSection';
-import EducationSection from '../../components/dashboard/profile/EducationSection';
-import CertificationsSection from '../../components/dashboard/profile/CertificationsSection';
-import LanguagesSection from '../../components/dashboard/profile/LanguagesSection';
-import SkillsSection from '../../components/dashboard/profile/SkillsSection';
+import type { ProfessionalProfile, BasicFormState, CompanyFormState } from '../../../components/dashboard/profile/types';
+import CompanyProfileForm from '../../../components/dashboard/profile/CompanyProfileForm';
+import ProfileTabs from '../../../components/dashboard/profile/ProfileTabs';
+import BasicInfoForm from '../../../components/dashboard/profile/BasicInfoForm';
+import ExperienceSection from '../../../components/dashboard/profile/ExperienceSection';
+import EducationSection from '../../../components/dashboard/profile/EducationSection';
+import CertificationsSection from '../../../components/dashboard/profile/CertificationsSection';
+import LanguagesSection from '../../../components/dashboard/profile/LanguagesSection';
+import SkillsSection from '../../../components/dashboard/profile/SkillsSection';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -213,9 +213,9 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#F5F0E8]">
+      <div className="min-h-[60vh] flex items-center justify-center bg-brand-bg">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-[#7B9E6B] animate-spin" />
+          <Loader2 className="w-8 h-8 text-brand-sage animate-spin" />
           <p className="text-sm text-gray-500 font-medium">Cargando perfil...</p>
         </div>
       </div>

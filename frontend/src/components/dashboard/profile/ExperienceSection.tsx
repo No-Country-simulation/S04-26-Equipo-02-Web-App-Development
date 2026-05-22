@@ -57,14 +57,14 @@ export default function ExperienceSection({
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2.5 bg-[#7B9E6B] text-white font-bold rounded-xl text-xs hover:bg-[#6b8c5c] transition-all flex items-center gap-1.5 shadow-md shadow-green-700/10"
+          className="px-4 py-2.5 bg-brand-sage text-white font-bold rounded-xl text-xs hover:bg-brand-sage-hover transition-all flex items-center gap-1.5 shadow-md shadow-green-700/10"
         >
           <Plus className="w-4 h-4" /> Agregar Cargo
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white border-2 border-[#7B9E6B]/30 rounded-3xl p-6 shadow-sm space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white border-2 border-brand-sage/30 rounded-3xl p-6 shadow-sm space-y-4">
           <h4 className="font-bold text-gray-800 text-sm">Nuevo Cargo Laboral</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
@@ -73,7 +73,7 @@ export default function ExperienceSection({
                 type="text"
                 value={form.company}
                 onChange={(e) => setForm({ ...form, company: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
@@ -84,7 +84,7 @@ export default function ExperienceSection({
                 type="text"
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
@@ -95,7 +95,7 @@ export default function ExperienceSection({
                 type="date"
                 value={form.startDate}
                 onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
@@ -107,7 +107,7 @@ export default function ExperienceSection({
                 value={form.endDate}
                 onChange={(e) => setForm({ ...form, endDate: e.target.value })}
                 disabled={form.isCurrent}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800 disabled:opacity-50"
               />
             </div>
 
@@ -117,7 +117,7 @@ export default function ExperienceSection({
                 id="isCurrent"
                 checked={form.isCurrent}
                 onChange={(e) => setForm({ ...form, isCurrent: e.target.checked })}
-                className="w-4 h-4 rounded text-[#7B9E6B] focus:ring-[#7B9E6B]"
+                className="w-4 h-4 rounded text-brand-sage focus:ring-brand-sage"
               />
               <label htmlFor="isCurrent" className="text-xs font-bold text-gray-500 cursor-pointer">Trabajo actualmente aquí</label>
             </div>
@@ -128,7 +128,7 @@ export default function ExperienceSection({
                 rows={3}
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
               />
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function ExperienceSection({
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 bg-[#7B9E6B] text-white font-bold rounded-xl text-xs hover:bg-[#6b8c5c] shadow-sm"
+              className="px-5 py-2 bg-brand-sage text-white font-bold rounded-xl text-xs hover:bg-brand-sage-hover shadow-sm"
             >
               {saving ? 'Guardando...' : 'Guardar Cargo'}
             </button>
@@ -157,12 +157,12 @@ export default function ExperienceSection({
           experience.map((exp) => (
             <div key={exp.id} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex items-start justify-between hover:shadow-md transition-all group">
               <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#EDE8DB] flex items-center justify-center text-[#7B9E6B] shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-brand-card flex items-center justify-center text-brand-sage shrink-0">
                   <Briefcase className="w-5 h-5" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-bold text-gray-900 text-base leading-snug">{exp.role}</h4>
-                  <p className="text-[#7B9E6B] font-bold text-sm">{exp.company}</p>
+                  <p className="text-brand-sage font-bold text-sm">{exp.company}</p>
                   <p className="text-xs text-gray-400 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {formatDate(exp.startDate)} — {exp.endDate ? formatDate(exp.endDate) : 'Actualidad'}</p>
                   {exp.description && (
                     <p className="text-xs text-gray-500 font-medium leading-relaxed pt-2 max-w-2xl">{exp.description}</p>

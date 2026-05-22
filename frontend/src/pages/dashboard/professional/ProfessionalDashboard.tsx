@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
-import { getMyProfile } from '../../api/profiles';
+import { useAuth } from '../../../hooks/useAuth';
+import { getMyProfile } from '../../../api/profiles';
 import { handleApiError, ApiError } from '@/lib/errors';
 import { ErrorDisplay } from '@/components/ui/error-display';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -159,7 +159,7 @@ export default function ProfessionalDashboard() {
     { label: 'Días en la Red', value: '32', change: 'Comunidad Activa', color: 'text-gray-900' },
     { label: 'Habilidades Registradas', value: String(selectedSkills.length), change: `${selectedSkills.length} cargadas`, color: 'text-gray-900' },
     { label: 'Eventos Asistidos', value: '9', change: 'Webinars + Talleres', color: 'text-gray-900' },
-    { label: 'Nivel de Perfil', value: `${profilePercent}%`, change: 'Completado', color: 'text-[#C4A962]' },
+    { label: 'Nivel de Perfil', value: `${profilePercent}%`, change: 'Completado', color: 'text-brand-gold' },
   ];
 
   return (
@@ -167,18 +167,18 @@ export default function ProfessionalDashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-4xl md:text-5xl font-black text-[#1A1A1A] tracking-tight">
-            Hola, {profile?.firstName || user?.firstName || 'Profesional'} 👋
+          <h1 className="text-4xl md:text-5xl font-black text-brand-heading tracking-tight">
+            Hola, {profile?.firstName || user?.firstName || 'Profesional'}
           </h1>
           <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">
             Tu espacio de crecimiento profesional y bienestar
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#EDE8DB] p-2.5 rounded-2xl px-5 border border-[#D4C9A8]/30">
-            <Star className="w-5 h-5 text-[#C4A962] fill-[#C4A962]" />
-            <span className="font-bold text-[#1A1A1A]">1,250</span>
-            <span className="text-[#9B9B9B] text-xs font-medium uppercase tracking-wider">XP</span>
+          <div className="flex items-center gap-2 bg-brand-card p-2.5 rounded-2xl px-5 border border-brand-accent/30">
+            <Star className="w-5 h-5 text-brand-gold fill-brand-gold" />
+            <span className="font-bold text-brand-heading">1,250</span>
+            <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">XP</span>
           </div>
         </div>
       </div>

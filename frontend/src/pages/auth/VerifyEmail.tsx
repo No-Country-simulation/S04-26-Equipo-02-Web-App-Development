@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api/axios';
-import { API_ENDPOINTS } from '../lib/constants';
+import api from '../../api/axios';
+import { API_ENDPOINTS } from '../../lib/constants';
 import { handleApiError } from '@/lib/errors';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';

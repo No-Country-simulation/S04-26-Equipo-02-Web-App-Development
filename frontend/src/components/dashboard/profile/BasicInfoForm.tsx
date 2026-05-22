@@ -24,7 +24,7 @@ export default function BasicInfoForm({
             type="text"
             value={basicForm.firstName}
             onChange={(e) => onChange('firstName', e.target.value)}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             required
           />
         </div>
@@ -35,7 +35,7 @@ export default function BasicInfoForm({
             type="text"
             value={basicForm.lastName}
             onChange={(e) => onChange('lastName', e.target.value)}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             required
           />
         </div>
@@ -46,7 +46,7 @@ export default function BasicInfoForm({
             type="text"
             value={basicForm.professionalTitle}
             onChange={(e) => onChange('professionalTitle', e.target.value)}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
           />
         </div>
 
@@ -56,7 +56,7 @@ export default function BasicInfoForm({
             type="number"
             value={basicForm.yearsOfExperience}
             onChange={(e) => onChange('yearsOfExperience', Number(e.target.value))}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
           />
         </div>
 
@@ -68,7 +68,7 @@ export default function BasicInfoForm({
               type="tel"
               value={basicForm.phone}
               onChange={(e) => onChange('phone', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             />
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function BasicInfoForm({
               type="text"
               value={basicForm.location}
               onChange={(e) => onChange('location', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             />
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function BasicInfoForm({
               placeholder="https://linkedin.com/in/tu-perfil"
               value={basicForm.linkedinUrl}
               onChange={(e) => onChange('linkedinUrl', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             />
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function BasicInfoForm({
               placeholder="https://tu-web.com"
               value={basicForm.portfolioUrl}
               onChange={(e) => onChange('portfolioUrl', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+              className="w-full pl-12 pr-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
             />
           </div>
         </div>
@@ -119,7 +119,7 @@ export default function BasicInfoForm({
           <select
             value={basicForm.availability}
             onChange={(e) => onChange('availability', e.target.value)}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-[#1A1A1A] h-12"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-brand-heading h-12"
           >
             <option value="AVAILABLE">Disponible para ofertas</option>
             <option value="IN_PROCESS">En procesos de selección</option>
@@ -132,7 +132,7 @@ export default function BasicInfoForm({
           <select
             value={basicForm.preferredModality}
             onChange={(e) => onChange('preferredModality', e.target.value as 'REMOTE' | 'HYBRID' | 'ON_SITE')}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-[#1A1A1A] h-12"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-brand-heading h-12"
           >
             <option value="REMOTE">Remoto</option>
             <option value="HYBRID">Híbrido</option>
@@ -147,7 +147,7 @@ export default function BasicInfoForm({
             onChange={(e) => onChange('valueProposition', e.target.value)}
             rows={2}
             maxLength={500}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
           />
         </div>
 
@@ -158,7 +158,7 @@ export default function BasicInfoForm({
             onChange={(e) => onChange('bio', e.target.value)}
             rows={4}
             maxLength={1000}
-            className="w-full px-4 py-3 bg-[#F5F0E8]/50 border border-gray-100 rounded-xl focus:border-[#7B9E6B] focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
+            className="w-full px-4 py-3 bg-brand-bg/50 border border-gray-100 rounded-xl focus:border-brand-sage focus:bg-white outline-none transition-all text-sm font-semibold text-gray-800"
           />
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function BasicInfoForm({
         <button
           type="submit"
           disabled={saving}
-          className="px-8 py-3.5 bg-[#7B9E6B] hover:bg-[#6b8c5c] text-white font-bold rounded-xl transition-all shadow-md flex items-center gap-2"
+          className="px-8 py-3.5 bg-brand-sage hover:bg-brand-sage-hover text-white font-bold rounded-xl transition-all shadow-md flex items-center gap-2"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Guardar Cambios</>}
         </button>

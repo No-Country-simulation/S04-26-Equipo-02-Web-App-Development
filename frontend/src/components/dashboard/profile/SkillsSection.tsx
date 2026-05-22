@@ -19,18 +19,18 @@ export default function SkillsSection({ skills }: SkillsSectionProps) {
               key={skill.id}
               className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-bold border transition-all ${
                 skill.isVerified
-                  ? 'bg-[#7B9E6B]/10 text-[#7B9E6B] border-[#7B9E6B]/20 shadow-sm'
-                  : 'bg-[#EDE8DB] text-gray-600 border-transparent'
+                  ? 'bg-brand-sage/10 text-brand-sage border-brand-sage/20 shadow-sm'
+                  : 'bg-brand-card text-gray-600 border-transparent'
               }`}
             >
               {skill.skill.name}
-              {skill.isVerified && <CheckCircle2 className="w-3.5 h-3.5 text-[#7B9E6B]" />}
+              {skill.isVerified && <CheckCircle2 className="w-3.5 h-3.5 text-brand-sage" />}
             </span>
           ))
         ) : (
           <div className="w-full text-center py-6">
             <p className="text-xs font-semibold text-gray-400">Completa el autodiagnóstico inicial para validar tus competencias y ver tus habilidades aquí.</p>
-            <Link to="/dashboard/diagnostic" className="inline-block mt-4 text-xs font-bold text-[#7B9E6B] hover:underline">Realizar Autodiagnóstico</Link>
+            <Link to="/dashboard/diagnostic" className="inline-block mt-4 text-xs font-bold text-brand-sage hover:underline">Realizar Autodiagnóstico</Link>
           </div>
         )}
       </div>

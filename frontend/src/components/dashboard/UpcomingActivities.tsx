@@ -21,7 +21,7 @@ export default function UpcomingActivities({ events, formatDate }: UpcomingActiv
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-black text-gray-900 tracking-tight">Próximas Actividades</h2>
-        <Link to="/dashboard/events" className="text-[#7B9E6B] font-bold text-sm hover:underline flex items-center gap-1">
+        <Link to="/dashboard/events" className="text-brand-sage font-bold text-sm hover:underline flex items-center gap-1">
           Ver todas <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
@@ -33,8 +33,8 @@ export default function UpcomingActivities({ events, formatDate }: UpcomingActiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.5 + i * 0.1 }}
-            whileHover={{ y: -4 }}
-            className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 space-y-4 cursor-pointer group transition-all hover:shadow-md"
+            whileHover={{ y: -6 }}
+            className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 space-y-4 cursor-pointer group transition-all duration-300 hover:shadow-lg hover:shadow-black/5"
           >
             <div className="flex items-center justify-between">
               <span className="rounded-full text-[9px] font-bold uppercase bg-gray-100 text-gray-500 px-3 py-1">
@@ -47,7 +47,7 @@ export default function UpcomingActivities({ events, formatDate }: UpcomingActiv
             </div>
 
             <div className="space-y-1.5 text-left">
-              <h3 className="font-black text-gray-900 leading-tight group-hover:text-[#7B9E6B] transition-colors">{item.title}</h3>
+              <h3 className="font-black text-gray-900 leading-tight group-hover:text-brand-sage transition-colors">{item.title}</h3>
               <p className="text-xs text-gray-500 font-semibold flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5 text-gray-400" />
                 {item.speaker}
@@ -59,7 +59,7 @@ export default function UpcomingActivities({ events, formatDate }: UpcomingActiv
                 <Clock className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-bold">{item.startTime} hs</span>
               </div>
-              <button className="text-[10px] font-bold uppercase text-[#7B9E6B] hover:text-[#5E7A52] flex items-center gap-1">
+              <button className="text-[10px] font-bold uppercase text-brand-sage hover:text-brand-sage-hover flex items-center gap-1">
                 Inscribirme <ArrowRight className="w-3 h-3" />
               </button>
             </div>

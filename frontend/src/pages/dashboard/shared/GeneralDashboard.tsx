@@ -1,4 +1,4 @@
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useAuth';
 import ProfessionalDashboard from '../professional/ProfessionalDashboard';
 import CompanyDashboard from '../company/CompanyDashboard';
 import AdminDashboard from '../admin/AdminDashboard';

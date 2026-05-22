@@ -46,14 +46,14 @@ export default function CertificationsSection({
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2.5 bg-[#7B9E6B] text-white font-bold rounded-xl text-xs hover:bg-[#6b8c5c] transition-all flex items-center gap-1.5 shadow-md"
+          className="px-4 py-2.5 bg-brand-sage text-white font-bold rounded-xl text-xs hover:bg-brand-sage-hover transition-all flex items-center gap-1.5 shadow-md"
         >
           <Plus className="w-4 h-4" /> Agregar
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white border-2 border-[#7B9E6B]/30 rounded-3xl p-6 shadow-sm space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white border-2 border-brand-sage/30 rounded-3xl p-6 shadow-sm space-y-4">
           <h4 className="font-bold text-gray-800 text-xs">Nueva Certificación</h4>
           <div className="space-y-3">
             <div className="space-y-1">
@@ -62,7 +62,7 @@ export default function CertificationsSection({
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
@@ -72,7 +72,7 @@ export default function CertificationsSection({
                 type="text"
                 value={form.issuer}
                 onChange={(e) => setForm({ ...form, issuer: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
                 required
               />
             </div>
@@ -82,7 +82,7 @@ export default function CertificationsSection({
                 type="date"
                 value={form.issueDate}
                 onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
               />
             </div>
             <div className="space-y-1">
@@ -91,13 +91,13 @@ export default function CertificationsSection({
                 type="url"
                 value={form.url}
                 onChange={(e) => setForm({ ...form, url: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-[#7B9E6B] outline-none text-xs font-semibold text-gray-800"
+                className="w-full px-4 py-2 bg-gray-55 border border-gray-200 rounded-xl focus:border-brand-sage outline-none text-xs font-semibold text-gray-800"
               />
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => { setShowForm(false); setForm(initialForm); }} className="px-3 py-1.5 text-xs text-gray-400">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-1.5 bg-[#7B9E6B] text-white font-bold rounded-xl text-xs">Guardar</button>
+            <button type="submit" disabled={saving} className="px-4 py-1.5 bg-brand-sage text-white font-bold rounded-xl text-xs">Guardar</button>
           </div>
         </form>
       )}
@@ -114,7 +114,7 @@ export default function CertificationsSection({
                   <h4 className="font-bold text-gray-900 text-sm">{cert.name}</h4>
                   <p className="text-gray-500 text-xs">{cert.issuer} {cert.issueDate && `· ${formatDate(cert.issueDate)}`}</p>
                   {cert.url && (
-                    <a href={cert.url} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#7B9E6B] hover:underline flex items-center gap-0.5 mt-0.5">Ver certificado <Link2 className="w-3 h-3" /></a>
+                    <a href={cert.url} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-brand-sage hover:underline flex items-center gap-0.5 mt-0.5">Ver certificado <Link2 className="w-3 h-3" /></a>
                   )}
                 </div>
               </div>

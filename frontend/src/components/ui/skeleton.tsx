@@ -1,10 +1,12 @@
 import { cn } from '@/lib/utils'
 
 type SkeletonVariant = 'text' | 'card' | 'circle'
+type SkeletonAnimation = 'pulse' | 'shimmer'
 
 interface SkeletonProps {
   variant?: SkeletonVariant
   className?: string
+  animation?: SkeletonAnimation
 }
 
 const variantStyles: Record<SkeletonVariant, string> = {
@@ -13,17 +15,21 @@ const variantStyles: Record<SkeletonVariant, string> = {
   circle: 'size-10 rounded-full',
 }
 
-function Skeleton({ variant = 'text', className }: SkeletonProps) {
+function Skeleton({ variant = 'text', className, animation = 'pulse' }: SkeletonProps) {
   return (
     <div
       data-slot="skeleton"
       className={cn(
-        'animate-pulse bg-muted',
+        animation === 'pulse' ? 'animate-pulse bg-muted' : 'relative overflow-hidden bg-muted',
         variantStyles[variant],
         className,
       )}
-    />
+    >
+      {animation === 'shimmer' && (
+        <div className="absolute inset-0 skeleton-shimmer" />
+      )}
+    </div>
   )
 }
 
-export { Skeleton, type SkeletonProps, type SkeletonVariant }
+export { Skeleton, type SkeletonProps, type SkeletonVariant, type SkeletonAnimation }
