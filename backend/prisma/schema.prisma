@@ -109,6 +109,7 @@ model CompanyProfile {
   logoUrl       String?
 
   preselections Preselection[]
+  jobOffers     JobOffer[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -245,4 +246,19 @@ model UserSession {
   revoked           Boolean
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model JobOffer {
+  id           String         @id @default(uuid())
+  companyId    String
+  company      CompanyProfile @relation(fields: [companyId], references: [id])
+  title        String
+  salaryRange  String
+  contractType String
+  modality     String
+  description  String
+  education    String
+  experience   String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
