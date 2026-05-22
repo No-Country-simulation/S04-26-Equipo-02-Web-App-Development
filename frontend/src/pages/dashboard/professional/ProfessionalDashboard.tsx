@@ -1,0 +1,249 @@
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
+import { useAuth } from '../../../hooks/useAuth';
+import { getMyProfile } from '../../../api/profiles';
+import { handleApiError, ApiError } from '@/lib/errors';
+import { ErrorDisplay } from '@/components/ui/error-display';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
+import { toast } from 'sonner';
+import ProfileSummaryCard, { type ProfessionalProfile } from '@/components/dashboard/ProfileSummaryCard';
+import ProgressChart from '@/components/dashboard/ProgressChart';
+import WeeklyTasks, { type Task } from '@/components/dashboard/WeeklyTasks';
+import StatsCards from '@/components/dashboard/StatsCards';
+import UpcomingActivities, { type Event } from '@/components/dashboard/UpcomingActivities';
+
+export default function ProfessionalDashboard() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
+
+  // Mocks de eventos estéticos
+  const upcomingEvents = useMemo<Event[]>(() => [
+    {
+      id: 'event-1',
+      title: 'Adaptabilidad laboral y nuevas tecnologías',
+      type: 'Webinar',
+      date: '2026-05-20T18:00:00.000Z',
+      startTime: '18:00',
+      speaker: 'Lic. Laura Martínez',
+    },
+    {
+      id: 'event-2',
+      title: 'Optimización de CV Vivo y perfil de LinkedIn',
+      type: 'Taller',
+      date: '2026-05-22T16:30:00.000Z',
+      startTime: '16:30',
+      speaker: 'Ing. Carlos Rossi',
+    },
+    {
+      id: 'event-3',
+      title: 'Networking: Encuentro mensual de la comunidad',
+      type: 'Mesa Redonda',
+      date: '2026-05-25T19:00:00.000Z',
+      startTime: '19:00',
+      speaker: 'Equipo Red de Bienestar',
+    },
+  ], []);
+
+  // Inicializar tareas semanales en localStorage
+  const [weeklyTasks, setWeeklyTasks] = useState<Task[]>(() => {
+    const storedEmail = localStorage.getItem('auth_user_email') || 'default';
+    const storageKey = `weekly_tasks_${storedEmail}`;
+    const savedTasks = localStorage.getItem(storageKey);
+    if (savedTasks) {
+      try {
+        return JSON.parse(savedTasks);
+      } catch {
+        // ignore
+      }
+    }
+    const defaultTasks: Task[] = [
+      { id: 'task-1', title: 'Completar tu diagnóstico de competencias', category: 'Diagnóstico', isCompleted: false },
+      { id: 'task-2', title: 'Explorar perfiles en el Marketplace de talento', category: 'Marketplace', isCompleted: false },
+      { id: 'task-3', title: 'Completar tu primer curso recomendado', category: 'Mi Ruta', isCompleted: false },
+      { id: 'task-4', title: 'Registrarse para el próximo webinar de la Red', category: 'Eventos', isCompleted: false },
+    ];
+    localStorage.setItem(storageKey, JSON.stringify(defaultTasks));
+    return defaultTasks;
+  });
+
+  const fetchProfile = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getMyProfile();
+      setProfile(data);
+    } catch (err) {
+      const apiErr = handleApiError(err);
+      toast.error(apiErr.message);
+      setError(apiErr);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      await Promise.resolve();
+      if (active) {
+        fetchProfile();
+      }
+    };
+    run();
+    return () => {
+      active = false;
+    };
+  }, [fetchProfile]);
+
+  const toggleTask = (taskId: string) => {
+    const updated = weeklyTasks.map(t =>
+      t.id === taskId ? { ...t, isCompleted: !t.isCompleted } : t
+    );
+    setWeeklyTasks(updated);
+    const storageKey = `weekly_tasks_${user?.email || 'default'}`;
+    localStorage.setItem(storageKey, JSON.stringify(updated));
+  };
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+  };
+
+  if (!user) {
+    return (
+      <EmptyState
+        title="Iniciá sesión"
+        description="Necesitás iniciar sesión para ver tu dashboard."
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-8 animate-in fade-in duration-700">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-4"><Skeleton variant="card" /></div>
+          <div className="lg:col-span-3"><Skeleton variant="card" /></div>
+          <div className="lg:col-span-5"><Skeleton variant="card" /></div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} variant="card" className="h-32" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} variant="card" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorDisplay error={error} onRetry={fetchProfile} />;
+  }
+
+  const selectedSkills = profile?.skills || [];
+  const completedTasksCount = weeklyTasks.filter(t => t.isCompleted).length;
+  const tasksPercent = weeklyTasks.length > 0 ? Math.round((completedTasksCount / weeklyTasks.length) * 100) : 0;
+  const profilePercent = profile?.completionScore || 15;
+
+  const stats = [
+    { label: 'Días en la Red', value: '32', change: 'Comunidad Activa', color: 'text-gray-900' },
+    { label: 'Habilidades Registradas', value: String(selectedSkills.length), change: `${selectedSkills.length} cargadas`, color: 'text-gray-900' },
+    { label: 'Eventos Asistidos', value: '9', change: 'Webinars + Talleres', color: 'text-gray-900' },
+    { label: 'Nivel de Perfil', value: `${profilePercent}%`, change: 'Completado', color: 'text-brand-gold' },
+  ];
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-700">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-4xl md:text-5xl font-black text-brand-heading tracking-tight">
+            Hola, {profile?.firstName || user?.firstName || 'Profesional'}
+          </h1>
+          <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">
+            Tu espacio de crecimiento profesional y bienestar
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-brand-card p-2.5 rounded-2xl px-5 border border-brand-accent/30">
+            <Star className="w-5 h-5 text-brand-gold fill-brand-gold" />
+            <span className="font-bold text-brand-heading">1,250</span>
+            <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">XP</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 1: Profile + Chart + Tasks */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <ProfileSummaryCard profile={profile} user={user} />
+        <ProgressChart skillsLength={selectedSkills.length} profilePercent={profilePercent} />
+        <WeeklyTasks tasks={weeklyTasks} onToggle={toggleTask} tasksPercent={tasksPercent} />
+      </div>
+
+      {/* Banner: Tu próximo paso */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="relative overflow-hidden bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6"
+      >
+        {/* Decorative elements */}
+        <div className="absolute right-0 top-0 w-32 h-32 bg-[#7B9E6B]/5 rounded-full blur-2xl -mr-10 -mt-10" />
+        <div className="absolute left-1/3 bottom-0 w-24 h-24 bg-[#C4A962]/5 rounded-full blur-xl -mb-8" />
+
+        <div className="flex items-start md:items-center gap-4 z-10">
+          <div className="w-12 h-12 bg-[#EDE8DB] rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#D4C9A8]/20">
+            <span className="text-2xl">🎯</span>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900">Tu próximo paso</h3>
+              <span className="bg-[#7B9E6B]/15 text-[#7B9E6B] text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                Recomendado
+              </span>
+            </div>
+            <p className="text-gray-500 text-sm font-medium">
+              {selectedSkills.length === 0
+                ? 'Completá el autodiagnóstico inicial para recibir una ruta de aprendizaje personalizada según tus necesidades.'
+                : 'Explorá tu ruta de aprendizaje personalizada y continuá potenciando tus habilidades.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="z-10 flex-shrink-0">
+          {selectedSkills.length === 0 ? (
+            <Link
+              to="/dashboard/diagnostic"
+              className="inline-flex items-center justify-center bg-[#7B9E6B] hover:bg-[#688859] text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-sm hover:shadow transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              Comenzar Diagnóstico
+            </Link>
+          ) : (
+            <Link
+              to="/dashboard/learning"
+              className="inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-sm hover:shadow transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              Ver Mi Ruta de Aprendizaje
+            </Link>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Row 2: Stats */}
+      <StatsCards stats={stats} />
+
+      {/* Row 3: Upcoming Activities */}
+      <UpcomingActivities events={upcomingEvents} formatDate={formatDate} />
+    </div>
+  );
+}

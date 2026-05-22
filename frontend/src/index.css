@@ -44,6 +44,9 @@
   --brand-gold: #C4A962;
   --brand-coral: #D4826A;
   --brand-sage-light: #A8B89E;
+  --brand-sage-hover: #6B8C5C;
+  --brand-charcoal: #2C2C2C;
+  --brand-heading: #1A1A1A;
 }
 
 .dark {
@@ -94,6 +97,11 @@
   --color-brand-olive: var(--brand-olive);
   --color-brand-gold: var(--brand-gold);
   --color-brand-coral: var(--brand-coral);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-sage-light: var(--brand-sage-light);
+  --color-brand-sage-hover: var(--brand-sage-hover);
+  --color-brand-charcoal: var(--brand-charcoal);
+  --color-brand-heading: var(--brand-heading);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -106,6 +114,24 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better focus styles */
+  *:focus-visible {
+    outline: 2px solid var(--color-brand-sage);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Selection color */
+  ::selection {
+    background-color: var(--color-brand-accent);
+    color: var(--color-brand-heading);
   }
 }
 
@@ -130,11 +156,11 @@
 
   /* Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-sage text-white font-bold rounded-xl hover:bg-brand-olive transition-all duration-300 hover:shadow-lg hover:shadow-brand-sage/25;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-sage text-white font-bold rounded-xl hover:bg-brand-olive active:scale-95 transition-all duration-300 hover:shadow-lg hover:shadow-brand-sage/25;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-bold rounded-xl border-2 border-gray-200 hover:border-brand-sage hover:text-brand-sage transition-all duration-300;
+    @apply inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-bold rounded-xl border-2 border-gray-200 hover:border-brand-sage hover:text-brand-sage active:scale-95 transition-all duration-300;
   }
 
   /* Role selector */
@@ -143,23 +169,65 @@
   }
 
   .role-option {
-    @apply flex-1 py-3 px-4 rounded-2xl border-2 text-center cursor-pointer transition-all;
+    @apply flex-1 py-3 px-4 rounded-2xl border-2 text-center cursor-pointer transition-all duration-300;
   }
 
   .role-option.selected {
-    @apply border-brand-sage bg-brand-bg;
+    @apply border-brand-sage bg-brand-bg shadow-sm shadow-brand-sage/10;
   }
 
   .role-option:not(.selected) {
-    @apply border-gray-200 hover:border-brand-sage/50;
+    @apply border-gray-200 hover:border-brand-sage/50 hover:bg-brand-bg/50 hover:shadow-sm;
   }
 
   .role-option > div {
     @apply flex flex-col items-center;
   }
 
+  .role-option:not(.selected):hover > div > div:first-child {
+    @apply text-brand-sage transition-colors duration-300;
+  }
+
   /* Loading */
   .loading-container {
     @apply flex flex-col items-center justify-center min-h-[50vh] gap-4;
   }
+
+  /* Shimmer animation for skeleton */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+/* Subtle noise texture overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Hide default Microsoft Edge/Chrome password reveal & clear buttons */
+input::-ms-reveal,
+input::-ms-clear,
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  display: none !important;
 }

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
+import { toast } from 'sonner';
+import { handleApiError } from '@/lib/errors';
 import { LogOut, Settings, ChevronRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -39,7 +41,7 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
       await logout();
       navigate('/login');
     } catch (err) {
-      console.error('Logout error:', err);
+      toast.error(handleApiError(err).message);
     }
   };
 
@@ -70,7 +72,7 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
           isCollapsed ? 'justify-center' : 'text-left'
         )}
       >
-        <div className="h-9 w-9 shrink-0 rounded-xl border border-[#7B9E6B]/50 shadow-[0_0_10px_2px_rgba(123,158,107,0.4)] flex items-center justify-center bg-[#7B9E6B]/20 text-[#7B9E6B] text-[10px] font-bold">
+        <div className="h-9 w-9 shrink-0 rounded-xl border border-brand-sage/50 shadow-[0_0_10px_2px_var(--color-brand-sage)] flex items-center justify-center bg-brand-sage/20 text-brand-sage text-[10px] font-bold">
           {avatarText}
         </div>
 
@@ -112,7 +114,7 @@ export default function UserButton({ isCollapsed }: UserButtonProps) {
             onClick={() => setIsOpen(false)}
             className="rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-white/5 group transition-all"
           >
-            <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center text-white/40 group-hover:text-[#7B9E6B] transition-all">
+            <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center text-white/40 group-hover:text-brand-sage transition-all">
               <Settings className="w-4 h-4" />
             </div>
             <div className="flex flex-col text-left">
