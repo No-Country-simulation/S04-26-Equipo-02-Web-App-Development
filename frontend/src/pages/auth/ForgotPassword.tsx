@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link } from 'react-router-dom';
+import { PageMeta } from '../../hooks/useMeta';
 import { FormField } from '../../components/FormField';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/errors';
@@ -56,6 +57,10 @@ export function ForgotPassword() {
   if (submitSuccess) {
     return (
       <div className="container-main py-24 lg:py-32">
+        <PageMeta
+          title="Revisa tu email"
+          description="Te enviamos instrucciones para recuperar tu contraseña de Red de Bienestar Laboral."
+        />
         <div className="container-center">
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
             Revisa tu email
@@ -74,6 +79,10 @@ export function ForgotPassword() {
 
   return (
     <div className="container-main py-24 lg:py-32">
+      <PageMeta
+        title="Recuperar contraseña"
+        description="Ingresá tu email y te enviaremos instrucciones para recuperar tu contraseña de Red de Bienestar Laboral."
+      />
       <div className="container-center">
         <svg
           className="w-16 h-16 mx-auto mb-6 text-gray-400"

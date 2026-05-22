@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PageMeta } from '../../hooks/useMeta';
 import { 
   ArrowRight, 
   Cpu, 
@@ -119,6 +120,17 @@ export function Home() {
 
   return (
     <div className="bg-[#F5F0E8] text-gray-800 min-h-screen overflow-x-hidden">
+      <PageMeta
+        title="Red de Bienestar Laboral"
+        description="Conectamos profesionales senior (+45) con empresas de alto impacto. Diagnosticamos, certificamos y conectamos talento con experiencia."
+        og={{
+          title: 'Red de Bienestar Laboral — Talento Senior +45',
+          description: 'La plataforma que conecta profesionales senior con empresas que valoran su experiencia. Diagnóstico de competencias, formación y oportunidades laborales.',
+          image: '/og-image.png',
+          url: 'https://redbienestar.com/',
+          type: 'website',
+        }}
+      />
       
       {/* 1. HERO SECTION */}
       <section className="relative pt-12 pb-24 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

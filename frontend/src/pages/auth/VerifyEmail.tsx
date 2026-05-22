@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { API_ENDPOINTS } from '../../lib/constants';
 import { handleApiError } from '@/lib/errors';
+import { PageMeta } from '../../hooks/useMeta';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 
@@ -39,8 +40,15 @@ export function VerifyEmail() {
     verifyEmail();
   }, [token]);
 
+  const pageTitle = status === 'loading' ? 'Verificando email' : status === 'success' ? 'Email verificado' : 'Error de verificación';
+
   return (
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
+      <PageMeta
+        title={pageTitle}
+        description={message || 'Verificación de email en Red de Bienestar Laboral.'}
+      />
+      <h1 className="sr-only">{pageTitle}</h1>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">

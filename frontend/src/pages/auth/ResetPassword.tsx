@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useSearchParams } from 'react-router-dom';
+import { PageMeta } from '../../hooks/useMeta';
 import { FormField } from '../../components/FormField';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/errors';
@@ -50,6 +51,10 @@ export function ResetPassword() {
   if (!token) {
     return (
       <div className="container-main py-24 lg:py-32">
+        <PageMeta
+          title="Enlace inválido"
+          description="El enlace de recuperación de contraseña ya no es válido o expiró."
+        />
         <div className="container-center">
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
             Enlace inválido
@@ -90,6 +95,10 @@ export function ResetPassword() {
   if (submitSuccess) {
     return (
       <div className="container-main py-24 lg:py-32">
+        <PageMeta
+          title="Contraseña actualizada"
+          description="Tu contraseña de Red de Bienestar Laboral fue cambiada exitosamente."
+        />
         <div className="container-center">
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
             Contraseña actualizada
@@ -107,6 +116,10 @@ export function ResetPassword() {
 
   return (
     <div className="container-main py-24 lg:py-32">
+      <PageMeta
+        title="Nueva contraseña"
+        description="Ingresá tu nueva contraseña para recuperar el acceso a tu cuenta de Red de Bienestar Laboral."
+      />
       <div className="container-center">
         <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
           Nueva contraseña

@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../hooks/useAuth'
+import { PageMeta } from '../../hooks/useMeta'
 import { registerSchema, type RegisterFormData } from '../../lib/schemas'
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -91,6 +92,12 @@ export function Register() {
       <div className="absolute top-[-100px] right-[-100px] w-[350px] h-[350px] rounded-full bg-brand-sage/5 blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-60px] left-[-60px] w-[250px] h-[250px] rounded-full bg-brand-gold/5 blur-[80px] pointer-events-none" />
 
+      <PageMeta
+        title="Crear cuenta"
+        description="Registrate en Red de Bienestar Laboral y accedé a diagnóstico de competencias, formación y oportunidades laborales."
+      />
+      <h1 className="sr-only">Crear cuenta</h1>
+
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -109,6 +116,8 @@ export function Register() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {form.formState.errors.root && (
                   <motion.div
+                    role="alert"
+                    aria-live="assertive"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-md"
