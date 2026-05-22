@@ -64,3 +64,22 @@ export const updateOffer = async (req: Request, res: Response, next: NextFunctio
         next(error);
     }
 }
+
+export const deleteOffer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to delete an offer" });
+            return;
+        }
+
+        const offer = await HiringService.deleteOfferService(req.params.id as string);
+
+        res.json(offer);
+
+    } catch (error) {
+        next(error);
+    }
+}

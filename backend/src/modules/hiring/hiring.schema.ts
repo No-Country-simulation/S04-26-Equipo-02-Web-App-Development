@@ -6,7 +6,7 @@ export const searchCandidatesSchema = z.object({
     location: z.string().optional(),
     availability: z.string().optional(),
     preferredModality: z.string().optional(),
-    salaryExpectation: z.number().optional(),
+    salaryExpectation: z.string().optional(),
     experience: z.union([
         z.coerce.number(),
         z.string(),

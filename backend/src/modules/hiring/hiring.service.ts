@@ -191,3 +191,12 @@ export const updateOfferService = async (userId: string, parsedBody: any) => {
 
     return "Oferta de trabajo actualizada";
 }
+
+export const deleteOfferService = async (id: string) => {
+
+    await prisma.jobOffer.delete({
+        where: { id: id }
+    });
+
+    return "Oferta de trabajo eliminada";
+}

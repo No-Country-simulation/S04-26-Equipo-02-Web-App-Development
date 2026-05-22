@@ -13,4 +13,6 @@ router.post('/create-offer', refreshToken, tokenMiddleware, HiringController.cre
 
 router.patch('/update-offer', refreshToken, tokenMiddleware, HiringController.updateOffer);
 
+router.delete('/delete-offer/:id', refreshToken, tokenMiddleware, HiringController.deleteOffer);
+
 export default router;
