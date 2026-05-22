@@ -1,5 +1,7 @@
 ﻿import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import {
   BookOpen,
   Award,
@@ -281,6 +283,7 @@ function LearningSkeleton() {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function Learning() {
+  const { user } = useAuth();
   const [loading] = useState(false);
   const [error] = useState<Error | null>(null);
   const [addedSkills, setAddedSkills] = useState<Set<string>>(new Set());
@@ -358,6 +361,10 @@ export default function Learning() {
       initial="hidden"
       animate="visible"
     >
+      <PageMeta
+        title={user?.name ? `Mi Ruta de Aprendizaje — ${user.name}` : 'Mi Ruta de Aprendizaje'}
+        description="Tu plan de desarrollo profesional personalizado en Red de Bienestar Laboral."
+      />
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <motion.div variants={itemVariants} className="space-y-1">
         <div className="flex items-center gap-3">

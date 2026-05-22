@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import {
   Search,
   MapPin,
@@ -210,6 +212,7 @@ function getAvailabilityBg(availability: Availability): string {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function TalentSearch() {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
@@ -260,6 +263,10 @@ export default function TalentSearch() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      <PageMeta
+        title={user?.name ? `Buscar Talento — ${user.name}` : 'Buscar Talento Senior'}
+        description="Encontrá profesionales senior con experiencia y trayectoria validada en Red de Bienestar Laboral."
+      />
       {/* ──────── HEADER ──────── */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}

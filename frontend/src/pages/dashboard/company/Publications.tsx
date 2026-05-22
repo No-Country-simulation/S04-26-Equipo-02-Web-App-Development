@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import {
   Plus,
   Search,
@@ -213,6 +215,7 @@ const cardVariants = {
 // ---------------------------------------------------------------------------
 
 export default function Publications() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<JobStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
@@ -250,6 +253,10 @@ export default function Publications() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      <PageMeta
+        title={user?.name ? `Publicaciones — ${user.name}` : 'Mis Publicaciones'}
+        description="Gestioná tus ofertas laborales activas en Red de Bienestar Laboral."
+      />
       {/* ---------------------------------------------------------------- */}
       {/* Header */}
       {/* ---------------------------------------------------------------- */}

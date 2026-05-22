@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import {
   Users,
   Briefcase,
@@ -182,10 +184,15 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
    ─────────────────────────────────────────── */
 
 export default function Metrics() {
+  const { user } = useAuth();
   const [activePeriod, setActivePeriod] = useState<Period>('Último mes');
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      <PageMeta
+        title={user?.name ? `Métricas — ${user.name}` : 'Métricas y Analíticas'}
+        description="Panel de análisis y estadísticas de la plataforma Red de Bienestar Laboral."
+      />
       {/* ═══ Header ═══ */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">

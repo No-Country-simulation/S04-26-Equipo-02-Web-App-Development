@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import * as profileApi from '../../../api/profiles';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/errors';
@@ -213,22 +214,27 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-brand-bg">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-brand-sage animate-spin" />
-          <p className="text-sm text-gray-500 font-medium">Cargando perfil...</p>
+      <>
+        <PageMeta title="Mi Perfil" description="Gestioná tu perfil profesional en Red de Bienestar Laboral." />
+        <div className="min-h-[60vh] flex items-center justify-center bg-brand-bg">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-8 h-8 text-brand-sage animate-spin" />
+            <p className="text-sm text-gray-500 font-medium">Cargando perfil...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (user?.role === 'COMPANY') {
     return (
-      <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 text-left">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Perfil de Empresa</h1>
-          <p className="text-gray-500 font-semibold text-xs uppercase tracking-widest">Gestiona la información pública de tu organización</p>
-        </div>
+      <>
+        <PageMeta title={user?.name ? `Panel de ${user.name}` : 'Perfil de Empresa'} description="Gestioná la información pública de tu organización en Red de Bienestar Laboral." />
+        <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 text-left">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Perfil de Empresa</h1>
+            <p className="text-gray-500 font-semibold text-xs uppercase tracking-widest">Gestiona la información pública de tu organización</p>
+          </div>
         <CompanyProfileForm
           companyForm={companyForm}
           onChange={(field: string, value: string) => setCompanyForm((prev) => ({ ...prev, [field]: value }))}
@@ -236,11 +242,14 @@ export default function Profile() {
           saving={saving}
         />
       </div>
-    );
+    </>
+  );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 text-left">
+    <>
+      <PageMeta title={user?.name ? `Mi Perfil — ${user.name}` : 'Mi Perfil Profesional'} description="Completá tu portafolio profesional en Red de Bienestar Laboral." />
+      <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Mi Perfil Profesional</h1>
@@ -312,5 +321,6 @@ export default function Profile() {
         )}
       </div>
     </div>
+    </>
   );
 }

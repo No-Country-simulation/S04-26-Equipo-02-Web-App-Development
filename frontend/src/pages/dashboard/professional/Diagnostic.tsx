@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import { 
   Loader2, 
   Cpu, 
@@ -51,6 +53,7 @@ const SCORE_LEVELS = [
 ];
 
 export default function Diagnostic() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
@@ -219,6 +222,10 @@ export default function Diagnostic() {
 
   return (
     <div className="max-w-4xl mx-auto py-4 px-2">
+      <PageMeta
+        title={user?.name ? `Diagnóstico — ${user.name}` : 'Autodiagnóstico Profesional'}
+        description="Evaluá tus competencias digitales, cognitivas y socioemocionales en Red de Bienestar Laboral."
+      />
       <AnimatePresence mode="wait">
         {/* STEP 0: INTRO */}
         {step === 0 && (
