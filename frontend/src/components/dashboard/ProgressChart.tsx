@@ -14,19 +14,19 @@ const chartConfig = {
   },
   skills: {
     label: 'Habilidades',
-    color: '#7B9E6B',
+    color: 'var(--color-brand-sage)',
   },
   webinars: {
     label: 'Webinars',
-    color: '#D4C36A',
+    color: 'var(--color-brand-gold)',
   },
   talleres: {
     label: 'Talleres',
-    color: '#D4826A',
+    color: 'var(--color-brand-coral)',
   },
   networking: {
     label: 'Networking',
-    color: '#8B9A6B',
+    color: 'var(--color-brand-olive)',
   },
 } satisfies ChartConfig;
 
