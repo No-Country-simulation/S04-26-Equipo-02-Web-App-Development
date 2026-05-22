@@ -109,6 +109,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
         {/* Toggle Button Desktop */}
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label={isCollapsed ? 'Expandir barra lateral' : 'Contraer barra lateral'}
           className="hidden md:flex p-1.5 hover:bg-white/10 rounded-lg text-white/40 hover:text-white self-center absolute -right-3 top-7 bg-brand-charcoal border border-white/10 shadow-sm z-50 transition-all"
         >
           <motion.div
@@ -123,6 +124,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
         {/* Close Button Mobile */}
         <button 
           onClick={() => setIsOpen(false)}
+          aria-label="Cerrar menú"
           className="p-1.5 hover:bg-white/10 rounded-lg text-white/40 lg:hidden"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -130,7 +132,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
       </div>
 
       {/* Navigation List */}
-      <nav className={cn(
+      <nav aria-label="Navegación principal" className={cn(
         'flex-1 py-6 space-y-1 transition-all duration-150',
         isCollapsed ? 'px-2 overflow-visible' : 'px-4 overflow-y-auto'
       )}>
@@ -145,6 +147,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed, classN
             <Link
               key={item.href}
               to={item.href}
+              aria-current={isActive ? 'page' : undefined}
               className={cn(
                 'group flex items-center rounded-xl transition-all duration-200 font-semibold text-sm relative',
                 isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
