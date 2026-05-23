@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../hooks/useAuth'
+import { PageMeta } from '../../hooks/useMeta'
 import { loginSchema, type LoginFormData } from '../../lib/schemas'
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { FormField } from '@/components/FormField'
@@ -54,6 +55,12 @@ export function Login() {
       <div className="absolute top-[-100px] right-[-100px] w-[350px] h-[350px] rounded-full bg-brand-sage/5 blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-60px] left-[-60px] w-[250px] h-[250px] rounded-full bg-brand-gold/5 blur-[80px] pointer-events-none" />
 
+      <PageMeta
+        title="Iniciar sesión"
+        description="Accedé a tu cuenta de Red de Bienestar Laboral para gestionar tu perfil, diagnóstico y oportunidades laborales."
+      />
+      <h1 className="sr-only">Iniciar sesión</h1>
+
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -72,6 +79,8 @@ export function Login() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {form.formState.errors.root && (
                   <motion.div
+                    role="alert"
+                    aria-live="assertive"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-md"

@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
@@ -537,6 +538,10 @@ export default function Events() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      <PageMeta
+        title={user?.name ? `Eventos — ${user.name}` : 'Eventos y Webinars'}
+        description="Capacitación, networking y crecimiento profesional en Red de Bienestar Laboral."
+      />
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">

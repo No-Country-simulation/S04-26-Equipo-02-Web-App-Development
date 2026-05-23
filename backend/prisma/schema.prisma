@@ -109,6 +109,7 @@ model CompanyProfile {
   logoUrl       String?
 
   preselections Preselection[]
+  jobOffers     JobOffer[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -135,10 +136,11 @@ model DiagnosticResult {
 }
 
 model LearningPath {
-  id          String   @id @default(uuid())
-  title       String
+  id          String        @id @default(uuid())
+  title       String        @unique
   description String
-  isActive    Boolean  @default(true)
+  category    SkillCategory
+  isActive    Boolean       @default(true)
   courses     Course[]
 }
 
@@ -150,6 +152,8 @@ model Course {
   description    String
   order          Int
   progress       CourseProgress[]
+
+  @@unique([learningPathId, order])
 }
 
 model CourseProgress {
@@ -242,4 +246,19 @@ model UserSession {
   revoked           Boolean
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model JobOffer {
+  id           String         @id @default(uuid())
+  companyId    String
+  company      CompanyProfile @relation(fields: [companyId], references: [id])
+  title        String
+  salaryRange  String
+  contractType String
+  modality     String
+  description  String
+  education    String
+  experience   String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }

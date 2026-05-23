@@ -32,7 +32,14 @@ export default function DashboardLayout() {
       className="h-screen bg-brand-bg flex overflow-hidden font-sans selection:bg-brand-accent selection:text-brand-heading"
       style={{ '--sidebar-width': isSidebarOpen ? (isCollapsed ? '80px' : '288px') : '0px' } as React.CSSProperties}
     >
-      
+      {/* Skip-to-content link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-brand-sage focus:text-white focus:rounded-xl focus:shadow-lg focus:outline-none focus:font-bold focus:text-sm"
+      >
+        Saltar al contenido principal
+      </a>
+
       {/* SIDEBAR WRAPPER */}
       <AnimatePresence mode="wait">
         {isSidebarOpen && (
@@ -57,7 +64,7 @@ export default function DashboardLayout() {
       </AnimatePresence>
 
       {/* CONTENT AREA */}
-      <main className="flex-1 flex flex-col min-w-0 min-h-screen overflow-hidden">
+      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col min-w-0 min-h-screen overflow-hidden outline-none">
         {/* Responsive Navbar Toggle (Mobile or when sidebar is closed) */}
         {!isSidebarOpen && (
           <div className="h-20 flex items-center px-8 border-b border-gray-200 bg-white/80 backdrop-blur-md sticky top-0 z-40">

@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, Info } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { PageMeta } from '../../hooks/useMeta';
 import { adminLoginSchema, type AdminLoginFormData } from '../../lib/schemas';
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { FormField } from '@/components/FormField';
@@ -55,6 +56,12 @@ export function AdminLogin() {
 
 
 
+      <PageMeta
+        title="Administración"
+        description="Panel de administración de Red de Bienestar Laboral — Ingreso con credenciales autorizadas."
+      />
+      <h1 className="sr-only">Administración</h1>
+
       <Card className="w-full max-w-md border border-brand-accent shadow-xl bg-white/90 backdrop-blur-sm relative z-10 transition-all duration-300 hover:shadow-2xl">
         {/* Top security border */}
         <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-brand-gold to-brand-sage rounded-t-lg" />
@@ -78,7 +85,7 @@ export function AdminLogin() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {form.formState.errors.root && (
-                <div className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-lg border border-destructive/20 font-medium">
+                <div role="alert" aria-live="assertive" className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-lg border border-destructive/20 font-medium">
                   {form.formState.errors.root.message}
                 </div>
               )}

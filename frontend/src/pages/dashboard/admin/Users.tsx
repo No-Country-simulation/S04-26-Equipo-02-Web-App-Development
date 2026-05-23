@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react';
+import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import {
   Users as UsersIcon,
   Search,
@@ -98,6 +100,7 @@ function getInitials(name: string): string {
 /* ------------------------------------------------------------------ */
 
 export default function Users() {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'TODOS'>('TODOS');
   const [statusFilter, setStatusFilter] = useState<UserStatus | 'TODOS'>('TODOS');
@@ -152,6 +155,10 @@ export default function Users() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      <PageMeta
+        title={user?.name ? `Usuarios — ${user.name}` : 'Gestión de Usuarios'}
+        description="Administración de perfiles y cuentas en Red de Bienestar Laboral."
+      />
 
       {/* ================================================================ */}
       {/*  Header                                                           */}

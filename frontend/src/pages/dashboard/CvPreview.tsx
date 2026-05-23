@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { PageMeta } from '../../hooks/useMeta';
 import * as profileApi from '../../api/profiles';
 import { formatDate, type ProfessionalProfile } from '../../components/dashboard/profile/types';
 import { toast } from 'sonner';
@@ -135,6 +136,10 @@ export default function CvPreview() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12 text-left">
+      <PageMeta
+        title={user?.name ? `CV — ${user.name}` : 'CV Vivo'}
+        description="Vista previa de tu currículum profesional en Red de Bienestar Laboral."
+      />
       {/* Botones de Acción - Ocultos en impresión */}
       <div className="flex justify-between items-center no-print">
         <button

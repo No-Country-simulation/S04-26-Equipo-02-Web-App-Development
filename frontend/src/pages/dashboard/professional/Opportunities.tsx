@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../../hooks/useAuth';
+import { PageMeta } from '../../../hooks/useMeta';
 import {
   Search,
   MapPin,
@@ -297,6 +299,7 @@ function getModalityBadge(modality: Modality): string {
 const ITEMS_PER_PAGE = 6;
 
 export default function Opportunities() {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [selectedModality, setSelectedModality] = useState('');
@@ -381,6 +384,10 @@ export default function Opportunities() {
   // ─── Render ───
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      <PageMeta
+        title={user?.name ? `Oportunidades — ${user.name}` : 'Marketplace de Talento'}
+        description="Encontrá oportunidades laborales que se ajusten a tu perfil profesional en Red de Bienestar Laboral."
+      />
       {/* ──────── HEADER ──────── */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
