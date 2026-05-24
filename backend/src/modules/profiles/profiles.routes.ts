@@ -39,4 +39,10 @@ router.patch('/company/update', tokenMiddleware, authorize([Role.COMPANY]), Prof
 // GET /api/v1/profiles/slug/:slug
 router.get('/slug/:slug', tokenMiddleware, ProfileController.getProfileBySlug);
 
+// Skills del Candidato (Professional)
+// POST /api/v1/profiles/skills
+router.post('/skills', tokenMiddleware, authorize([Role.PROFESSIONAL]), ProfileController.addSkill);
+// DELETE /api/v1/profiles/skills/:skillId
+router.delete('/skills/:skillId', tokenMiddleware, authorize([Role.PROFESSIONAL]), ProfileController.removeSkill);
+
 export default router;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as ProfileService from './profiles.service';
-import { updateProfileSchema, experienceSchema, languageSchema, educationSchema, certificationSchema, companyProfileSchema } from './profiles.schema';
+import { updateProfileSchema, experienceSchema, languageSchema, educationSchema, certificationSchema, companyProfileSchema, addSkillSchema } from './profiles.schema';
 
 export const getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -242,6 +242,50 @@ export const getProfileBySlug = async (req: Request, res: Response, next: NextFu
     return res.json({
       success: true,
       data: profile,
+      error: null,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const addSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validatedData = addSkillSchema.parse(req.body);
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+
+    const profileSkill = await ProfileService.addSkill(userId, validatedData);
+
+    return res.status(201).json({
+      success: true,
+      data: profileSkill,
+      error: null,
+    });
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      return res.status(409).json({
+        success: false,
+        data: null,
+        error: 'Ya tenés esta skill en tu perfil',
+      });
+    }
+    return next(error);
+  }
+};
+
+export const removeSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { skillId } = req.params;
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+    if (!skillId) throw new Error('SKILL_ID_REQUIRED');
+
+    await ProfileService.deleteSkill(userId, skillId as string);
+
+    return res.json({
+      success: true,
+      data: { message: 'Skill eliminada correctamente' },
       error: null,
     });
   } catch (error) {

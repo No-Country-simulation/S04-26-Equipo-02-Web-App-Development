@@ -51,9 +51,14 @@ export const companyProfileSchema = z.object({
   logoUrl: z.string().url('URL de logo inválida').optional().or(z.literal('')),
 });
 
+export const addSkillSchema = z.object({
+  skillId: z.string().uuid('El skillId debe ser un UUID válido'),
+});
+
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;
 export type LanguageInput = z.infer<typeof languageSchema>;
 export type EducationInput = z.infer<typeof educationSchema>;
 export type CertificationInput = z.infer<typeof certificationSchema>;
 export type CompanyProfileInput = z.infer<typeof companyProfileSchema>;
+export type AddSkillInput = z.infer<typeof addSkillSchema>;
