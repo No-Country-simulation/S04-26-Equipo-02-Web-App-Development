@@ -43,8 +43,17 @@ export const certificationSchema = z.object({
   url: z.string().url('URL de certificación inválida').optional().nullable().or(z.literal('')),
 });
 
+export const companyProfileSchema = z.object({
+  companyName: z.string().min(2, 'El nombre de la empresa debe tener al menos 2 caracteres').optional(),
+  industry: z.string().max(100).optional(),
+  description: z.string().max(2000).optional(),
+  website: z.string().url('URL de sitio web inválida').optional().or(z.literal('')),
+  logoUrl: z.string().url('URL de logo inválida').optional().or(z.literal('')),
+});
+
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;
 export type LanguageInput = z.infer<typeof languageSchema>;
 export type EducationInput = z.infer<typeof educationSchema>;
 export type CertificationInput = z.infer<typeof certificationSchema>;
+export type CompanyProfileInput = z.infer<typeof companyProfileSchema>;

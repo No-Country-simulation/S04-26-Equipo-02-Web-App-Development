@@ -1,5 +1,6 @@
 import { prisma } from '../../utils/prisma';
-import { UpdateProfileInput, ExperienceInput, LanguageInput, EducationInput, CertificationInput } from './profiles.schema';
+import { UpdateProfileInput, ExperienceInput, LanguageInput, EducationInput, CertificationInput, CompanyProfileInput } from './profiles.schema';
+
 
 export const getProfileByUserId = async (userId: string) => {
   return await prisma.professionalProfile.findUnique({
@@ -56,7 +57,24 @@ export const getProfileBySlug = async (slug: string) => {
   });
 };
 
+export const getCompanyProfileByUserId = async (userId: string) => {
+  return await prisma.companyProfile.findUnique({
+    where: { userId },
+    include: {
+      jobOffers: { orderBy: { createdAt: 'desc' } },
+    }
+  });
+};
+
+export const updateCompanyProfile = async (userId: string, data: CompanyProfileInput) => {
+  return await prisma.companyProfile.update({
+    where: { userId },
+    data,
+  });
+};
+
 export const addExperience = async (userId: string, data: ExperienceInput) => {
+
   const profile = await prisma.professionalProfile.findUnique({
     where: { userId },
     select: { id: true }

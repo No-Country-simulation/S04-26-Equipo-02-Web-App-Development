@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import * as ProfileController from './profiles.controller';
-import { tokenMiddleware } from '../../middlewares/token.middleware';
+import { tokenMiddleware, authorize } from '../../middlewares/token.middleware';
+import { Role } from '@prisma/client';
 
 const router = Router();
 
+// Perfiles de Candidato (Professional)
 // GET /api/v1/profiles/me
 router.get('/me', tokenMiddleware, ProfileController.getMyProfile);
 
@@ -25,5 +27,16 @@ router.delete('/education/:id', tokenMiddleware, ProfileController.removeEducati
 // Certificaciones
 router.post('/certifications', tokenMiddleware, ProfileController.addCertification);
 router.delete('/certifications/:id', tokenMiddleware, ProfileController.removeCertification);
+
+// Perfiles de Empresa (Company)
+// GET /api/v1/profiles/company/me
+router.get('/company/me', tokenMiddleware, authorize([Role.COMPANY]), ProfileController.getCompanyProfile);
+
+// PATCH /api/v1/profiles/company/update
+router.patch('/company/update', tokenMiddleware, authorize([Role.COMPANY]), ProfileController.updateCompanyProfile);
+
+// Perfil Público por Slug
+// GET /api/v1/profiles/slug/:slug
+router.get('/slug/:slug', tokenMiddleware, ProfileController.getProfileBySlug);
 
 export default router;
