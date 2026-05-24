@@ -37,7 +37,7 @@ export const createOffer = async (req: Request, res: Response, next: NextFunctio
 
         const offer = await HiringService.createOfferService(user.userId, parsed);
 
-        res.json(offer);
+        res.json({ message: offer });
 
     } catch (error) {
         next(error);
@@ -58,7 +58,7 @@ export const updateOffer = async (req: Request, res: Response, next: NextFunctio
 
         const offer = await HiringService.updateOfferService(user.userId, parsed);
 
-        res.json(offer);
+        res.json({ message: offer });
 
     } catch (error) {
         next(error);
@@ -77,7 +77,7 @@ export const deleteOffer = async (req: Request, res: Response, next: NextFunctio
 
         const offer = await HiringService.deleteOfferService(req.params.id as string);
 
-        res.json(offer);
+        res.json({ message: offer });
 
     } catch (error) {
         next(error);
