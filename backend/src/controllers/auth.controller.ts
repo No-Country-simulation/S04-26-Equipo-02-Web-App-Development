@@ -109,6 +109,12 @@ export const registerController = async (req: Request<{}, {}, RegisterBody>, res
 
         const { email, password, provider, firstName, lastName, location, phone } = result.data;
 
+        if(provider === Role.ADMIN) {
+            return res.status(403).json({
+                message: 'No se permite registrar usuarios con rol ADMIN'
+            });
+        }
+
         const responseService = await registerService(email, password, provider, firstName, lastName, location, phone);
 
         return res.status(200).json({
