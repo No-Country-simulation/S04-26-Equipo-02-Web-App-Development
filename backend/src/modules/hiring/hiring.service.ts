@@ -30,6 +30,12 @@ export const searchCandidatesService = async (parsed: z.infer<typeof searchCandi
             ...(parsed.preferredModality && {
                 preferredModality: parsed.preferredModality as any,
             }),
+            ...(parsed.salaryExpectation && {
+                salaryExpectation: {
+                    contains: parsed.salaryExpectation,
+                    mode: 'insensitive',
+                },
+            }),
             ...(parsed.skills?.length && {
                 skills: {
                     some: {
