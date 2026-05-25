@@ -319,3 +319,85 @@ export const preselectionService = async (userId: string, companyId: string, not
     return "Candidato preseleccionado";
 
 }
+
+export const avancePreselectionService = async (preselectionId: string, status: string) => {
+
+    const preselectionCheck = await prisma.preselection.findUnique({
+        where: { id: preselectionId }
+    });
+
+    if (!preselectionCheck) {
+        throw new Error("PRESELECTION_NOT_FOUND");
+    }
+
+    if(preselectionCheck.status === "REJECTED") {
+        throw new Error("CANNOT_ADVANCE_REJECTED_PRESELECTION");
+    }
+
+    if(status === "AVANZADO" ) {
+
+        switch (preselectionCheck.status) {
+            case "INTERESTED":
+                await prisma.preselection.update({
+                    where: { id: preselectionId },
+                    data: {
+                        status: "CONTACTED"
+                    }
+                });
+                break;
+            case "CONTACTED":
+                await prisma.preselection.update({
+                    where: { id: preselectionId },
+                    data: {
+                        status: "INTERVIEWING"
+                    }
+                });
+                break;
+            case "INTERVIEWING":
+                await prisma.preselection.update({
+                    where: { id: preselectionId },
+                    data: {
+                        status: "HIRED"
+                    }
+                });
+                break;
+            default:
+                throw new Error("NO_NEXT_STATUS");
+        }
+
+    } else if (status === "RECHAZADO") {
+
+        await prisma.preselection.update({
+            where: { id: preselectionId },
+            data: {
+                status: "REJECTED"
+            }
+        });
+
+    }
+
+    const userData = await prisma.professionalProfile.findUnique({
+        where: { id: preselectionCheck.professionalProfileId }
+    });
+
+    if (!userData) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    const userEmail = await prisma.user.findUnique({
+        where: { id: userData?.userId }
+    });
+
+    if (!userEmail) {
+        throw new Error("USER_EMAIL_NOT_FOUND");
+    }
+
+    await sendEmail({
+        to: userEmail.email,
+        subject: "Actualización de preselección",
+        html: `<p> Tu preselección ha sido actualizada. </p>`
+    });
+
+    return "Avance de preselección actualizado";
+
+}

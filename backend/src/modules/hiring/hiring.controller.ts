@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as HiringService from './hiring.service';
-import { searchCandidatesSchema, createOfferSchema, updateOfferSchema, searchOpportunitiesSchema, preselectionSchema } from './hiring.schema';
+import { searchCandidatesSchema, createOfferSchema, updateOfferSchema, searchOpportunitiesSchema, preselectionSchema, avancePreselectionSchema } from './hiring.schema';
 
 export const searchCandidates = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -132,6 +132,32 @@ export const preselectionController = async (req: Request, res: Response, next: 
         const { userId, notes } = preselectionSchema.parse(req.body);
 
         const preselection = await HiringService.preselectionService(userId, companyId, notes);
+
+        res.json({message: preselection});
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const avancePreselection = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to advance preselection" });
+            return;
+        }
+
+        const {status, id} = avancePreselectionSchema.parse(req.params);
+
+        if(!status || !id) {
+            res.status(400).json({ message: "Missing preselection ID or status" });
+            return;
+        }
+
+        const preselection = await HiringService.avancePreselectionService(id, status);
 
         res.json({message: preselection});
 

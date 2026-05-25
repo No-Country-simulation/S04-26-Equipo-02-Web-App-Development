@@ -92,3 +92,8 @@ export const preselectionSchema = z.object({
     userId: z.string(),
     notes: z.string()
 });
+
+export const avancePreselectionSchema = z.object({
+    status: z.enum(['AVANZADO', 'RECHAZADO']),
+    id: z.string()
+});
