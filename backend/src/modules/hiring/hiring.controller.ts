@@ -83,3 +83,22 @@ export const deleteOffer = async (req: Request, res: Response, next: NextFunctio
         next(error);
     }
 }
+
+export const getOffers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to view offers" });
+            return;
+        }
+
+        const offers = await HiringService.getOffersService(user.userId);
+
+        res.json(offers);
+
+    } catch (error) {
+        next(error);
+    }
+}
