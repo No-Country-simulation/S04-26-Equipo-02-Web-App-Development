@@ -8,7 +8,7 @@ import { Register } from './pages/auth/Register';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
 import { VerifyEmail } from './pages/auth/VerifyEmail';
-import { NotFound } from './pages/public/NotFound';
+import { NotFound } from './components/NotFound';
 
 // Dashboard imports
 import DashboardLayout from './components/dashboard/DashboardLayout';
@@ -79,6 +79,9 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={['PROFESSIONAL', 'ADMIN']} />}>
           <Route path="events" element={<Events />} />
         </Route>
+
+        {/* 404 dentro del dashboard */}
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
