@@ -53,7 +53,9 @@ function App() {
         }
       >
         <Route index element={<GeneralDashboard />} />
-        <Route path="profile" element={<Profile />} />
+        <Route element={<ProtectedRoute allowedRoles={['PROFESSIONAL', 'COMPANY']} />}>
+          <Route path="profile" element={<Profile />} />
+        </Route>
         <Route path="cv-preview" element={<CvPreview />} />
 
         {/* Rutas exclusivas para Profesionales */}

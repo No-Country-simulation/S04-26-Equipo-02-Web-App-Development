@@ -24,6 +24,11 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Admin bypassa todos los filtros de rol
+  if (user?.role === 'ADMIN') {
+    return children ? <>{children}</> : <Outlet />;
+  }
+
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }
