@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '../../utils/prisma';
 import { searchCandidatesSchema, searchOpportunitiesSchema } from './hiring.schema';
+import { sendEmail } from '../../config/nodemailer';
 
 export const searchCandidatesService = async (parsed: z.infer<typeof searchCandidatesSchema>) => {
 
@@ -272,5 +273,49 @@ export const getOpportunitiesService = async (parsed: z.infer<typeof searchOppor
     });
 
     return opportunities;
+
+}
+
+export const preselectionService = async (userId: string, companyId: string, notes: string) => {
+
+    const userCheck = await prisma.professionalProfile.findUnique({
+        where: { userId }
+    });
+
+    if (!userCheck) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    const companyCheck = await prisma.companyProfile.findUnique({
+        where: { userId: companyId }
+    })
+
+    if (!companyCheck) {
+        throw new Error("COMPANY_NOT_FOUND");
+    }
+
+    await prisma.preselection.create({
+        data: {
+            professionalProfileId: userCheck.id,
+            companyProfileId: companyCheck.id,
+            notes
+        }
+    });
+
+    const userData = await prisma.user.findUnique({
+        where: { id: userId }
+    });
+
+    if (!userData) {
+        throw new Error("USER_EMAIL_NOT_FOUND");
+    }
+
+    await sendEmail({
+        to: userData.email,
+        subject: "¡Has sido preseleccionado para una oferta de trabajo!",
+        html: `<p>¡Felicidades! Has sido preseleccionado por una empresa. Te recomendamos revisar tu perfil y prepararte para los próximos pasos en el proceso de selección. ¡Mucho éxito!</p>`
+    });
+
+    return "Candidato preseleccionado";
 
 }

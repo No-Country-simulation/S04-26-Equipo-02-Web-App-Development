@@ -87,3 +87,8 @@ export const searchOpportunitiesSchema = z.object({
     education: z.string().optional(),
     orderBy: z.enum(['updatedAt']).optional()
 });
+
+export const preselectionSchema = z.object({
+    userId: z.string(),
+    notes: z.string()
+});

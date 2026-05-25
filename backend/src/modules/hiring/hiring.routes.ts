@@ -19,4 +19,6 @@ router.get('/opportunities', refreshToken, tokenMiddleware, HiringController.get
 
 router.get('/search-candidates', refreshToken, tokenMiddleware, HiringController.searchCandidates);
 
+router.post('/preselection', refreshToken, tokenMiddleware, HiringController.preselectionController);
+
 export default router;

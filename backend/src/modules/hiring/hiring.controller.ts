@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as HiringService from './hiring.service';
-import { searchCandidatesSchema, createOfferSchema, updateOfferSchema, searchOpportunitiesSchema } from './hiring.schema';
+import { searchCandidatesSchema, createOfferSchema, updateOfferSchema, searchOpportunitiesSchema, preselectionSchema } from './hiring.schema';
 
 export const searchCandidates = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -111,6 +111,29 @@ export const getOpportunities = async (req: Request, res: Response, next: NextFu
         const opportunities = await HiringService.getOpportunitiesService(query);
 
         res.json(opportunities);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const preselectionController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to preselect candidates" });
+            return;
+        }
+
+        const companyId = user.userId
+
+        const { userId, notes } = preselectionSchema.parse(req.body);
+
+        const preselection = await HiringService.preselectionService(userId, companyId, notes);
+
+        res.json({message: preselection});
 
     } catch (error) {
         next(error);
