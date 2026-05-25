@@ -23,6 +23,7 @@ import Publications from './pages/dashboard/company/Publications';
 import Events from './pages/dashboard/shared/Events';
 import Users from './pages/dashboard/admin/Users';
 import Metrics from './pages/dashboard/admin/Metrics';
+import About from './pages/public/About';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
+        <Route path="/about" element={<About />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
