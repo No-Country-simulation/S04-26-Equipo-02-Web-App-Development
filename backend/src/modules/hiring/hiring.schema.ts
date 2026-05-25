@@ -77,3 +77,13 @@ export const updateOfferSchema = z.object({
     education: z.string().optional(),
     experience: z.string().optional()
 });
+
+export const searchOpportunitiesSchema = z.object({
+    title: z.string().optional(),
+    salaryRange: z.string().optional(),
+    contractType: z.string().optional(),
+    modality: z.string().optional(),
+    experience: z.string().optional(),
+    education: z.string().optional(),
+    orderBy: z.enum(['updatedAt']).optional()
+});

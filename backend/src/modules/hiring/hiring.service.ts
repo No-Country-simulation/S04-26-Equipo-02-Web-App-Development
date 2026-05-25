@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { prisma } from '../../utils/prisma';
-import { searchCandidatesSchema } from './hiring.schema';
+import { searchCandidatesSchema, searchOpportunitiesSchema } from './hiring.schema';
 
 export const searchCandidatesService = async (parsed: z.infer<typeof searchCandidatesSchema>) => {
 
@@ -224,5 +224,53 @@ export const getOffersService = async (userId: string) => {
     });
 
     return offers;
+
+}
+
+export const getOpportunitiesService = async (parsed: z.infer<typeof searchOpportunitiesSchema>) => {
+
+    const opportunities = await prisma.jobOffer.findMany({
+        where: {
+            ...(parsed.title && {
+                title: {
+                    contains: parsed.title,
+                    mode: 'insensitive'
+                }
+            }),
+            ...(parsed.salaryRange && {
+                salaryRange: {
+                    contains: parsed.salaryRange,
+                    mode: 'insensitive'
+                }
+            }),
+            ...(parsed.contractType && {
+                contractType: {
+                    contains: parsed.contractType,
+                    mode: 'insensitive'
+                }
+            }),
+            ...(parsed.modality && {
+                modality: {
+                    contains: parsed.modality,
+                    mode: 'insensitive'
+                }
+            }),
+            ...(parsed.experience !== undefined && {
+                experience: {
+                    contains: String(parsed.experience),
+                    mode: 'insensitive'
+                }
+            }),
+            ...(parsed.education && {
+                education: {
+                    contains: parsed.education,
+                    mode: 'insensitive'
+                }
+            })
+        },
+        orderBy: parsed.orderBy ? { [parsed.orderBy]: 'desc' } : undefined
+    });
+
+    return opportunities;
 
 }

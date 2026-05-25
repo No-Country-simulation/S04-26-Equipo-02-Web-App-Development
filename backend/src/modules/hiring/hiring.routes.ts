@@ -7,8 +7,6 @@ import { tokenMiddleware } from '../../middlewares/token.middleware';
 
 const router = Router();
 
-router.get('/search-candidates', refreshToken, tokenMiddleware, HiringController.searchCandidates);
-
 router.post('/create-offer', refreshToken, tokenMiddleware, HiringController.createOffer);
 
 router.patch('/update-offer', refreshToken, tokenMiddleware, HiringController.updateOffer);
@@ -16,5 +14,9 @@ router.patch('/update-offer', refreshToken, tokenMiddleware, HiringController.up
 router.delete('/delete-offer/:id', refreshToken, tokenMiddleware, HiringController.deleteOffer);
 
 router.get('/offers', refreshToken, tokenMiddleware, HiringController.getOffers);
+
+router.get('/opportunities', refreshToken, tokenMiddleware, HiringController.getOpportunities);
+
+router.get('/search-candidates', refreshToken, tokenMiddleware, HiringController.searchCandidates);
 
 export default router;

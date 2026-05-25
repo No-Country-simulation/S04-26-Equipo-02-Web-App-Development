@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as HiringService from './hiring.service';
-import { searchCandidatesSchema, createOfferSchema, updateOfferSchema } from './hiring.schema';
+import { searchCandidatesSchema, createOfferSchema, updateOfferSchema, searchOpportunitiesSchema } from './hiring.schema';
 
 export const searchCandidates = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -97,6 +97,20 @@ export const getOffers = async (req: Request, res: Response, next: NextFunction)
         const offers = await HiringService.getOffersService(user.userId);
 
         res.json(offers);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getOpportunities = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const query = searchOpportunitiesSchema.parse(req.query);
+
+        const opportunities = await HiringService.getOpportunitiesService(query);
+
+        res.json(opportunities);
 
     } catch (error) {
         next(error);
