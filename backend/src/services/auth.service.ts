@@ -6,7 +6,8 @@ import { generateRefreshToken } from "../utils/generate.refresh.token";
 import { hashPassword } from "../utils/hash.password";
 import { Role } from "@prisma/client";
 import { sendEmail } from "../config/nodemailer";
-import { validateEmailVerificationToken } from "../utils/validate.token";
+import { validateEmailVerificationToken, validateRefreshToken } from "../utils/validate.token";
+import { hashRefreshToken } from "../utils/hash.refresh.token";
 
 const prisma = new PrismaClient();
 
@@ -162,5 +163,41 @@ export const verifyEmailService = async (token: string) => {
     });
 
     return 'Email verificado exitosamente';
+
+}
+
+export const logoutService = async (refreshToken: string) => {
+
+    const decoded = validateRefreshToken(refreshToken);
+
+    if (!decoded) {
+        throw new Error('El token es invalido');
+    }
+
+    const hashedRefreshToken = await hashRefreshToken(decoded.refreshToken);
+
+    const session = await prisma.userSession.findUnique({
+        where: {
+            id: decoded.refreshTokenId,
+            refreshTokenHash: hashedRefreshToken,
+            userId: decoded.userId,
+            revoked: false
+        }
+    });
+
+    if (!session) {
+        throw new Error('No existe la sesión');
+    }
+
+    await prisma.userSession.update({
+        where: {
+            id: session.id
+        },
+        data: {
+            revoked: true
+        }
+    });
+
+    return 'Logout exitoso';
 
 }

@@ -7,7 +7,8 @@ import {
     loginController,
     registerController,
     verifyEmailController,
-    validateSessionController
+    validateSessionController,
+    logoutController
 
 } from '../controllers/auth.controller';
 
@@ -21,5 +22,7 @@ router.post("/register", registerController);
 router.patch("/verify-email/:token", verifyEmailController);
 
 router.get("/validate-session", refreshToken, tokenMiddleware, validateSessionController);
+
+router.patch("/logout", refreshToken, tokenMiddleware, logoutController);
 
 export default router;
