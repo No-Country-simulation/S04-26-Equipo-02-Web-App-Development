@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as ProfileService from './profiles.service';
-import { updateProfileSchema, experienceSchema, languageSchema, educationSchema, certificationSchema } from './profiles.schema';
+import { updateProfileSchema, experienceSchema, languageSchema, educationSchema, certificationSchema, companyProfileSchema, addSkillSchema } from './profiles.schema';
 
 export const getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -186,5 +186,109 @@ export const removeCertification = async (req: Request, res: Response, next: Nex
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const getCompanyProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+
+    const profile = await ProfileService.getCompanyProfileByUserId(userId);
+
+    res.json({
+      success: true,
+      data: profile,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCompanyProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validatedData = companyProfileSchema.parse(req.body);
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+
+    const updatedProfile = await ProfileService.updateCompanyProfile(userId, validatedData);
+
+    res.json({
+      success: true,
+      data: updatedProfile,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProfileBySlug = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { slug } = req.params;
+    if (!slug) throw new Error('SLUG_REQUIRED');
+
+    const profile = await ProfileService.getProfileBySlug(slug as string);
+
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        error: 'Perfil no encontrado',
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: profile,
+      error: null,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const addSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validatedData = addSkillSchema.parse(req.body);
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+
+    const profileSkill = await ProfileService.addSkill(userId, validatedData);
+
+    return res.status(201).json({
+      success: true,
+      data: profileSkill,
+      error: null,
+    });
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      return res.status(409).json({
+        success: false,
+        data: null,
+        error: 'Ya tenés esta skill en tu perfil',
+      });
+    }
+    return next(error);
+  }
+};
+
+export const removeSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { skillId } = req.params;
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+    if (!skillId) throw new Error('SKILL_ID_REQUIRED');
+
+    await ProfileService.deleteSkill(userId, skillId as string);
+
+    return res.json({
+      success: true,
+      data: { message: 'Skill eliminada correctamente' },
+      error: null,
+    });
+  } catch (error) {
+    return next(error);
   }
 };

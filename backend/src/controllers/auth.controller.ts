@@ -45,17 +45,19 @@ export const loginController = async (req: Request<{}, {}, LoginBody>, res: Resp
 
         const responseService = await loginService(email, password, provider);
 
+        const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+
         res.cookie('token', responseService.token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: isSecure,
+            sameSite: isSecure ? 'none' : 'lax',
             maxAge: 15 * 60 * 1000
         });
 
         res.cookie('refreshToken', responseService.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: isSecure,
+            sameSite: isSecure ? 'none' : 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000
         });
 

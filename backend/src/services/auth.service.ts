@@ -107,6 +107,19 @@ export const registerService = async (email: string, password: string, provider:
         })
     }
 
+    if(provider === Role.COMPANY) {
+        await prisma.companyProfile.create({
+            data: {
+                companyName: `${firstName} ${lastName}`,
+                user: {
+                    connect: {
+                        id: newUser?.id
+                    }
+                }
+            }
+        })
+    }
+
     const emailVerificationToken = generateEmailVerificationToken({ userId: newUser?.id, email: newUser?.email });
 
     const verificationLink = `${process.env.FRONTEND_URL}/verify-email/${emailVerificationToken}`;

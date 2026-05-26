@@ -4,20 +4,22 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'PROFESSIONAL' | 'COMPANY';
+  role: 'PROFESSIONAL' | 'COMPANY' | 'ADMIN';
+  firstName?: string;
+  lastName?: string;
   createdAt?: string;
 }
 
 export interface LoginCredentials {
   email: string;
   password: string;
-  provider: 'PROFESSIONAL' | 'COMPANY';
+  provider: 'PROFESSIONAL' | 'COMPANY' | 'ADMIN';
 }
 
 export interface RegisterData {
   email: string;
   password: string;
-  provider: 'PROFESSIONAL' | 'COMPANY';
+  provider: 'PROFESSIONAL' | 'COMPANY' | 'ADMIN';
   firstName: string;
   lastName: string;
   location: string;
@@ -39,6 +41,7 @@ export interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  updateUser: (fields: Partial<User>) => void;
   isAuthenticated: boolean;
 }

@@ -1,5 +1,6 @@
 import { prisma } from '../../utils/prisma';
-import { UpdateProfileInput, ExperienceInput, LanguageInput, EducationInput, CertificationInput } from './profiles.schema';
+import { UpdateProfileInput, ExperienceInput, LanguageInput, EducationInput, CertificationInput, CompanyProfileInput, AddSkillInput } from './profiles.schema';
+
 
 export const getProfileByUserId = async (userId: string) => {
   return await prisma.professionalProfile.findUnique({
@@ -56,7 +57,24 @@ export const getProfileBySlug = async (slug: string) => {
   });
 };
 
+export const getCompanyProfileByUserId = async (userId: string) => {
+  return await prisma.companyProfile.findUnique({
+    where: { userId },
+    include: {
+      jobOffers: { orderBy: { createdAt: 'desc' } },
+    }
+  });
+};
+
+export const updateCompanyProfile = async (userId: string, data: CompanyProfileInput) => {
+  return await prisma.companyProfile.update({
+    where: { userId },
+    data,
+  });
+};
+
 export const addExperience = async (userId: string, data: ExperienceInput) => {
+
   const profile = await prisma.professionalProfile.findUnique({
     where: { userId },
     select: { id: true }
@@ -180,6 +198,48 @@ export const deleteCertification = async (userId: string, certificationId: strin
     where: { 
       id: certificationId,
       profileId: profile.id
+    }
+  });
+};
+
+export const addSkill = async (userId: string, data: AddSkillInput) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  // Verificar que la skill existe en la BD
+  const skill = await prisma.skill.findUnique({
+    where: { id: data.skillId }
+  });
+
+  if (!skill) throw new Error('SKILL_NOT_FOUND');
+
+  return await prisma.profileSkill.create({
+    data: {
+      profileId: profile.id,
+      skillId: data.skillId,
+    },
+    include: { skill: true }
+  });
+};
+
+export const deleteSkill = async (userId: string, skillId: string) => {
+  const profile = await prisma.professionalProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!profile) throw new Error('PROFILE_NOT_FOUND');
+
+  return await prisma.profileSkill.delete({
+    where: {
+      profileId_skillId: {
+        profileId: profile.id,
+        skillId,
+      }
     }
   });
 };
