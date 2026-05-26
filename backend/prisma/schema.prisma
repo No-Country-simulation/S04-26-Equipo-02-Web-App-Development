@@ -92,6 +92,7 @@ model ProfessionalProfile {
   languages       Language[]
   skills          ProfileSkill[]
   preselections   Preselection[]
+  eventEnrolls    EventEnroll[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -258,4 +259,27 @@ model JobOffer {
   experience  String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id            String @id @default(uuid())
+  title         String
+  type          String
+  day           String
+  link          String
+
+  enrolls       EventEnroll[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model EventEnroll {
+  id                    String @id @default(uuid())
+
+  eventId              String
+  event                Event @relation(fields: [eventId], references: [id])
+
+  professionalId       String
+  professionalProfile  ProfessionalProfile @relation(fields: [professionalId], references: [id])
 }
