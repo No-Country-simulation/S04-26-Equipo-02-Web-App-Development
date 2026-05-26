@@ -23,15 +23,18 @@ Este documento detalla la correspondencia entre las vistas/servicios del fronten
 
 ## Estado de Ramas de Desarrollo (Git)
 
-Durante la auditoría del repositorio se identificó código desarrollado en ramas secundarias que aún no está integrado en la rama `main`:
+Durante la auditoría del repositorio se identificaron las siguientes ramas secundarias:
 
-*   **Rama `gonza-dev`**: 
-    *   Implementa el módulo de contratación `/api/v1/hiring` con endpoints para buscar candidatos, crear, editar y borrar ofertas laborales.
+*   **Rama `gonza-dev` (Pendiente de integrar)**:
+    *   Implementa el módulo de contratación `/api/v1/hiring` con endpoints completos para crear, editar, borrar y listar ofertas laborales, buscar candidatos con filtros complejos, y preseleccionar o avanzar candidatos.
+    *   Implementa el endpoint de logout de sesión (`PATCH /api/v1/auth/logout`) invalidando el token en la BD y limpiando las cookies.
     *   Contiene una validación en el registro para impedir la creación manual de usuarios con rol `ADMIN`.
     *   *Nota*: Cambia el middleware de `cors` en el backend a `cors()`, lo cual puede requerir re-configurar `credentials: true` y `origin` para que las cookies `HttpOnly` sigan funcionando.
-*   **Rama `feature/company-profile-endpoints`**: 
-    *   Implementa el disparador automático para que, al registrar una cuenta de tipo `COMPANY`, se inserte de inmediato su perfil en la tabla `CompanyProfile`.
-    *   Agrega los endpoints para leer y actualizar la información de perfiles de empresa.
+*   **Rama `feature/company-profile-endpoints` (Integrada en `main`)**:
+    *   Implementó el disparador automático para que, al registrar una cuenta de tipo `COMPANY`, se inserte de inmediato su perfil en la tabla `CompanyProfile`.
+    *   Agregó los endpoints para leer y actualizar la información de perfiles de empresa en `main`.
+*   **Rama `feature/profile-skills-manual` (Integrada en `main`)**:
+    *   Implementó los endpoints para agregar y eliminar de forma manual las habilidades en el perfil del profesional (`POST /api/v1/profiles/skills` y `DELETE /api/v1/profiles/skills/:skillId`).
 
 ---
 
@@ -44,10 +47,10 @@ Durante la auditoría del repositorio se identificó código desarrollado en ram
 | Endpoint Requerido | Método | Propósito | Estado en Backend (`main`) | Adaptación / Cambio Requerido |
 | :--- | :--- | :--- | :--- | :--- |
 | `/api/v1/auth/login` | `POST` | Iniciar sesión y establecer cookies `token` y `refreshToken`. | ✅ Implementado. | Ninguna. |
-| `/api/v1/auth/register` | `POST` | Registro de nuevos usuarios (Profesionales/Empresas). | ✅ Implementado. | *Avance en `feature/company-profile-endpoints`*: Agrega la creación automática de `CompanyProfile` para el rol `COMPANY`. |
+| `/api/v1/auth/register` | `POST` | Registro de nuevos usuarios (Profesionales/Empresas). | ✅ Implementado. | Creación automática de `CompanyProfile` y `ProfessionalProfile` según rol. |
 | `/api/v1/auth/verify-email/:token` | `PATCH` | Verificar email mediante token de activación. | ✅ Implementado. | Ninguna. |
 | `/api/v1/auth/validate-session` | `GET` | Validar sesión activa en base a las cookies. | ✅ Implementado. | Ninguna. |
-| `/api/v1/auth/logout` | `POST` | Cerrar sesión limpiando las cookies `HttpOnly` del navegador. | ❌ **Ausente**. | Crear ruta y controlador en backend que llame a `res.clearCookie('token')` y `res.clearCookie('refreshToken')`. |
+| `/api/v1/auth/logout` | `PATCH` | Cerrar sesión limpiando las cookies `HttpOnly` e invalidando la sesión en la base de datos. | ❌ **Ausente en main**. | 🛠️ *Desarrollado en `gonza-dev` como `PATCH /logout`*. Fusionar la rama para activar. |
 
 ---
 
@@ -69,19 +72,21 @@ Durante la auditoría del repositorio se identificó código desarrollado en ram
 | `/api/v1/profiles/certifications/:id` | `DELETE` | Eliminar una certificación. | ✅ Implementado. | Ninguna. |
 | `/api/v1/profiles/languages` | `POST` | Agregar idiomas. | ✅ Implementado. | Ninguna. |
 | `/api/v1/profiles/languages/:id` | `DELETE` | Eliminar un idioma. | ✅ Implementado. | Ninguna. |
-| `/api/v1/profiles/slug/:slug` | `GET` | Obtener el perfil público del profesional para vista previa de CV o búsquedas. | ❌ **Ausente en rutas** (Existe en servicio). | Agregar la ruta `GET /slug/:slug` en `profiles.routes.ts` y llamar al servicio `getProfileBySlug(slug)`. |
+| `/api/v1/profiles/slug/:slug` | `GET` | Obtener el perfil público del profesional por su slug. | ✅ Implementado. | Ninguna. |
+| `/api/v1/profiles/skills` | `POST` | Agregar una habilidad manualmente al perfil. | ✅ Implementado. | Ninguna (Desarrollado en `feature/profile-skills-manual`). |
+| `/api/v1/profiles/skills/:skillId` | `DELETE` | Eliminar una habilidad manual del perfil. | ✅ Implementado. | Ninguna (Desarrollado en `feature/profile-skills-manual`). |
 
 ---
 
 ## 3. Perfiles de Empresas (Company Profiles)
 
 *   **Vistas en Frontend**: `CompanyDashboard.tsx` (datos generales corporativos), `Profile.tsx` (pestaña de empresa).
-*   **Estado de Conexión**: ❌ **Mockeado / LocalStorage** (Listo en rama de desarrollo).
+*   **Estado de Conexión**: ❌ **Mockeado / LocalStorage** (Listo en Backend, falta conectar en Frontend).
 
-| Endpoint Requerido (Propuesto) | Método | Propósito | Estado en Backend (`main`) | Estado en Otras Ramas | Adaptación / Cambio Requerido |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `/api/v1/profiles/company/me` | `GET` | Obtener los datos del perfil corporativo de la empresa autenticada. | ❌ **Ausente**. | 🛠️ *Desarrollado en `feature/company-profile-endpoints`*. | Fusionar rama y conectar en el frontend. |
-| `/api/v1/profiles/company/update` | `PATCH` | Actualizar nombre, industria, descripción, logo y web de la empresa. | ❌ **Ausente**. | 🛠️ *Desarrollado en `feature/company-profile-endpoints`*. | Fusionar rama y conectar en el frontend. |
+| Endpoint Requerido | Método | Propósito | Estado en Backend (`main`) | Adaptación / Cambio Requerido |
+| :--- | :--- | :--- | :--- | :--- |
+| `/api/v1/profiles/company/me` | `GET` | Obtener los datos del perfil corporativo de la empresa autenticada. | ✅ Implementado. | Consumir en el frontend y reemplazar el mock actual. |
+| `/api/v1/profiles/company/update` | `PATCH` | Actualizar nombre, industria, descripción, logo y web de la empresa. | ✅ Implementado. | Consumir en el frontend para actualizar los datos corporativos. |
 
 ---
 
@@ -89,13 +94,13 @@ Durante la auditoría del repositorio se identificó código desarrollado en ram
 
 *   **Vistas en Frontend**: `Diagnostic.tsx`.
 *   **Servicios/Stores**: [diagnostic.ts](file:///c:/Users/Hernan/Documents/GitHub/S04-26-Equipo-02-Web-App-Development/frontend/src/api/diagnostic.ts).
-*   **Estado de Conexión**: **Parcialmente Conectado**.
+*   **Estado de Conexión**: **Conectado**.
 
 | Endpoint Requerido | Método | Propósito | Estado en Backend (`main`) | Adaptación / Cambio Requerido |
 | :--- | :--- | :--- | :--- | :--- |
 | `/api/v1/diagnostic/skills` | `GET` | Obtener el banco de habilidades categorizadas para responder la evaluación. | ✅ Implementado. | Ninguna. |
 | `/api/v1/diagnostic/submit` | `POST` | Guardar las puntuaciones autoevaluadas del diagnóstico del profesional. | ✅ Implementado. | Ninguna. |
-| `/api/v1/diagnostic` | `GET` | Comprobar si el usuario ya realizó su diagnóstico y ver estado general. | ❌ **Ausente**. | Crear ruta `GET /` en `diagnostic.routes.ts` que consulte la base de datos para ver si el usuario tiene registros en `DiagnosticResult`. |
+| `/api/v1/diagnostic` | `GET` | Comprobar si el usuario ya realizó su diagnóstico y ver estado general. | ✅ Implementado. | Ninguna. |
 
 ---
 
@@ -120,10 +125,10 @@ Durante la auditoría del repositorio se identificó código desarrollado en ram
 | Endpoint Requerido (Propuesto) | Método | Propósito | Estado en Backend (`main`) | Estado en Otras Ramas | Adaptación / Cambio Requerido |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `/api/v1/hiring/create-offer` | `POST` | Crear una oferta de empleo vinculada a la empresa autenticada. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y crear llamadas API correspondientes en el front. |
-| `/api/v1/hiring/offers` | `GET` | Listar todas las ofertas laborales creadas por la propia empresa. | ❌ **Ausente**. | ❌ *Ausente* (la rama `gonza-dev` implementa la creación, pero no el listado por empresa). | Crear endpoint que consulte `JobOffer` filtrando por la empresa asociada al usuario autenticado. |
-| `/api/v1/hiring/update-offer` | `PATCH` | Modificar datos de una oferta o su estado. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. Nota: recibe el body completo de la oferta. |
+| `/api/v1/hiring/offers` | `GET` | Listar todas las ofertas laborales creadas por la propia empresa. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y consumir en Publications.tsx. |
+| `/api/v1/hiring/update-offer` | `PATCH` | Modificar datos de una oferta o su estado. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. Recibe el body completo de la oferta. |
 | `/api/v1/hiring/delete-offer/:id` | `DELETE` | Eliminar una publicación de vacante. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. |
-| `/api/v1/hiring/opportunities` | `GET` | Listar vacantes en el Marketplace de profesionales (Opportunities.tsx) con filtros y ordenamiento. | ❌ **Ausente**. | ❌ *Ausente*. | Crear endpoint que consulte `JobOffer` con filtros avanzados. |
+| `/api/v1/hiring/opportunities` | `GET` | Listar vacantes en el Marketplace de profesionales (Opportunities.tsx) con filtros y ordenamiento. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y consumir en Opportunities.tsx con filtros. |
 
 ---
 
@@ -135,8 +140,8 @@ Durante la auditoría del repositorio se identificó código desarrollado en ram
 | Endpoint Requerido (Propuesto) | Método | Propósito | Estado en Backend (`main`) | Estado en Otras Ramas | Adaptación / Cambio Requerido |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `/api/v1/hiring/search-candidates` | `GET` | Buscar perfiles profesionales seniors activos usando filtros complejos (expectativa salarial, ubicación, modalidad, habilidades, años de experiencia). | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. El endpoint soporta filtrados múltiples complejos. |
-| `/api/v1/hiring/preselection` | `POST` | Guardar un candidato en el embudo de interés/preselección de la empresa. | ❌ **Ausente**. | ❌ *Ausente*. | Crear endpoint para insertar un registro en la tabla `Preselection`. |
-| `/api/v1/hiring/preselection/:id` | `PATCH` | Avanzar el estado de un candidato preseleccionado. | ❌ **Ausente**. | ❌ *Ausente*. | Crear endpoint para modificar el status en `Preselection`. |
+| `/api/v1/hiring/preselection` | `POST` | Guardar un candidato en el embudo de interés/preselección de la empresa. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y consumir en TalentSearch.tsx. |
+| `/api/v1/hiring/preselection/:id/:status` | `PATCH` | Avanzar el estado de un candidato preseleccionado. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. Cambia el status del preseleccionado usando parámetros de ruta. |
 
 ---
 

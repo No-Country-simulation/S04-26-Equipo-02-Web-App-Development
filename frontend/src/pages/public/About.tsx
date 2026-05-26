@@ -109,17 +109,17 @@ const ENDPOINTS_DATA: Endpoint[] = [
   {
     id: 'auth-5',
     module: 'Auth',
-    method: 'POST',
+    method: 'PATCH',
     path: '/api/v1/auth/logout',
-    purpose: 'Cerrar sesión limpiando las cookies HttpOnly del navegador.',
-    status: 'MISSING',
-    statusLabel: 'Falta en Backend',
-    backendState: 'Ausente en routes y controllers de la rama main.',
-    adaptation: 'Crear ruta y controlador en el backend que borre las cookies token y refreshToken (res.clearCookie). El frontend ya tiene la llamada configurada.',
-    focus: 'BACKEND',
+    purpose: 'Cerrar sesión limpiando las cookies HttpOnly e invalidando la sesión en la base de datos.',
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (logoutController) como PATCH /logout.',
+    adaptation: 'Fusionar la rama gonza-dev para habilitar el endpoint de logout.',
+    focus: 'MERGE',
     resBody: `{
   "success": true,
-  "message": "Sesión cerrada correctamente"
+  "message": "Logout exitoso"
 }`
   },
   // Profiles
@@ -170,11 +170,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'GET',
     path: '/api/v1/profiles/slug/:slug',
     purpose: 'Obtener perfil público por slug (para ver CVs o candidatos).',
-    status: 'MISMATCH',
-    statusLabel: 'Discrepancia / Ruta Desactivada',
-    backendState: 'El servicio getProfileBySlug existe en main, pero no está registrado en el router del backend.',
-    adaptation: 'Agregar la ruta GET /slug/:slug en profiles.routes.ts y crear el método en profiles.controller.ts.',
-    focus: 'BACKEND',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y habilitado en la rama main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     resBody: `{
   "success": true,
   "data": {
@@ -185,6 +185,33 @@ const ENDPOINTS_DATA: Endpoint[] = [
   }
 }`
   },
+  {
+    id: 'prof-4',
+    module: 'Profiles',
+    method: 'POST',
+    path: '/api/v1/profiles/skills',
+    purpose: 'Agregar una habilidad manualmente al perfil profesional.',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y habilitado en la rama main (desarrollado en feature/profile-skills-manual).',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
+    reqBody: `{
+  "skillId": "skill-uuid-1"
+}`
+  },
+  {
+    id: 'prof-5',
+    module: 'Profiles',
+    method: 'DELETE',
+    path: '/api/v1/profiles/skills/:skillId',
+    purpose: 'Eliminar una habilidad del perfil profesional.',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y habilitado en la rama main (desarrollado en feature/profile-skills-manual).',
+    adaptation: 'Ninguna.',
+    focus: 'NONE'
+  },
   // Company Profiles
   {
     id: 'comp-1',
@@ -192,11 +219,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'GET',
     path: '/api/v1/profiles/company/me',
     purpose: 'Obtener los datos corporativos de la empresa autenticada.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama feature/company-profile-endpoints',
-    backendState: 'Desarrollado en la rama feature/company-profile-endpoints.',
-    adaptation: 'Fusionar la rama feature/company-profile-endpoints hacia main para habilitar este endpoint y conectar las llamadas en el front.',
-    focus: 'MERGE',
+    status: 'MISMATCH',
+    statusLabel: 'Falta en Frontend (Mock en Vista)',
+    backendState: 'Implementado en backend (fusionado en main).',
+    adaptation: 'Consumir los endpoints en el frontend y reemplazar el mock de LocalStorage en el perfil de empresa.',
+    focus: 'FRONTEND',
     resBody: `{
   "success": true,
   "data": {
@@ -214,11 +241,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'PATCH',
     path: '/api/v1/profiles/company/update',
     purpose: 'Actualizar nombre, industria, descripción, web de la empresa.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama feature/company-profile-endpoints',
-    backendState: 'Desarrollado en la rama feature/company-profile-endpoints.',
-    adaptation: 'Fusionar la rama feature/company-profile-endpoints hacia main y reemplazar la edición actual por LocalStorage.',
-    focus: 'MERGE',
+    status: 'MISMATCH',
+    statusLabel: 'Falta en Frontend (Mock en Vista)',
+    backendState: 'Implementado en backend (fusionado en main).',
+    adaptation: 'Consumir los endpoints en el frontend para actualizar los datos corporativos.',
+    focus: 'FRONTEND',
     reqBody: `{
   "companyName": "TechSolutions AR Modificado",
   "industry": "Software",
@@ -262,11 +289,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'GET',
     path: '/api/v1/diagnostic',
     purpose: 'Comprobar si el usuario ya realizó su diagnóstico y ver estado general.',
-    status: 'MISMATCH',
-    statusLabel: 'Falta en Backend (Ruta Raíz)',
-    backendState: 'La API del front diagnostic.ts tiene getDiagnostic() llamando a /api/v1/diagnostic pero el backend no expone la ruta raíz.',
-    adaptation: 'Crear ruta GET / en diagnostic.routes.ts que consulte la base de datos para ver si el usuario tiene registros en DiagnosticResult.',
-    focus: 'BACKEND',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y consumido (habilitado en la rama main).',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     resBody: `{
   "success": true,
   "data": {
@@ -363,11 +390,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'GET',
     path: '/api/v1/hiring/offers',
     purpose: 'Listar las ofertas laborales de la empresa.',
-    status: 'MISSING',
-    statusLabel: 'Falta en Backend',
-    backendState: 'Ausente en main y tampoco se detectó en gonza-dev (la rama crea, edita y borra, pero no lista).',
-    adaptation: 'Crear endpoint GET que consulte JobOffer filtrando por la empresa asociada al usuario autenticado.',
-    focus: 'BACKEND',
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (getOffers).',
+    adaptation: 'Fusionar la rama gonza-dev para listar las ofertas laborales de la empresa en el frontend.',
+    focus: 'MERGE',
     resBody: `{
   "success": true,
   "data": [
@@ -410,11 +437,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'GET',
     path: '/api/v1/hiring/opportunities',
     purpose: 'Listar ofertas en el Marketplace para profesionales (Opportunities.tsx) con filtros.',
-    status: 'MISSING',
-    statusLabel: 'Falta en Backend',
-    backendState: 'Ausente en main y en ramas de desarrollo.',
-    adaptation: 'Crear endpoint público/profesional que consulte JobOffer. Se sugiere incluir un cálculo de matchScore comparando los requerimientos de la oferta con el perfil del postulante.',
-    focus: 'BACKEND',
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (getOpportunities).',
+    adaptation: 'Fusionar la rama gonza-dev y consumir en el Marketplace de oportunidades del frontend.',
+    focus: 'MERGE',
     resBody: `{
   "success": true,
   "data": [
@@ -447,15 +474,13 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'POST',
     path: '/api/v1/hiring/preselection',
     purpose: 'Guardar candidato preseleccionado de interés para la empresa.',
-    status: 'MISSING',
-    statusLabel: 'Falta en Backend',
-    backendState: 'El modelo Preselection existe en la DB pero no tiene enrutamiento ni controladores.',
-    adaptation: 'Crear endpoint para insertar un registro en la tabla Preselection vinculando la empresa y el profesional.',
-    focus: 'BACKEND',
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (preselectionController).',
+    adaptation: 'Fusionar la rama gonza-dev y consumir en la sección de preselección del frontend.',
+    focus: 'MERGE',
     reqBody: `{
-  "professionalProfileId": "prof-uuid-1",
-  "jobPostingId": "job-uuid-123", // Opcional
-  "status": "INTERESTED",
+  "userId": "prof-uuid-1",
   "notes": "Excelente perfil"
 }`,
     resBody: `{
@@ -467,17 +492,13 @@ const ENDPOINTS_DATA: Endpoint[] = [
     id: 'talent-3',
     module: 'Talent/Preselection',
     method: 'PATCH',
-    path: '/api/v1/hiring/preselection/:id',
+    path: '/api/v1/hiring/preselection/:id/:status',
     purpose: 'Avanzar a un candidato en el embudo (ej: CONTACTED, INTERVIEWING).',
-    status: 'MISSING',
-    statusLabel: 'Falta en Backend',
-    backendState: 'Ausente.',
-    adaptation: 'Crear endpoint para modificar el status y las notas en un registro de la tabla Preselection.',
-    focus: 'BACKEND',
-    reqBody: `{
-  "status": "INTERVIEWING",
-  "notes": "Entrevista agendada para el lunes"
-}`
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (avancePreselection) con firma /preselection/:id/:status.',
+    adaptation: 'Fusionar la rama gonza-dev y adaptar la llamada en el frontend para enviar el estado en la URL.',
+    focus: 'MERGE'
   },
   // Events
   {
@@ -703,7 +724,7 @@ export default function About() {
           </h2>
           <p className="text-gray-500 text-sm font-medium leading-relaxed max-w-3xl">
             Este panel mapea todas las interacciones de red requeridas por el frontend. Se han agregado notas e íconos especiales
-            para identificar la lógica que ya ha sido desarrollada por compañeros en ramas secundarias como <code className="bg-gray-100 text-brand-sage px-1.5 py-0.5 rounded font-mono text-[11px]">gonza-dev</code> y <code className="bg-gray-100 text-brand-sage px-1.5 py-0.5 rounded font-mono text-[11px]">feature/company-profile-endpoints</code> y que solo requieren ser fusionadas a `main`.
+            para identificar la lógica que ya ha sido desarrollada en la rama secundaria <code className="bg-gray-100 text-brand-sage px-1.5 py-0.5 rounded font-mono text-[11px]">gonza-dev</code> (pendiente de fusionar) y ramas ya integradas en <code className="bg-gray-100 text-brand-sage px-1.5 py-0.5 rounded font-mono text-[11px]">main</code> como <code className="bg-gray-100 text-brand-sage px-1.5 py-0.5 rounded font-mono text-[11px]">feature/company-profile-endpoints</code> y <code className="bg-gray-100 text-brand-sage px-1.5 py-0.5 rounded font-mono text-[11px]">feature/profile-skills-manual</code>.
           </p>
         </div>
       </div>
