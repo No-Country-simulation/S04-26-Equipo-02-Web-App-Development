@@ -10,4 +10,8 @@ router.get('/skills', DiagnosticController.getSkills);
 // POST /api/v1/diagnostic/submit
 router.post('/submit', tokenMiddleware, authorize(['PROFESSIONAL']), DiagnosticController.submitDiagnostic);
 
+// GET /api/v1/diagnostic
+router.get('/', tokenMiddleware, authorize(['PROFESSIONAL']), DiagnosticController.getDiagnosticStatus);
+
 export default router;
+

@@ -32,3 +32,21 @@ export const submitDiagnostic = async (req: Request, res: Response, next: NextFu
     next(error);
   }
 };
+
+export const getDiagnosticStatus = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new Error('UNAUTHORIZED');
+
+    const status = await DiagnosticService.getDiagnosticStatus(userId);
+
+    res.json({
+      success: true,
+      data: status,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

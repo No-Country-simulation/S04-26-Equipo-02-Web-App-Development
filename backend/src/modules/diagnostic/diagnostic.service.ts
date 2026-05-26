@@ -57,3 +57,16 @@ export const processDiagnosticResults = async (userId: string, answers: { skillI
     };
   });
 };
+
+export const getDiagnosticStatus = async (userId: string) => {
+  const result = await prisma.diagnosticResult.findFirst({
+    where: { userId },
+    orderBy: { assessedAt: 'desc' },
+  });
+
+  return {
+    completed: !!result,
+    assessedAt: result ? result.assessedAt : null,
+  };
+};
+
