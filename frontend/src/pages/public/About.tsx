@@ -115,7 +115,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (logoutController) como PATCH /logout.',
-    adaptation: 'Fusionar la rama gonza-dev para habilitar el endpoint de logout.',
+    adaptation: 'Fusionar la rama gonza-dev. Nota de Mismatch: El backend en gonza-dev espera PATCH /logout, pero el frontend en main realiza un POST a /logout. Se debe corregir la llamada del frontend a PATCH (o la ruta del backend a POST) al hacer el merge.',
     focus: 'MERGE',
     resBody: `{
   "success": true,
@@ -372,7 +372,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (createOffer).',
-    adaptation: 'Fusionar la rama gonza-dev para traer la lógica al backend main, y consumir en el formulario de nueva publicación.',
+    adaptation: 'El frontend ya está conectado (createOffer). Falta fusionar la rama gonza-dev en el backend de main para activar el endpoint real.',
     focus: 'MERGE',
     reqBody: `{
   "title": "Senior Frontend Developer",
@@ -393,7 +393,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (getOffers).',
-    adaptation: 'Fusionar la rama gonza-dev para listar las ofertas laborales de la empresa en el frontend.',
+    adaptation: 'El frontend ya está conectado (getMyOffers). Falta fusionar la rama gonza-dev en el backend de main.',
     focus: 'MERGE',
     resBody: `{
   "success": true,
@@ -411,7 +411,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (updateOffer).',
-    adaptation: 'Fusionar la rama gonza-dev para actualizar ofertas laborales de la empresa.',
+    adaptation: 'El frontend ya está conectado (updateOffer). Falta fusionar la rama gonza-dev en el backend de main.',
     focus: 'MERGE',
     reqBody: `{
   "id": "job-uuid-123",
@@ -428,7 +428,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (deleteOffer).',
-    adaptation: 'Fusionar la rama gonza-dev para habilitar el borrado de ofertas desde Mis Publicaciones.',
+    adaptation: 'El frontend ya está conectado (deleteOffer). Falta fusionar la rama gonza-dev en el backend de main.',
     focus: 'MERGE'
   },
   {
@@ -440,7 +440,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (getOpportunities).',
-    adaptation: 'Fusionar la rama gonza-dev y consumir en el Marketplace de oportunidades del frontend.',
+    adaptation: 'El frontend ya está conectado (getOpportunities). Falta fusionar la rama gonza-dev en el backend de main.',
     focus: 'MERGE',
     resBody: `{
   "success": true,
@@ -459,7 +459,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (searchCandidates).',
-    adaptation: 'Fusionar la rama gonza-dev. El servicio cuenta con filtros avanzados de experiencia, título, habilidades e idiomas.',
+    adaptation: 'El frontend ya está conectado (searchCandidates). Falta fusionar la rama gonza-dev en el backend de main.',
     focus: 'MERGE',
     resBody: `{
   "success": true,
@@ -477,7 +477,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (preselectionController).',
-    adaptation: 'Fusionar la rama gonza-dev y consumir en la sección de preselección del frontend.',
+    adaptation: 'El frontend ya está conectado (preselectCandidate). Falta fusionar la rama gonza-dev en el backend de main.',
     focus: 'MERGE',
     reqBody: `{
   "userId": "prof-uuid-1",
@@ -497,7 +497,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'BRANCH_READY',
     statusLabel: 'Listo en Rama gonza-dev',
     backendState: 'Implementado en la rama gonza-dev (avancePreselection) con firma /preselection/:id/:status.',
-    adaptation: 'Fusionar la rama gonza-dev y adaptar la llamada en el frontend para enviar el estado en la URL.',
+    adaptation: 'El frontend ya está conectado (updatePreselectionStatus). Falta fusionar la rama gonza-dev en el backend de main.',
     focus: 'MERGE'
   },
   // Events
@@ -505,31 +505,59 @@ const ENDPOINTS_DATA: Endpoint[] = [
     id: 'event-1',
     module: 'Events',
     method: 'GET',
-    path: '/api/v1/events',
+    path: '/api/v1/events/get-all',
     purpose: 'Obtener el calendario de eventos programados (webinars, talleres).',
-    status: 'MISSING',
-    statusLabel: 'Falta en Backend (Tablas y API)',
-    backendState: 'No existen los modelos Event ni EventRegistration en schema.prisma, ni la API.',
-    adaptation: 'Declarar los modelos Event y EventRegistration en la DB, correr migraciones, y crear controlador para listar eventos activos/pasados.',
-    focus: 'BACKEND',
-    resBody: `{
-  "success": true,
-  "data": [
-    { "id": "evt-1", "title": "LinkedIn para Seniors", "type": "Taller", "date": "..." }
-  ]
-}`
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (EventsController.getAll).',
+    adaptation: 'El frontend ya está conectado (getAllEvents). Falta fusionar la rama gonza-dev en el backend de main.',
+    focus: 'MERGE',
+    resBody: `[
+  {
+    "id": "evt-uuid-1",
+    "title": "LinkedIn para Seniors",
+    "type": "Taller",
+    "day": "2026-06-15",
+    "link": "https://meet.google.com/abc-defg-hij",
+    "createdAt": "2026-05-27T14:00:00.000Z"
+  }
+]`
   },
   {
     id: 'event-2',
     module: 'Events',
     method: 'POST',
-    path: '/api/v1/events/:id/register',
-    purpose: 'Inscribirse a un evento.',
-    status: 'MISSING',
-    statusLabel: 'Falta en Backend (Tablas y API)',
-    backendState: 'Ausente.',
-    adaptation: 'Crear endpoint que asocie al profesional con el evento en EventRegistration, verificando capacidad máxima.',
-    focus: 'BACKEND'
+    path: '/api/v1/events/enroll/:id',
+    purpose: 'Inscribirse a un evento (PROFESSIONAL).',
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (EventsController.enrollUser).',
+    adaptation: 'El frontend ya está conectado (enrollEvent). Falta fusionar la rama gonza-dev en el backend de main.',
+    focus: 'MERGE',
+    resBody: `{
+  "message": "Inscripción exitosa"
+}`
+  },
+  {
+    id: 'event-3',
+    module: 'Events',
+    method: 'POST',
+    path: '/api/v1/events/create',
+    purpose: 'Crear un nuevo evento en la plataforma (ADMIN).',
+    status: 'BRANCH_READY',
+    statusLabel: 'Listo en Rama gonza-dev',
+    backendState: 'Implementado en la rama gonza-dev (EventsController.createEvent).',
+    adaptation: 'El frontend ya está conectado (createEvent). Falta fusionar la rama gonza-dev en el backend de main.',
+    focus: 'MERGE',
+    reqBody: `{
+  "title": "Buenas Prácticas en Git",
+  "type": "Clase",
+  "day": "2026-06-20",
+  "link": "https://meet.google.com/xyz-pdq-rst"
+}`,
+    resBody: `{
+  "message": "Evento creado exitosamente"
+}`
   },
   // Stats
   {

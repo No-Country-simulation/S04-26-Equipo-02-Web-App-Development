@@ -27,6 +27,7 @@ Durante la auditoría del repositorio se identificaron las siguientes ramas secu
 
 *   **Rama `gonza-dev` (Pendiente de integrar)**:
     *   Implementa el módulo de contratación `/api/v1/hiring` con endpoints completos para crear, editar, borrar y listar ofertas laborales, buscar candidatos con filtros complejos, y preseleccionar o avanzar candidatos.
+    *   Implementa los endpoints del módulo de eventos `/api/v1/events` (`GET /get-all`, `POST /enroll/:id`, `POST /create`) para listar, inscribirse y crear eventos.
     *   Implementa el endpoint de logout de sesión (`PATCH /api/v1/auth/logout`) invalidando el token en la BD y limpiando las cookies.
     *   Contiene una validación en el registro para impedir la creación manual de usuarios con rol `ADMIN`.
     *   *Nota*: Cambia el middleware de `cors` en el backend a `cors()`, lo cual puede requerir re-configurar `credentials: true` y `origin` para que las cookies `HttpOnly` sigan funcionando.
@@ -50,7 +51,7 @@ Durante la auditoría del repositorio se identificaron las siguientes ramas secu
 | `/api/v1/auth/register` | `POST` | Registro de nuevos usuarios (Profesionales/Empresas). | ✅ Implementado. | Creación automática de `CompanyProfile` y `ProfessionalProfile` según rol. |
 | `/api/v1/auth/verify-email/:token` | `PATCH` | Verificar email mediante token de activación. | ✅ Implementado. | Ninguna. |
 | `/api/v1/auth/validate-session` | `GET` | Validar sesión activa en base a las cookies. | ✅ Implementado. | Ninguna. |
-| `/api/v1/auth/logout` | `PATCH` | Cerrar sesión limpiando las cookies `HttpOnly` e invalidando la sesión en la base de datos. | ❌ **Ausente en main**. | 🛠️ *Desarrollado en `gonza-dev` como `PATCH /logout`*. Fusionar la rama para activar. |
+| `/api/v1/auth/logout` | `PATCH` | Cerrar sesión limpiando las cookies `HttpOnly` e invalidando la sesión en la base de datos. | ❌ **Ausente en main**. | 🛠️ *Desarrollado en `gonza-dev` como `PATCH /logout`*. Fusionar la rama para activar. **Nota**: El frontend envía un POST, por lo que debe alinearse al fusionar (cambiar frontend a PATCH o backend a POST). |
 
 ---
 
@@ -120,41 +121,41 @@ Durante la auditoría del repositorio se identificaron las siguientes ramas secu
 ## 6. Ofertas Laborales y Oportunidades (Jobs / Hiring)
 
 *   **Vistas en Frontend**: `Opportunities.tsx` (Profesional), `Publications.tsx` (Empresa).
-*   **Estado de Conexión**: ❌ **100% Mockeado en main** (Listo en rama de desarrollo).
+*   **Estado de Conexión**: **Conectado (Falta merge del backend)**.
 
 | Endpoint Requerido (Propuesto) | Método | Propósito | Estado en Backend (`main`) | Estado en Otras Ramas | Adaptación / Cambio Requerido |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `/api/v1/hiring/create-offer` | `POST` | Crear una oferta de empleo vinculada a la empresa autenticada. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y crear llamadas API correspondientes en el front. |
-| `/api/v1/hiring/offers` | `GET` | Listar todas las ofertas laborales creadas por la propia empresa. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y consumir en Publications.tsx. |
-| `/api/v1/hiring/update-offer` | `PATCH` | Modificar datos de una oferta o su estado. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. Recibe el body completo de la oferta. |
-| `/api/v1/hiring/delete-offer/:id` | `DELETE` | Eliminar una publicación de vacante. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. |
-| `/api/v1/hiring/opportunities` | `GET` | Listar vacantes en el Marketplace de profesionales (Opportunities.tsx) con filtros y ordenamiento. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y consumir en Opportunities.tsx con filtros. |
+| `/api/v1/hiring/create-offer` | `POST` | Crear una oferta de empleo vinculada a la empresa autenticada. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend**. Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/hiring/offers` | `GET` | Listar todas las ofertas laborales creadas por la propia empresa. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (getMyOffers). Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/hiring/update-offer` | `PATCH` | Modificar datos de una oferta o su estado. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend**. Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/hiring/delete-offer/:id` | `DELETE` | Eliminar una publicación de vacante. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (deleteOffer). Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/hiring/opportunities` | `GET` | Listar vacantes en el Marketplace de profesionales (Opportunities.tsx) con filtros y ordenamiento. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (getOpportunities). Fusionar backend de `gonza-dev` para habilitar. |
 
 ---
 
 ## 7. Búsqueda de Talento y Selección (Talent Search & Preselection)
 
 *   **Vistas en Frontend**: `TalentSearch.tsx` (Búsqueda de Talento por Empresa).
-*   **Estado de Conexión**: ❌ **100% Mockeado en main** (Listo en rama de desarrollo).
+*   **Estado de Conexión**: **Conectado (Falta merge del backend)**.
 
 | Endpoint Requerido (Propuesto) | Método | Propósito | Estado en Backend (`main`) | Estado en Otras Ramas | Adaptación / Cambio Requerido |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `/api/v1/hiring/search-candidates` | `GET` | Buscar perfiles profesionales seniors activos usando filtros complejos (expectativa salarial, ubicación, modalidad, habilidades, años de experiencia). | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. El endpoint soporta filtrados múltiples complejos. |
-| `/api/v1/hiring/preselection` | `POST` | Guardar un candidato en el embudo de interés/preselección de la empresa. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama y consumir en TalentSearch.tsx. |
-| `/api/v1/hiring/preselection/:id/:status` | `PATCH` | Avanzar el estado de un candidato preseleccionado. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | Fusionar rama. Cambia el status del preseleccionado usando parámetros de ruta. |
+| `/api/v1/hiring/search-candidates` | `GET` | Buscar perfiles profesionales seniors activos usando filtros complejos (expectativa salarial, ubicación, modalidad, habilidades, años de experiencia). | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (searchCandidates). Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/hiring/preselection` | `POST` | Guardar un candidato en el embudo de interés/preselección de la empresa. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (preselectCandidate). Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/hiring/preselection/:id/:status` | `PATCH` | Avanzar el estado de un candidato preseleccionado. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (updatePreselectionStatus). Fusionar backend de `gonza-dev` para habilitar. |
 
 ---
 
 ## 8. Eventos y Calendario (Events)
 
 *   **Vistas en Frontend**: `Events.tsx` (Calendario e inscripciones).
-*   **Estado de Conexión**: ❌ **100% Mockeado**.
+*   **Estado de Conexión**: **Conectado (Falta merge del backend)**.
 
-| Endpoint Requerido (Propuesto) | Método | Propósito | Estado en Backend (`main`) | Adaptación / Cambio Requerido |
-| :--- | :--- | :--- | :--- | :--- |
-| `/api/v1/events` | `GET` | Obtener la lista de webinars, talleres y mesas redondas programados. | ❌ **Ausente**. | Declarar modelos `Event` y `EventRegistration` en el schema de Prisma, crear el controlador y la ruta correspondiente. |
-| `/api/v1/events/:id/register` | `POST` | Inscribir al profesional logueado en un evento. | ❌ **Ausente**. | Crear endpoint que asocie al profesional con el evento en `EventRegistration`. |
-| `/api/v1/events` | `POST` | Crear un evento en la plataforma (Restringido a rol `ADMIN`). | ❌ **Ausente**. | Crear endpoint de administración para poblar el calendario. |
+| Endpoint Requerido (Propuesto) | Método | Propósito | Estado en Backend (`main`) | Estado en Otras Ramas | Adaptación / Cambio Requerido |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `/api/v1/events/get-all` | `GET` | Obtener la lista de webinars, talleres y clases programados. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (getAllEvents). Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/events/enroll/:id` | `POST` | Inscribir al profesional logueado en un evento. | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (enrollEvent). Fusionar backend de `gonza-dev` para habilitar. |
+| `/api/v1/events/create` | `POST` | Crear un evento en la plataforma (Restringido a rol `ADMIN`). | ❌ **Ausente**. | 🛠️ *Desarrollado en `gonza-dev`*. | **Conectado en frontend** (createEvent). Fusionar backend de `gonza-dev` para habilitar. |
 
 ---
 
