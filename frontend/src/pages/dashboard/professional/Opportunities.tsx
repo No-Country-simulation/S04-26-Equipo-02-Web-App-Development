@@ -22,6 +22,7 @@ import {
   getOpportunities,
   type Offer,
 } from '../../../api/hiring';
+import ConfirmModal from '@/components/dashboard/ConfirmModal';
 
 // ─── Mock company names ──────────────────────────────────────────────────────
 // Backend devuelve companyId (UUID), mapeamos a nombres para la UI
@@ -111,32 +112,95 @@ export default function Opportunities() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
 
+  // ─── Apply to Job States ───
+  const [appliedOfferIds, setAppliedOfferIds] = useState<string[]>([]);
+  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
+  const [selectedOfferTitle, setSelectedOfferTitle] = useState<string>('');
+  const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const stored = localStorage.getItem(`professional_applications_${user.id}`);
+      if (stored) {
+        try {
+          queueMicrotask(() => setAppliedOfferIds(JSON.parse(stored)));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, [user]);
+
+  const handleApply = (offerId: string, offerTitle: string) => {
+    setSelectedOfferId(offerId);
+    setSelectedOfferTitle(offerTitle);
+    setModalOpen(true);
+  };
+
+  const executeApply = () => {
+    if (!user || !selectedOfferId) return;
+
+    const newApplied = [...appliedOfferIds, selectedOfferId];
+    setAppliedOfferIds(newApplied);
+    localStorage.setItem(`professional_applications_${user.id}`, JSON.stringify(newApplied));
+
+    const globalAppsStr = localStorage.getItem('global_job_applications');
+    let globalApps = [];
+    if (globalAppsStr) {
+      try {
+        globalApps = JSON.parse(globalAppsStr);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const offer = offers.find((o) => o.id === selectedOfferId);
+
+    const newApp = {
+      id: Math.random().toString(36).substr(2, 9),
+      offerId: selectedOfferId,
+      offerTitle: selectedOfferTitle,
+      companyId: offer?.companyId || 'default',
+      professionalId: user.id || 'default',
+      professionalName: user.name || 'Usuario Profesional',
+      professionalEmail: user.email || 'profesional@test.com',
+      professionalTitle: 'Candidato Interesado',
+      status: 'INTERESTED',
+      createdAt: new Date().toISOString(),
+    };
+
+    globalApps.push(newApp);
+    localStorage.setItem('global_job_applications', JSON.stringify(globalApps));
+
+    toast.success(`Te postulaste con éxito a ${selectedOfferTitle}`);
+  };
+
   // ─── Fetch data ───
   const loadOffers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filters: Record<string, string> = {};
-      if (searchQuery) filters.title = searchQuery;
-      if (selectedType) filters.contractType = selectedType;
-      if (selectedModality) filters.modality = selectedModality;
-      if (sortBy) filters.orderBy = sortBy;
+    const filters: Record<string, string> = {};
+    if (searchQuery) filters.title = searchQuery;
+    if (selectedType) filters.contractType = selectedType;
+    if (selectedModality) filters.modality = selectedModality;
+    if (sortBy) filters.orderBy = sortBy;
 
-      const data = await getOpportunities(filters);
-      setOffers(data);
-    } catch (err) {
-      toast.error(handleApiError(err).message);
-    }
-    setLoading(false);
+    const data = await getOpportunities(filters);
+    setOffers(data);
   }, [searchQuery, selectedType, selectedModality, sortBy]);
 
   useEffect(() => {
-    loadOffers();
+    const fetchData = async () => {
+      setCurrentPage(1);
+      setLoading(true);
+      try {
+        await loadOffers();
+      } catch (err) {
+        toast.error(handleApiError(err).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, [loadOffers]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, selectedType, selectedModality, sortBy]);
 
   // ─── Active filter chips ───
   const activeFilters: { label: string; onRemove: () => void }[] = [];
@@ -423,12 +487,28 @@ export default function Opportunities() {
                 {/* ── Divider ── */}
                 <div className="border-t border-gray-100" />
 
-                {/* ── Footer: Updated date ── */}
-                <div className="flex items-center justify-between">
+                {/* ── Footer: Updated date + Postularme Button ── */}
+                <div className="flex items-center justify-between mt-auto">
                   <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-gray-400">
                     <Clock className="w-3.5 h-3.5" />
                     Actualizado {formatDate(offer.updatedAt)}
                   </span>
+
+                  {appliedOfferIds.includes(offer.id) ? (
+                    <button
+                      disabled
+                      className="px-4 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-xl text-xs font-bold whitespace-nowrap cursor-default animate-in fade-in"
+                    >
+                      Postulado ✓
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleApply(offer.id, offer.title)}
+                      className="px-4 py-1.5 bg-brand-sage text-white rounded-xl text-xs font-bold hover:bg-brand-sage/90 active:scale-95 transition-all duration-300 whitespace-nowrap"
+                    >
+                      Postularme
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -501,6 +581,17 @@ export default function Opportunities() {
           </button>
         </motion.div>
       )}
+
+      {/* ── Confirm Modal ── */}
+      <ConfirmModal
+        isOpen={modalOpen}
+        title="Confirmar Postulación"
+        description={`¿Estás seguro de que quieres postularte a la oferta "${selectedOfferTitle}"? Tus datos de contacto serán compartidos con la empresa.`}
+        confirmText="Confirmar"
+        cancelText="Cancelar"
+        onConfirm={executeApply}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 }

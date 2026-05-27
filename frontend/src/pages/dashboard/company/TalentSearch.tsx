@@ -123,23 +123,27 @@ export default function TalentSearch() {
 
   // ─── Fetch candidates ───
   const loadCandidates = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filters: Record<string, string | number | string[]> = {};
-      if (searchQuery) filters.professionalTitle = searchQuery;
-      if (selectedLocation) filters.location = selectedLocation;
-      if (selectedAvailability) filters.availability = selectedAvailability;
+    const filters: Record<string, string | number | string[]> = {};
+    if (searchQuery) filters.professionalTitle = searchQuery;
+    if (selectedLocation) filters.location = selectedLocation;
+    if (selectedAvailability) filters.availability = selectedAvailability;
 
-      const data = await searchCandidates(filters);
-      setCandidates(data);
-    } catch (err) {
-      toast.error(handleApiError(err).message);
-    }
-    setLoading(false);
+    const data = await searchCandidates(filters);
+    setCandidates(data);
   }, [searchQuery, selectedLocation, selectedAvailability]);
 
   useEffect(() => {
-    loadCandidates();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await loadCandidates();
+      } catch (err) {
+        toast.error(handleApiError(err).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, [loadCandidates]);
 
   // ─── Preselection ───

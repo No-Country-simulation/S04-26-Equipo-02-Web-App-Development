@@ -32,8 +32,16 @@ import ConfirmModal from '../../../components/dashboard/ConfirmModal';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+// Safely extracts YYYY-MM-DD from a string that may be a full ISO datetime
+function parseDateString(dayStr: string): Date {
+  if (!dayStr) return new Date('invalid');
+  // If the string contains a 'T', take only the date part
+  const dateOnly = dayStr.includes('T') ? dayStr.split('T')[0] : dayStr;
+  return new Date(dateOnly + 'T00:00:00');
+}
+
 function formatDayLabel(dayStr: string): { day: string; month: string } {
-  const d = new Date(dayStr + 'T00:00:00');
+  const d = parseDateString(dayStr);
   return {
     day: d.toLocaleDateString('es-ES', { day: '2-digit' }),
     month: d.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase(),
@@ -41,7 +49,7 @@ function formatDayLabel(dayStr: string): { day: string; month: string } {
 }
 
 function formatDayLong(dayStr: string): string {
-  const d = new Date(dayStr + 'T00:00:00');
+  const d = parseDateString(dayStr);
   return d.toLocaleDateString('es-ES', {
     weekday: 'long',
     day: 'numeric',
@@ -85,11 +93,11 @@ function getTypeLabel(type: string): string {
 function getEventStatus(dayStr: string): 'upcoming' | 'past' {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const eventDate = new Date(dayStr + 'T00:00:00');
+  const eventDate = parseDateString(dayStr);
   return eventDate >= today ? 'upcoming' : 'past';
 }
 
-type FilterStatus = 'all' | 'upcoming' | 'past';
+type FilterStatus = 'all' | 'upcoming' | 'past' | 'enrolled';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -420,7 +428,7 @@ function MiniCalendar({ events, userId }: { events: BackendEvent[]; userId?: str
   // Helper to find events on a given day in the active view
   const getEventsOnDay = (dayNum: number) => {
     return events.filter((ev) => {
-      const d = new Date(ev.day + 'T00:00:00');
+      const d = parseDateString(ev.day);
       return (
         d.getDate() === dayNum &&
         d.getMonth() === currentMonth.getMonth() &&
@@ -553,17 +561,18 @@ export default function Events() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    getAllEvents()
-      .then((data) => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllEvents();
         if (active) setEvents(data);
-      })
-      .catch((err) => {
+      } catch (err) {
         if (active) toast.error(handleApiError(err).message);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    };
+    fetchData();
     return () => {
       active = false;
     };
@@ -572,13 +581,16 @@ export default function Events() {
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
       const status = getEventStatus(e.day);
+      if (filterStatus === 'enrolled') {
+        return !!(user && e.enrolls?.some(en => en.professionalId === user.id));
+      }
       return (
         filterStatus === 'all' ||
         (filterStatus === 'upcoming' && status === 'upcoming') ||
         (filterStatus === 'past' && status === 'past')
       );
     });
-  }, [events, filterStatus]);
+  }, [events, filterStatus, user]);
 
   const handleEnroll = async (eventId: string) => {
     setEnrollingId(eventId);
@@ -639,6 +651,7 @@ export default function Events() {
     { key: 'all', label: 'Todos' },
     { key: 'upcoming', label: 'Próximos' },
     { key: 'past', label: 'Pasados' },
+    ...(user?.role === 'PROFESSIONAL' ? [{ key: 'enrolled' as FilterStatus, label: 'Mis Eventos' }] : []),
   ];
 
   if (loading) {

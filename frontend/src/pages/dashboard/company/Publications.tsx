@@ -108,24 +108,20 @@ function OfferFormModal({
   onSaved: () => void;
   initial?: Offer | null;
 }) {
-  const [form, setForm] = useState<OfferFormState>(EMPTY_FORM);
+  const [form, setForm] = useState<OfferFormState>(
+    () => initial
+      ? {
+          title: initial.title,
+          salaryRange: initial.salaryRange,
+          contractType: initial.contractType,
+          modality: initial.modality,
+          description: initial.description,
+          education: initial.education,
+          experience: initial.experience,
+        }
+      : EMPTY_FORM
+  );
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (initial) {
-      setForm({
-        title: initial.title,
-        salaryRange: initial.salaryRange,
-        contractType: initial.contractType,
-        modality: initial.modality,
-        description: initial.description,
-        education: initial.education,
-        experience: initial.experience,
-      });
-    } else {
-      setForm(EMPTY_FORM);
-    }
-  }, [initial, open]);
 
   if (!open) return null;
 
@@ -268,18 +264,24 @@ export default function Publications() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const loadOffers = useCallback(async () => {
-    setLoading(true);
     try {
       const data = await getMyOffers();
       setOffers(data);
     } catch (err) {
       toast.error(handleApiError(err).message);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
-    loadOffers();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await loadOffers();
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, [loadOffers]);
 
   const filtered = offers.filter((o) => {
@@ -504,6 +506,7 @@ export default function Publications() {
 
       {/* ── Create / Edit Form Modal ── */}
       <OfferFormModal
+        key={editingOffer?.id ?? 'new'}
         open={showForm}
         onClose={() => { setShowForm(false); setEditingOffer(null); }}
         onSaved={handleSaveOffer}

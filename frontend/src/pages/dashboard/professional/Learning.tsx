@@ -235,22 +235,21 @@ export default function Learning() {
   const [error, setError] = useState<Error | null>(null);
   const [addedSkills, setAddedSkills] = useState<Set<string>>(new Set());
 
-  const fetchData = async () => {
-    try {
-      const progress = await getUserProgress();
-      setProgressList(progress);
-      if (progress.length === 0) {
-        const paths = await getLearningPaths();
-        setAllPaths(paths);
-      }
-    } catch (err: any) {
-      setError(err instanceof Error ? err : new Error(err.message || 'Error al cargar datos'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const progress = await getUserProgress();
+        setProgressList(progress);
+        if (progress.length === 0) {
+          const paths = await getLearningPaths();
+          setAllPaths(paths);
+        }
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err : new Error('Error al cargar datos'));
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchData();
   }, []);
 

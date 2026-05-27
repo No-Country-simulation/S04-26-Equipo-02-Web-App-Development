@@ -45,8 +45,8 @@ const ENDPOINTS_DATA: Endpoint[] = [
     focus: 'NONE',
     reqBody: `{
   "email": "usuario@test.com",
-  "password": "password123",
-  "provider": "PROFESSIONAL" // o COMPANY
+  "password": "123456789",
+  "provider": "PROFESSIONAL" // o COMPANY / ADMIN
 }`,
     resBody: `{
   "message": "Login exitoso"
@@ -61,11 +61,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     status: 'CONNECTED',
     statusLabel: 'Conectado',
     backendState: 'Implementado en backend y consumido.',
-    adaptation: 'Nota: En la rama `feature/company-profile-endpoints` se agregó la creación automática de CompanyProfile para el rol COMPANY en este flujo.',
+    adaptation: 'Crea automáticamente CompanyProfile o ProfessionalProfile según el rol al registrar.',
     focus: 'NONE',
     reqBody: `{
   "email": "nuevo@test.com",
-  "password": "password123",
+  "password": "123456789",
   "provider": "PROFESSIONAL",
   "firstName": "Juan",
   "lastName": "Pérez",
@@ -112,11 +112,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'PATCH',
     path: '/api/v1/auth/logout',
     purpose: 'Cerrar sesión limpiando las cookies HttpOnly e invalidando la sesión en la base de datos.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (logoutController) como PATCH /logout.',
-    adaptation: 'Fusionar la rama gonza-dev. Nota de Mismatch: El backend en gonza-dev espera PATCH /logout, pero el frontend en main realiza un POST a /logout. Se debe corregir la llamada del frontend a PATCH (o la ruta del backend a POST) al hacer el merge.',
-    focus: 'MERGE',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado como PATCH /logout.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     resBody: `{
   "success": true,
   "message": "Logout exitoso"
@@ -139,7 +139,6 @@ const ENDPOINTS_DATA: Endpoint[] = [
   "data": {
     "id": "prof-uuid-1",
     "firstName": "Juan",
-    "lastName": "Pérez",
     "skills": [...],
     "experience": [...],
     "education": [...]
@@ -169,10 +168,10 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Profiles',
     method: 'GET',
     path: '/api/v1/profiles/slug/:slug',
-    purpose: 'Obtener perfil público por slug (para ver CVs o candidatos).',
+    purpose: 'Obtener perfil público por slug (para ver CVs de candidatos).',
     status: 'CONNECTED',
     statusLabel: 'Conectado',
-    backendState: 'Implementado y habilitado en la rama main.',
+    backendState: 'Implementado en main.',
     adaptation: 'Ninguna.',
     focus: 'NONE',
     resBody: `{
@@ -180,8 +179,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
   "data": {
     "firstName": "Juan",
     "lastName": "Pérez",
-    "slug": "juan-perez",
-    ...
+    "slug": "juan-perez"
   }
 }`
   },
@@ -193,12 +191,10 @@ const ENDPOINTS_DATA: Endpoint[] = [
     purpose: 'Agregar una habilidad manualmente al perfil profesional.',
     status: 'CONNECTED',
     statusLabel: 'Conectado',
-    backendState: 'Implementado y habilitado en la rama main (desarrollado en feature/profile-skills-manual).',
+    backendState: 'Implementado en main.',
     adaptation: 'Ninguna.',
     focus: 'NONE',
-    reqBody: `{
-  "skillId": "skill-uuid-1"
-}`
+    reqBody: `{ "skillId": "skill-uuid-1" }`
   },
   {
     id: 'prof-5',
@@ -208,7 +204,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     purpose: 'Eliminar una habilidad del perfil profesional.',
     status: 'CONNECTED',
     statusLabel: 'Conectado',
-    backendState: 'Implementado y habilitado en la rama main (desarrollado en feature/profile-skills-manual).',
+    backendState: 'Implementado en main.',
     adaptation: 'Ninguna.',
     focus: 'NONE'
   },
@@ -219,11 +215,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'GET',
     path: '/api/v1/profiles/company/me',
     purpose: 'Obtener los datos corporativos de la empresa autenticada.',
-    status: 'MISMATCH',
-    statusLabel: 'Falta en Frontend (Mock en Vista)',
-    backendState: 'Implementado en backend (fusionado en main).',
-    adaptation: 'Consumir los endpoints en el frontend y reemplazar el mock de LocalStorage en el perfil de empresa.',
-    focus: 'FRONTEND',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado en backend y consumido en Profile.tsx.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     resBody: `{
   "success": true,
   "data": {
@@ -241,11 +237,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'PATCH',
     path: '/api/v1/profiles/company/update',
     purpose: 'Actualizar nombre, industria, descripción, web de la empresa.',
-    status: 'MISMATCH',
-    statusLabel: 'Falta en Frontend (Mock en Vista)',
-    backendState: 'Implementado en backend (fusionado en main).',
-    adaptation: 'Consumir los endpoints en el frontend para actualizar los datos corporativos.',
-    focus: 'FRONTEND',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado en backend y consumido en Profile.tsx.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     reqBody: `{
   "companyName": "TechSolutions AR Modificado",
   "industry": "Software",
@@ -261,7 +257,7 @@ const ENDPOINTS_DATA: Endpoint[] = [
     purpose: 'Obtener habilidades para la autoevaluación.',
     status: 'CONNECTED',
     statusLabel: 'Conectado',
-    backendState: 'Implementado y consumido en la evaluación.',
+    backendState: 'Implementado y consumido.',
     adaptation: 'Ninguna.',
     focus: 'NONE'
   },
@@ -288,18 +284,15 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Diagnostic',
     method: 'GET',
     path: '/api/v1/diagnostic',
-    purpose: 'Comprobar si el usuario ya realizó su diagnóstico y ver estado general.',
+    purpose: 'Comprobar si el usuario ya realizó su diagnóstico.',
     status: 'CONNECTED',
     statusLabel: 'Conectado',
-    backendState: 'Implementado y consumido (habilitado en la rama main).',
+    backendState: 'Implementado y consumido.',
     adaptation: 'Ninguna.',
     focus: 'NONE',
     resBody: `{
   "success": true,
-  "data": {
-    "status": "completed",
-    "timestamp": "2026-05-22T00:00:00Z"
-  }
+  "data": { "status": "completed", "timestamp": "2026-05-22T00:00:00Z" }
 }`
   },
   // Learning
@@ -310,19 +303,13 @@ const ENDPOINTS_DATA: Endpoint[] = [
     path: '/api/v1/learning/paths',
     purpose: 'Obtener módulos y cursos formativos.',
     status: 'MISMATCH',
-    statusLabel: 'Falta en Frontend (Mock en Vista)',
+    statusLabel: 'Backend listo — Falta conectar en Vista',
     backendState: 'Implementado en el backend.',
-    adaptation: 'Crear el archivo API learning.ts en el frontend, consumir el endpoint y reemplazar los mocks en Learning.tsx.',
+    adaptation: 'El archivo learning.ts existe en el frontend pero Learning.tsx aún usa datos mockeados. Reemplazar mocks por llamada real.',
     focus: 'FRONTEND',
     resBody: `{
   "success": true,
-  "data": [
-    {
-      "id": "path-uuid",
-      "title": "Habilidades Digitales Clave",
-      "courses": [...]
-    }
-  ]
+  "data": [{ "id": "path-uuid", "title": "Habilidades Digitales", "courses": [...] }]
 }`
   },
   {
@@ -330,17 +317,15 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Learning',
     method: 'GET',
     path: '/api/v1/learning/progress',
-    purpose: 'Obtener el avance del profesional logueado en sus cursos.',
+    purpose: 'Obtener el avance del profesional en sus cursos.',
     status: 'MISMATCH',
-    statusLabel: 'Falta en Frontend (Mock en Vista)',
-    backendState: 'Implementado. Autogenera cursos sugeridos a partir del diagnóstico de menor puntaje.',
-    adaptation: 'Consumir en el frontend para cargar los cursos asignados al profesional en lugar del listado estático.',
+    statusLabel: 'Backend listo — Falta conectar en Vista',
+    backendState: 'Implementado. Autogenera cursos sugeridos a partir del diagnóstico.',
+    adaptation: 'Consumir en Learning.tsx para reemplazar el listado estático.',
     focus: 'FRONTEND',
     resBody: `{
   "success": true,
-  "data": [
-    { "id": "prog-1", "courseId": "course-1", "status": "IN_PROGRESS" }
-  ]
+  "data": [{ "id": "prog-1", "courseId": "course-1", "status": "IN_PROGRESS" }]
 }`
   },
   {
@@ -350,17 +335,12 @@ const ENDPOINTS_DATA: Endpoint[] = [
     path: '/api/v1/learning/progress/:courseId',
     purpose: 'Actualizar avance en un curso (marcar como COMPLETADO).',
     status: 'MISMATCH',
-    statusLabel: 'Falta en Frontend (Diferencia de Firma)',
-    backendState: 'Implementado en backend recibiendo courseId en URL y status en Body. El frontend propuesto asume enviar courseId en Body.',
-    adaptation: 'Al integrar la API en el frontend, enviar el ID del curso como parámetro URL de la petición.',
+    statusLabel: 'Backend listo — Falta conectar en Vista',
+    backendState: 'Implementado. Recibe courseId en URL y status en Body.',
+    adaptation: 'Al integrar en frontend: enviar el courseId como parámetro URL, no en el body.',
     focus: 'FRONTEND',
-    reqBody: `{
-  "status": "COMPLETED" // PENDING, IN_PROGRESS, COMPLETED
-}`,
-    resBody: `{
-  "success": true,
-  "data": { "courseId": "...", "status": "COMPLETED" }
-} // Nota: Cambiar a COMPLETED verifica las habilidades en el perfil`
+    reqBody: `{ "status": "COMPLETED" }`,
+    resBody: `{ "success": true, "data": { "courseId": "...", "status": "COMPLETED" } }`
   },
   // Jobs
   {
@@ -369,16 +349,16 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'POST',
     path: '/api/v1/hiring/create-offer',
     purpose: 'Crear una oferta de empleo para la empresa.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (createOffer).',
-    adaptation: 'El frontend ya está conectado (createOffer). Falta fusionar la rama gonza-dev en el backend de main para activar el endpoint real.',
-    focus: 'MERGE',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     reqBody: `{
   "title": "Senior Frontend Developer",
-  "salaryRange": "$4.5M - $5.5M ARS",
-  "contractType": "Tiempo Completo",
-  "modality": "REMOTE", // REMOTE, ON_SITE, HYBRID
+  "salaryRange": "$2500 - $3500 USD",
+  "contractType": "Término indefinido",
+  "modality": "Remoto",
   "description": "Requisitos...",
   "education": "Universitario",
   "experience": "5+ años"
@@ -389,17 +369,15 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Hiring/Jobs',
     method: 'GET',
     path: '/api/v1/hiring/offers',
-    purpose: 'Listar las ofertas laborales de la empresa.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (getOffers).',
-    adaptation: 'El frontend ya está conectado (getMyOffers). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
+    purpose: 'Listar las ofertas laborales de la empresa autenticada.',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     resBody: `{
   "success": true,
-  "data": [
-    { "id": "job-1", "title": "React Developer", "applicantCount": 12 }
-  ]
+  "data": [{ "id": "job-1", "title": "React Developer", "modality": "Remoto" }]
 }`
   },
   {
@@ -408,16 +386,12 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'PATCH',
     path: '/api/v1/hiring/update-offer',
     purpose: 'Editar campos de una vacante o su estado.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (updateOffer).',
-    adaptation: 'El frontend ya está conectado (updateOffer). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
-    reqBody: `{
-  "id": "job-uuid-123",
-  "title": "React Dev Senior",
-  "salaryRange": "$4.8M - $5.8M ARS"
-}`
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
+    reqBody: `{ "id": "job-uuid-123", "title": "React Dev Senior" }`
   },
   {
     id: 'jobs-4',
@@ -425,28 +399,49 @@ const ENDPOINTS_DATA: Endpoint[] = [
     method: 'DELETE',
     path: '/api/v1/hiring/delete-offer/:id',
     purpose: 'Eliminar una oferta de empleo.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (deleteOffer).',
-    adaptation: 'El frontend ya está conectado (deleteOffer). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE'
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE'
   },
   {
     id: 'jobs-5',
     module: 'Hiring/Jobs',
     method: 'GET',
     path: '/api/v1/hiring/opportunities',
-    purpose: 'Listar ofertas en el Marketplace para profesionales (Opportunities.tsx) con filtros.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (getOpportunities).',
-    adaptation: 'El frontend ya está conectado (getOpportunities). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
+    purpose: 'Listar ofertas en el Marketplace para profesionales con filtros.',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     resBody: `{
   "success": true,
-  "data": [
-    { "id": "job-1", "company": "InnovaTech", "position": "UX", "matchScore": 88 }
-  ]
+  "data": [{ "id": "job-1", "company": "InnovaTech", "title": "UX Designer" }]
+}`
+  },
+  {
+    id: 'jobs-6',
+    module: 'Hiring/Jobs',
+    method: 'POST',
+    path: 'N/A — Simulado con LocalStorage',
+    purpose: 'Postulación del profesional a una oferta de empleo.',
+    status: 'LOCALSTORAGE',
+    statusLabel: 'LocalStorage Temporal',
+    backendState: 'No existe un endpoint de postulación desde el lado del profesional. POST /hiring/preselection es para que la EMPRESA marque candidatos, no al revés.',
+    adaptation: 'Las postulaciones se guardan en localStorage (professional_applications_{userId} y global_job_applications). Si se agrega POST /hiring/apply/:offerId en el backend, la lógica migra sin cambiar la UI.',
+    focus: 'BACKEND',
+    reqBody: `// Guardado en localStorage:
+{
+  "id": "uuid",
+  "offerId": "job-uuid",
+  "offerTitle": "React Developer Senior",
+  "companyId": "company-uuid",
+  "professionalId": "prof-uuid",
+  "professionalName": "Juan Pérez",
+  "status": "INTERESTED",
+  "createdAt": "2026-05-27T..."
 }`
   },
   // Talent
@@ -455,17 +450,15 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Talent/Preselection',
     method: 'GET',
     path: '/api/v1/hiring/search-candidates',
-    purpose: 'Búsqueda avanzada de profesionales Seniors para empresas (TalentSearch.tsx).',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (searchCandidates).',
-    adaptation: 'El frontend ya está conectado (searchCandidates). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
+    purpose: 'Búsqueda avanzada de profesionales Seniors para empresas.',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main. Filtra por título, años, ubicación, disponibilidad, skills, modalidad, salario.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     resBody: `{
   "success": true,
-  "data": [
-    { "id": "prof-1", "firstName": "Silvia", "skills": ["PMP", "Scrum"] }
-  ]
+  "data": [{ "id": "prof-1", "firstName": "Silvia", "skills": ["PMP"] }]
 }`
   },
   {
@@ -473,32 +466,38 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Talent/Preselection',
     method: 'POST',
     path: '/api/v1/hiring/preselection',
-    purpose: 'Guardar candidato preseleccionado de interés para la empresa.',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (preselectionController).',
-    adaptation: 'El frontend ya está conectado (preselectCandidate). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
-    reqBody: `{
-  "userId": "prof-uuid-1",
-  "notes": "Excelente perfil"
-}`,
-    resBody: `{
-  "success": true,
-  "data": { "id": "presel-uuid-123", "status": "INTERESTED" }
-}`
+    purpose: 'Guardar candidato preseleccionado de interés para la empresa (desde TalentSearch).',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
+    reqBody: `{ "userId": "prof-uuid-1", "notes": "Excelente perfil" }`,
+    resBody: `{ "success": true, "data": { "id": "presel-uuid-123", "status": "INTERESTED" } }`
   },
   {
     id: 'talent-3',
     module: 'Talent/Preselection',
     method: 'PATCH',
     path: '/api/v1/hiring/preselection/:id/:status',
-    purpose: 'Avanzar a un candidato en el embudo (ej: CONTACTED, INTERVIEWING).',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (avancePreselection) con firma /preselection/:id/:status.',
-    adaptation: 'El frontend ya está conectado (updatePreselectionStatus). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE'
+    purpose: 'Avanzar a un candidato en el embudo (CONTACTED, INTERVIEWING, HIRED).',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE'
+  },
+  {
+    id: 'talent-4',
+    module: 'Talent/Preselection',
+    method: 'POST',
+    path: 'N/A — Simulado con LocalStorage',
+    purpose: 'Panel de postulantes en CompanyDashboard: funnel de candidatos que se postularon vía botón "Postularme".',
+    status: 'LOCALSTORAGE',
+    statusLabel: 'LocalStorage Temporal',
+    backendState: 'El panel cruza getMyOffers() (API real) con global_job_applications (localStorage). El avance de fases (Interesado → Contratado) también se persiste en localStorage.',
+    adaptation: 'Si se agrega el endpoint POST /hiring/apply/:offerId, el CompanyDashboard puede leer postulantes directamente desde el backend.',
+    focus: 'BACKEND'
   },
   // Events
   {
@@ -506,20 +505,20 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Events',
     method: 'GET',
     path: '/api/v1/events/get-all',
-    purpose: 'Obtener el calendario de eventos programados (webinars, talleres).',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (EventsController.getAll).',
-    adaptation: 'El frontend ya está conectado (getAllEvents). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
+    purpose: 'Obtener el calendario de eventos programados (webinars, talleres, clases).',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main. Incluye enrolls[] por evento.',
+    adaptation: 'Fix de fechas aplicado: parseDateString() maneja ISO completos (2026-06-15T03:00:00.000Z).',
+    focus: 'NONE',
     resBody: `[
   {
     "id": "evt-uuid-1",
     "title": "LinkedIn para Seniors",
     "type": "Taller",
-    "day": "2026-06-15",
-    "link": "https://meet.google.com/abc-defg-hij",
-    "createdAt": "2026-05-27T14:00:00.000Z"
+    "day": "2026-06-15T03:00:00.000Z",
+    "link": "https://meet.google.com/abc-defg",
+    "enrolls": [{ "id": "enroll-1", "professionalId": "prof-uuid-1" }]
   }
 ]`
   },
@@ -528,36 +527,45 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Events',
     method: 'POST',
     path: '/api/v1/events/enroll/:id',
-    purpose: 'Inscribirse a un evento (PROFESSIONAL).',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (EventsController.enrollUser).',
-    adaptation: 'El frontend ya está conectado (enrollEvent). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
-    resBody: `{
-  "message": "Inscripción exitosa"
-}`
+    purpose: 'Inscribirse a un evento (solo PROFESSIONAL).',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
+    resBody: `{ "message": "Inscripción exitosa" }`
+  },
+  {
+    id: 'event-unenroll',
+    module: 'Events',
+    method: 'POST',
+    path: '/api/v1/events/unenroll/:id',
+    purpose: 'Cancelar inscripción a un evento (solo PROFESSIONAL).',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
+    resBody: `{ "message": "Inscripción cancelada" }`
   },
   {
     id: 'event-3',
     module: 'Events',
     method: 'POST',
     path: '/api/v1/events/create',
-    purpose: 'Crear un nuevo evento en la plataforma (ADMIN).',
-    status: 'BRANCH_READY',
-    statusLabel: 'Listo en Rama gonza-dev',
-    backendState: 'Implementado en la rama gonza-dev (EventsController.createEvent).',
-    adaptation: 'El frontend ya está conectado (createEvent). Falta fusionar la rama gonza-dev en el backend de main.',
-    focus: 'MERGE',
+    purpose: 'Crear un nuevo evento en la plataforma (solo ADMIN).',
+    status: 'CONNECTED',
+    statusLabel: 'Conectado',
+    backendState: 'Implementado y activo en main.',
+    adaptation: 'Ninguna.',
+    focus: 'NONE',
     reqBody: `{
   "title": "Buenas Prácticas en Git",
   "type": "Clase",
   "day": "2026-06-20",
   "link": "https://meet.google.com/xyz-pdq-rst"
 }`,
-    resBody: `{
-  "message": "Evento creado exitosamente"
-}`
+    resBody: `{ "message": "Evento creado exitosamente" }`
   },
   // Stats
   {
@@ -565,11 +573,11 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Stats',
     method: 'GET',
     path: '/api/v1/stats/professional',
-    purpose: 'Estadísticas del panel para Profesionales.',
+    purpose: 'Estadísticas del panel para Profesionales (días activo, skills, eventos).',
     status: 'MISSING',
     statusLabel: 'Falta en Backend',
-    backendState: 'Ausente.',
-    adaptation: 'Crear endpoint unificado que calcule el % de completitud de perfil, cuente skills asociadas y eventos registrados pasados.',
+    backendState: 'Ausente. El dashboard muestra datos estáticos/maquetados.',
+    adaptation: 'Crear endpoint que calcule % de completitud de perfil, cuente skills y eventos inscriptos.',
     focus: 'BACKEND',
     resBody: `{
   "success": true,
@@ -581,15 +589,15 @@ const ENDPOINTS_DATA: Endpoint[] = [
     module: 'Stats',
     method: 'GET',
     path: '/api/v1/stats/company',
-    purpose: 'Estadísticas del panel para Empresas.',
+    purpose: 'Estadísticas del panel para Empresas (vacantes activas, postulantes).',
     status: 'MISSING',
     statusLabel: 'Falta en Backend',
-    backendState: 'Ausente.',
-    adaptation: 'Crear endpoint que cuente ofertas activas y cantidad de candidatos preseleccionados por la empresa.',
+    backendState: 'Parcial: el conteo de vacantes viene de getMyOffers() (real). El conteo de postulantes viene de global_job_applications (localStorage).',
+    adaptation: 'Crear endpoint que unifique métricas reales: ofertas activas + candidatos por oferta.',
     focus: 'BACKEND',
     resBody: `{
   "success": true,
-  "data": { "candidatesViewed": 12, "activeJobs": 2, "suggestedMatches": 5 }
+  "data": { "activeJobs": 3, "totalApplicants": 7, "inProcess": 2 }
 }`
   }
 ];
