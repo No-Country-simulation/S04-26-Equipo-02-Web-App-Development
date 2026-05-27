@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
-import authRoutes from './routes/auth.route';
+import authRoutes from './modules/auth/auth.routes';
 import profileRoutes from './modules/profiles/profiles.routes';
 import diagnosticRoutes from './modules/diagnostic/diagnostic.routes';
 import hiringRoutes from './modules/hiring/hiring.routes';

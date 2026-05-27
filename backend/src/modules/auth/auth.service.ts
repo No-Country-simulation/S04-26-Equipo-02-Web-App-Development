@@ -1,15 +1,13 @@
-import { PrismaClient } from "@prisma/client";
-import { validatePassword } from "../utils/validate.password";
-import { generateId } from "../utils/generate.id";
-import { generateToken, generateRefreshTokenJwt, generateEmailVerificationToken } from "../utils/generate.token";
-import { generateRefreshToken } from "../utils/generate.refresh.token";
-import { hashPassword } from "../utils/hash.password";
+import { validatePassword } from "../../utils/validate.password";
+import { generateId } from "../../utils/generate.id";
+import { generateToken, generateRefreshTokenJwt, generateEmailVerificationToken } from "../../utils/generate.token";
+import { generateRefreshToken } from "../../utils/generate.refresh.token";
+import { hashPassword } from "../../utils/hash.password";
 import { Role } from "@prisma/client";
-import { sendEmail } from "../config/nodemailer";
-import { validateEmailVerificationToken, validateRefreshToken } from "../utils/validate.token";
-import { hashRefreshToken } from "../utils/hash.refresh.token";
-
-const prisma = new PrismaClient();
+import { sendEmail } from "../../config/nodemailer";
+import { validateEmailVerificationToken, validateRefreshToken } from "../../utils/validate.token";
+import { hashRefreshToken } from "../../utils/hash.refresh.token";
+import { prisma } from '../../utils/prisma';
 
 export const loginService = async (email: string, password: string, provider: string) => {
 
