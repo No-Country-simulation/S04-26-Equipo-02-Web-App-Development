@@ -37,16 +37,12 @@ export default function Profile() {
     portfolioUrl: '', availability: 'AVAILABLE', preferredModality: 'REMOTE', salaryExpectation: '',
   });
 
-  const [companyForm, setCompanyForm] = useState<CompanyFormState>(() => {
-    const storedEmail = localStorage.getItem('auth_user_email');
-    const storedRole = localStorage.getItem('auth_user_role');
-    if (storedRole === 'COMPANY' && storedEmail) {
-      const stored = localStorage.getItem(`company_profile_${storedEmail}`);
-      if (stored) {
-        try { return JSON.parse(stored); } catch { /* ignore */ }
-      }
-    }
-    return { companyName: '', industry: 'Tecnología', website: '', description: 'Red de Bienestar Corporativo y Gestión de Equipos.', location: 'Buenos Aires, Argentina' };
+  const [companyForm, setCompanyForm] = useState<CompanyFormState>({
+    companyName: '',
+    industry: '',
+    website: '',
+    description: '',
+    location: '',
   });
 
   const loadProfile = useCallback(async () => {
@@ -70,6 +66,15 @@ export default function Profile() {
           preferredModality: data.preferredModality || 'REMOTE',
           salaryExpectation: data.salaryExpectation || '',
         });
+      } else if (user.role === 'COMPANY') {
+        const data = await profileApi.getCompanyProfile();
+        setCompanyForm({
+          companyName: data.companyName || '',
+          industry: data.industry || '',
+          website: data.website || '',
+          description: data.description || '',
+          location: '',
+        });
       }
     } catch (err) {
       toast.error(handleApiError(err).message);
@@ -80,7 +85,7 @@ export default function Profile() {
 
   useEffect(() => {
     let active = true;
-    if (user?.role === 'PROFESSIONAL') {
+    if (user?.role === 'PROFESSIONAL' || user?.role === 'COMPANY') {
       Promise.resolve().then(() => { if (active) loadProfile(); });
     } else {
       Promise.resolve().then(() => { if (active) setLoading(false); });
@@ -101,9 +106,12 @@ export default function Profile() {
           loadProfile();
         }
       } else {
-        localStorage.setItem(`company_profile_${user?.email}`, JSON.stringify(companyForm));
-        toast.success('¡Perfil de empresa guardado con éxito!');
-        updateUser({ name: companyForm.companyName });
+        const res = await profileApi.updateCompanyProfile(companyForm);
+        if (res.success) {
+          toast.success('¡Perfil de empresa guardado con éxito!');
+          updateUser({ name: companyForm.companyName });
+          loadProfile();
+        }
       }
     } catch (err) {
       toast.error(handleApiError(err).message);

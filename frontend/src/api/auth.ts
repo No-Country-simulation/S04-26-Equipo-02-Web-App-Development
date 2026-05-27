@@ -51,7 +51,7 @@ export async function register(data: RegisterData): Promise<void> {
 
 export async function logout(): Promise<void> {
   try {
-    await api.post(API_ENDPOINTS.auth.logout);
+    await api.patch(API_ENDPOINTS.auth.logout);
   } catch {
     // Silently swallow errors — logout is best-effort
   }

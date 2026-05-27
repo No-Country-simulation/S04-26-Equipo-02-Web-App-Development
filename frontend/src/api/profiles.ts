@@ -1,6 +1,6 @@
 import api from './axios';
 import { API_ENDPOINTS } from '../lib/constants';
-import type { ProfessionalProfile } from '../components/dashboard/profile/types';
+import type { ProfessionalProfile, CompanyFormState } from '../components/dashboard/profile/types';
 
 export async function getMyProfile(): Promise<ProfessionalProfile> {
   const res = await api.get(`${API_ENDPOINTS.profiles}/me`);
@@ -67,5 +67,15 @@ export async function addLanguage(data: {
 
 export async function deleteLanguage(id: string): Promise<unknown> {
   const res = await api.delete(`${API_ENDPOINTS.profiles}/languages/${id}`);
+  return res.data;
+}
+
+export async function getCompanyProfile(): Promise<CompanyFormState> {
+  const res = await api.get(`${API_ENDPOINTS.profiles}/company/me`);
+  return res.data.data;
+}
+
+export async function updateCompanyProfile(payload: CompanyFormState): Promise<{ success: boolean; data?: CompanyFormState }> {
+  const res = await api.patch<{ success: boolean; data?: CompanyFormState }>(`${API_ENDPOINTS.profiles}/company/update`, payload);
   return res.data;
 }

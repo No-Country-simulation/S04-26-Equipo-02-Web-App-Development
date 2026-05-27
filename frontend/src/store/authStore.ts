@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as authApi from '../api/auth';
-import { getMyProfile } from '../api/profiles';
+import { getMyProfile, getCompanyProfile } from '../api/profiles';
 import type { User, LoginCredentials, RegisterData } from '../types';
 
 // ── Module-level idempotency guard ──────────────────────────────────────────
@@ -62,14 +62,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // Ignored — fallback to email-derived name is acceptable
       }
     } else if (credentials.provider === 'COMPANY') {
-      const storedCompany = localStorage.getItem('company');
-      if (storedCompany) {
-        try {
-          const companyData = JSON.parse(storedCompany);
+      try {
+        const companyData = await getCompanyProfile();
+        if (companyData) {
           user.name = companyData.companyName || user.name;
-        } catch {
-          // ignore
         }
+      } catch {
+        // ignore
       }
     }
 
@@ -142,15 +141,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
 
         if (user.role === 'COMPANY') {
-          // Read company data from localStorage for display name
-          const storedCompany = localStorage.getItem('company');
-          if (storedCompany) {
-            try {
-              const companyData = JSON.parse(storedCompany);
+          // Fetch company profile for name enrichment
+          try {
+            const companyData = await getCompanyProfile();
+            if (companyData) {
               user.name = companyData.companyName || user.name;
-            } catch {
-              // Malformed JSON — use default name
             }
+          } catch {
+            // ignore
           }
         }
 
