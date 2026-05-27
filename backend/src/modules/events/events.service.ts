@@ -1,11 +1,12 @@
 import { prisma } from '../../utils/prisma';
 
 export const getAllEventsService = async () => {
-
-    const events = await prisma.event.findMany();
-
+    const events = await prisma.event.findMany({
+        include: {
+            enrolls: true
+        }
+    });
     return events;
-
 }
 
 export const enrollUserInEventService = async (userId: string, eventId: string) => {
@@ -39,6 +40,27 @@ export const enrollUserInEventService = async (userId: string, eventId: string) 
 
     return 'User enrolled in event successfully';
 
+}
+
+export const unenrollUserInEventService = async (userId: string, eventId: string) => {
+    const checkUser = await prisma.professionalProfile.findUnique({
+        where: {
+            userId
+        }
+    });
+
+    if (!checkUser) {
+        throw new Error('User not found');
+    }
+
+    await prisma.eventEnroll.deleteMany({
+        where: {
+            eventId: eventId,
+            professionalId: checkUser.id
+        }
+    });
+
+    return 'User unenrolled from event successfully';
 }
 
 export const createEventService = async (title: string, type: string, day: string, link: string ) => {

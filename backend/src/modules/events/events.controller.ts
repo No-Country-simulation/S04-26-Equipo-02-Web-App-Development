@@ -39,6 +39,26 @@ export const enrollUser = async (req: Request, res: Response, next: NextFunction
 
 }
 
+export const unenrollUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = (req as any).user;
+
+        if (!user || user.role !== "PROFESSIONAL") {
+            res.status(403).json({ message: "You are not authorized to unenroll from an event" });
+            return;
+        }
+
+        const { id } = enrollUserInEventSchema.parse(req).params;
+
+        const message = await EventsService.unenrollUserInEventService(user.userId, id);
+
+        res.json({ message });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const createEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
