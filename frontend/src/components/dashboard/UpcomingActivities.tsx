@@ -9,14 +9,28 @@ export interface Event {
   date: string;
   startTime: string;
   speaker: string;
+  enrolls?: {
+    professionalId: string;
+  }[];
 }
 
 interface UpcomingActivitiesProps {
   events: Event[];
   formatDate: (dateStr: string) => string;
+  onEnroll: (eventId: string) => void;
+  onUnenroll: (eventId: string) => void;
+  enrollingId: string | null;
+  userId?: string;
 }
 
-export default function UpcomingActivities({ events, formatDate }: UpcomingActivitiesProps) {
+export default function UpcomingActivities({
+  events,
+  formatDate,
+  onEnroll,
+  onUnenroll,
+  enrollingId,
+  userId,
+}: UpcomingActivitiesProps) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -59,9 +73,37 @@ export default function UpcomingActivities({ events, formatDate }: UpcomingActiv
                 <Clock className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-bold">{item.startTime} hs</span>
               </div>
-              <button className="text-[10px] font-bold uppercase text-brand-sage hover:text-brand-sage-hover flex items-center gap-1">
-                Inscribirme <ArrowRight className="w-3 h-3" />
-              </button>
+              {(() => {
+                const isEnrolled = !!(userId && item.enrolls?.some(e => e.professionalId === userId));
+                if (isEnrolled) {
+                  return (
+                    <button
+                      disabled={enrollingId === item.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUnenroll(item.id);
+                      }}
+                      className="text-[10px] font-bold uppercase text-red-500 hover:text-red-600 flex items-center gap-1 disabled:opacity-50 cursor-pointer"
+                    >
+                      {enrollingId === item.id ? 'Cancelando...' : 'Cancelar Inscripción'}
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  );
+                }
+                return (
+                  <button
+                    disabled={enrollingId === item.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEnroll(item.id);
+                    }}
+                    className="text-[10px] font-bold uppercase text-brand-sage hover:text-brand-sage-hover flex items-center gap-1 disabled:opacity-50 cursor-pointer"
+                  >
+                    {enrollingId === item.id ? 'Inscribiendo...' : 'Inscribirme'}
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                );
+              })()}
             </div>
           </motion.div>
         ))}

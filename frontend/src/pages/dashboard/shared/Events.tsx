@@ -23,10 +23,12 @@ import { handleApiError } from '@/lib/errors';
 import {
   getAllEvents,
   enrollEvent,
+  unenrollEvent,
   createEvent,
   type BackendEvent,
   type CreateEventPayload,
 } from '../../../api/events';
+import ConfirmModal from '../../../components/dashboard/ConfirmModal';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -246,10 +248,12 @@ function CreateEventModal({
 function EventCard({
   event,
   onEnroll,
+  onUnenroll,
   enrollingId,
 }: {
   event: BackendEvent;
   onEnroll: (id: string) => void;
+  onUnenroll: (id: string) => void;
   enrollingId: string | null;
 }) {
   const { user } = useAuth();
@@ -329,20 +333,44 @@ function EventCard({
             Evento finalizado
           </Button>
         ) : user?.role === 'PROFESSIONAL' ? (
-          <Button
-            onClick={() => onEnroll(event.id)}
-            disabled={enrollingId === event.id}
-            className="w-full rounded-2xl text-sm font-bold bg-brand-sage hover:bg-brand-sage-hover text-white shadow-md shadow-brand-sage/20"
-          >
-            {enrollingId === event.id ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                Inscribirme
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </Button>
+          (() => {
+            const isEnrolled = !!(user && event.enrolls?.some(e => e.professionalId === user.id));
+            if (isEnrolled) {
+              return (
+                <Button
+                  onClick={() => onUnenroll(event.id)}
+                  disabled={enrollingId === event.id}
+                  variant="outline"
+                  className="w-full rounded-2xl text-sm font-bold border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 transition-all duration-300 gap-1.5"
+                >
+                  {enrollingId === event.id ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      Cancelar inscripción
+                      <X className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              );
+            }
+            return (
+              <Button
+                onClick={() => onEnroll(event.id)}
+                disabled={enrollingId === event.id}
+                className="w-full rounded-2xl text-sm font-bold bg-brand-sage hover:bg-brand-sage-hover text-white shadow-md shadow-brand-sage/20"
+              >
+                {enrollingId === event.id ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    Inscribirme
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+            );
+          })()
         ) : (
           <a
             href={event.link}
@@ -361,7 +389,7 @@ function EventCard({
 
 // ── Mini Calendar ────────────────────────────────────────────────────────────
 
-function MiniCalendar({ events }: { events: BackendEvent[] }) {
+function MiniCalendar({ events, userId }: { events: BackendEvent[]; userId?: string }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthNames = [
@@ -371,20 +399,9 @@ function MiniCalendar({ events }: { events: BackendEvent[] }) {
 
   const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-  // Days that have events (by month)
-  const eventDaysByMonth = useMemo(() => {
-    const map: Record<string, number[]> = {};
-    events.forEach((ev) => {
-      const d = new Date(ev.day + 'T00:00:00');
-      const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
-      if (!map[key]) map[key] = [];
-      if (!map[key].includes(d.getDate())) map[key].push(d.getDate());
-    });
-    return map;
-  }, [events]);
+
 
   const key = `${currentMonth.getFullYear()}-${currentMonth.getMonth() + 1}`;
-  const eventDays = eventDaysByMonth[key] || [];
 
   const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -399,6 +416,18 @@ function MiniCalendar({ events }: { events: BackendEvent[] }) {
     setCurrentMonth((p) => new Date(p.getFullYear(), p.getMonth() - 1, 1));
   const nextMonth = () =>
     setCurrentMonth((p) => new Date(p.getFullYear(), p.getMonth() + 1, 1));
+
+  // Helper to find events on a given day in the active view
+  const getEventsOnDay = (dayNum: number) => {
+    return events.filter((ev) => {
+      const d = new Date(ev.day + 'T00:00:00');
+      return (
+        d.getDate() === dayNum &&
+        d.getMonth() === currentMonth.getMonth() &&
+        d.getFullYear() === currentMonth.getFullYear()
+      );
+    });
+  };
 
   return (
     <motion.div
@@ -444,7 +473,10 @@ function MiniCalendar({ events }: { events: BackendEvent[] }) {
       <div className="grid grid-cols-7 gap-1">
         <AnimatePresence mode="wait">
           {calendarDays.map((day, i) => {
-            const hasEvent = day !== null && eventDays.includes(day);
+            const dayEvents = day !== null ? getEventsOnDay(day) : [];
+            const hasEvent = dayEvents.length > 0;
+            const isEnrolled = !!(userId && dayEvents.some(ev => ev.enrolls?.some(e => e.professionalId === userId)));
+
             const isToday =
               day !== null &&
               day === new Date().getDate() &&
@@ -462,13 +494,18 @@ function MiniCalendar({ events }: { events: BackendEvent[] }) {
                   day === null ? 'invisible' : '',
                   isToday
                     ? 'bg-brand-sage text-white font-bold shadow-md shadow-brand-sage/30'
+                    : isEnrolled
+                    ? 'bg-[#7B9E6B]/15 border border-[#7B9E6B]/30 text-brand-heading font-bold cursor-pointer transition-all duration-300 hover:bg-[#7B9E6B]/25'
                     : hasEvent
                     ? 'bg-brand-bg hover:bg-brand-accent/50 cursor-pointer font-medium text-brand-heading transition-colors'
                     : 'hover:bg-gray-50 text-gray-600 transition-colors'
                 )}
               >
                 {day}
-                {hasEvent && !isToday && (
+                {isEnrolled && !isToday && (
+                  <div className="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-[#7B9E6B]" />
+                )}
+                {!isEnrolled && hasEvent && !isToday && (
                   <div className="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-brand-sage" />
                 )}
               </motion.div>
@@ -481,6 +518,12 @@ function MiniCalendar({ events }: { events: BackendEvent[] }) {
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-brand-sage" />
           <span className="text-[10px] font-medium text-gray-500">Con evento</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded bg-[#7B9E6B]/15 border border-[#7B9E6B]/30 flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#7B9E6B]" />
+          </div>
+          <span className="text-[10px] font-medium text-gray-500">Inscripto</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded bg-brand-sage" />
@@ -500,6 +543,11 @@ export default function Events() {
   const [enrollingId, setEnrollingId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
+  const [pendingAction, setPendingAction] = useState<{
+    id: string;
+    title: string;
+    action: 'enroll' | 'unenroll';
+  } | null>(null);
 
   const isAdmin = user?.role === 'ADMIN';
 
@@ -537,10 +585,54 @@ export default function Events() {
     try {
       await enrollEvent(eventId);
       toast.success('Te inscribiste correctamente al evento');
+      const data = await getAllEvents();
+      setEvents(data);
     } catch (err) {
       toast.error(handleApiError(err).message);
     }
     setEnrollingId(null);
+  };
+
+  const handleUnenroll = async (eventId: string) => {
+    setEnrollingId(eventId);
+    try {
+      await unenrollEvent(eventId);
+      toast.success('Inscripción cancelada correctamente');
+      const data = await getAllEvents();
+      setEvents(data);
+    } catch (err) {
+      toast.error(handleApiError(err).message);
+    }
+    setEnrollingId(null);
+  };
+
+  const triggerEnrollConfirm = (eventId: string) => {
+    const ev = events.find(e => e.id === eventId);
+    if (!ev) return;
+    setPendingAction({
+      id: eventId,
+      title: ev.title,
+      action: 'enroll',
+    });
+  };
+
+  const triggerUnenrollConfirm = (eventId: string) => {
+    const ev = events.find(e => e.id === eventId);
+    if (!ev) return;
+    setPendingAction({
+      id: eventId,
+      title: ev.title,
+      action: 'unenroll',
+    });
+  };
+
+  const handleConfirmAction = () => {
+    if (!pendingAction) return;
+    if (pendingAction.action === 'enroll') {
+      handleEnroll(pendingAction.id);
+    } else {
+      handleUnenroll(pendingAction.id);
+    }
   };
 
   const statusTabs: { key: FilterStatus; label: string }[] = [
@@ -621,7 +713,8 @@ export default function Events() {
             <EventCard
               key={event.id}
               event={event}
-              onEnroll={handleEnroll}
+              onEnroll={triggerEnrollConfirm}
+              onUnenroll={triggerUnenrollConfirm}
               enrollingId={enrollingId}
             />
           ))}
@@ -638,7 +731,7 @@ export default function Events() {
       )}
 
       {/* Calendar */}
-      <MiniCalendar events={events} />
+      <MiniCalendar events={events} userId={user?.id} />
 
       {/* Create Event Modal */}
       <CreateEventModal
@@ -648,6 +741,21 @@ export default function Events() {
           // Refresh after creation
           getAllEvents().then(setEvents).catch(() => {});
         }}
+      />
+
+      <ConfirmModal
+        isOpen={!!pendingAction}
+        title={pendingAction?.action === 'enroll' ? '¿Confirmar inscripción?' : '¿Cancelar inscripción?'}
+        description={
+          pendingAction?.action === 'enroll'
+            ? `Vas a inscribirte al evento "${pendingAction?.title}". ¿Estás seguro?`
+            : `Vas a cancelar tu inscripción al evento "${pendingAction?.title}". ¿Estás seguro?`
+        }
+        confirmText={pendingAction?.action === 'enroll' ? 'Sí, inscribirme' : 'Sí, cancelar'}
+        cancelText={pendingAction?.action === 'enroll' ? 'Cancelar' : 'Volver'}
+        isDanger={pendingAction?.action === 'unenroll'}
+        onConfirm={handleConfirmAction}
+        onClose={() => setPendingAction(null)}
       />
     </div>
   );

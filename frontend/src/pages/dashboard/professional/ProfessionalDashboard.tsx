@@ -14,12 +14,26 @@ import ProgressChart from '@/components/dashboard/ProgressChart';
 import WeeklyTasks, { type Task } from '@/components/dashboard/WeeklyTasks';
 import StatsCards from '@/components/dashboard/StatsCards';
 import UpcomingActivities, { type Event } from '@/components/dashboard/UpcomingActivities';
+import { getAllEvents, enrollEvent, unenrollEvent, type BackendEvent } from '../../../api/events';
+import ConfirmModal from '@/components/dashboard/ConfirmModal';
 
 export default function ProfessionalDashboard() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
+  const [dbEvents, setDbEvents] = useState<BackendEvent[]>([]);
+  const [enrollingId, setEnrollingId] = useState<string | null>(null);
+  const [mockEnrolledIds, setMockEnrolledIds] = useState<string[]>(() => {
+    const storedEmail = localStorage.getItem('auth_user_email') || 'default';
+    const saved = localStorage.getItem(`mock_enrollments_${storedEmail}`);
+    return saved ? (JSON.parse(saved) as string[]) : [];
+  });
+  const [pendingAction, setPendingAction] = useState<{
+    id: string;
+    title: string;
+    action: 'enroll' | 'unenroll';
+  } | null>(null);
 
   // Mocks de eventos estéticos
   const upcomingEvents = useMemo<Event[]>(() => [
@@ -27,7 +41,7 @@ export default function ProfessionalDashboard() {
       id: 'event-1',
       title: 'Adaptabilidad laboral y nuevas tecnologías',
       type: 'Webinar',
-      date: '2026-05-20T18:00:00.000Z',
+      date: '2026-06-03T18:00:00.000Z',
       startTime: '18:00',
       speaker: 'Lic. Laura Martínez',
     },
@@ -35,7 +49,7 @@ export default function ProfessionalDashboard() {
       id: 'event-2',
       title: 'Optimización de CV Vivo y perfil de LinkedIn',
       type: 'Taller',
-      date: '2026-05-22T16:30:00.000Z',
+      date: '2026-06-05T16:30:00.000Z',
       startTime: '16:30',
       speaker: 'Ing. Carlos Rossi',
     },
@@ -43,7 +57,7 @@ export default function ProfessionalDashboard() {
       id: 'event-3',
       title: 'Networking: Encuentro mensual de la comunidad',
       type: 'Mesa Redonda',
-      date: '2026-05-25T19:00:00.000Z',
+      date: '2026-06-10T19:00:00.000Z',
       startTime: '19:00',
       speaker: 'Equipo Red de Bienestar',
     },
@@ -71,13 +85,17 @@ export default function ProfessionalDashboard() {
     return defaultTasks;
   });
 
-  const fetchProfile = useCallback(async () => {
+  const loadDashboardData = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await getMyProfile();
-      setProfile(data);
+      const [profileData, eventsData] = await Promise.all([
+        getMyProfile(),
+        getAllEvents().catch(() => [])
+      ]);
+      setProfile(profileData);
+      setDbEvents(eventsData);
     } catch (err) {
       const apiErr = handleApiError(err);
       toast.error(apiErr.message);
@@ -92,14 +110,117 @@ export default function ProfessionalDashboard() {
     const run = async () => {
       await Promise.resolve();
       if (active) {
-        fetchProfile();
+        loadDashboardData();
       }
     };
     run();
     return () => {
       active = false;
     };
-  }, [fetchProfile]);
+  }, [loadDashboardData]);
+
+  const events = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const upcomingDb = dbEvents
+      .filter(e => {
+        const evDate = new Date(e.day + 'T00:00:00');
+        return evDate >= today;
+      })
+      .slice(0, 3)
+      .map(e => ({
+        id: e.id,
+        title: e.title,
+        type: e.type,
+        date: e.day + 'T18:00:00.000Z',
+        startTime: '18:00',
+        speaker: 'Equipo Red de Bienestar',
+        enrolls: e.enrolls,
+      }));
+
+    if (upcomingDb.length > 0) {
+      return upcomingDb;
+    }
+
+    return upcomingEvents.map(e => ({
+      ...e,
+      enrolls: mockEnrolledIds.includes(e.id) ? [{ professionalId: user?.id || '' }] : [],
+    }));
+  }, [dbEvents, mockEnrolledIds, upcomingEvents, user]);
+
+  const handleUnenrollEvent = async (eventId: string) => {
+    if (eventId.startsWith('event-')) {
+      const storedEmail = localStorage.getItem('auth_user_email') || 'default';
+      const updated = mockEnrolledIds.filter(id => id !== eventId);
+      setMockEnrolledIds(updated);
+      localStorage.setItem(`mock_enrollments_${storedEmail}`, JSON.stringify(updated));
+      toast.success('Inscripción cancelada correctamente');
+      return;
+    }
+
+    setEnrollingId(eventId);
+    try {
+      await unenrollEvent(eventId);
+      toast.success('Inscripción cancelada correctamente');
+      loadDashboardData();
+    } catch (err) {
+      toast.error(handleApiError(err).message);
+    } finally {
+      setEnrollingId(null);
+    }
+  };
+
+  const handleEnrollEvent = async (eventId: string) => {
+    if (eventId.startsWith('event-')) {
+      const storedEmail = localStorage.getItem('auth_user_email') || 'default';
+      const updated = [...mockEnrolledIds, eventId];
+      setMockEnrolledIds(updated);
+      localStorage.setItem(`mock_enrollments_${storedEmail}`, JSON.stringify(updated));
+      toast.success('¡Te inscribiste correctamente al evento!');
+      return;
+    }
+
+    setEnrollingId(eventId);
+    try {
+      await enrollEvent(eventId);
+      toast.success('¡Te inscribiste correctamente al evento!');
+      loadDashboardData();
+    } catch (err) {
+      toast.error(handleApiError(err).message);
+    } finally {
+      setEnrollingId(null);
+    }
+  };
+
+  const triggerEnrollConfirm = (eventId: string) => {
+    const ev = events.find(e => e.id === eventId);
+    if (!ev) return;
+    setPendingAction({
+      id: eventId,
+      title: ev.title,
+      action: 'enroll',
+    });
+  };
+
+  const triggerUnenrollConfirm = (eventId: string) => {
+    const ev = events.find(e => e.id === eventId);
+    if (!ev) return;
+    setPendingAction({
+      id: eventId,
+      title: ev.title,
+      action: 'unenroll',
+    });
+  };
+
+  const handleConfirmAction = () => {
+    if (!pendingAction) return;
+    if (pendingAction.action === 'enroll') {
+      handleEnrollEvent(pendingAction.id);
+    } else {
+      handleUnenrollEvent(pendingAction.id);
+    }
+  };
 
   const toggleTask = (taskId: string) => {
     const updated = weeklyTasks.map(t =>
@@ -147,7 +268,7 @@ export default function ProfessionalDashboard() {
   }
 
   if (error) {
-    return <ErrorDisplay error={error} onRetry={fetchProfile} />;
+    return <ErrorDisplay error={error} onRetry={loadDashboardData} />;
   }
 
   const selectedSkills = profile?.skills || [];
@@ -243,7 +364,29 @@ export default function ProfessionalDashboard() {
       <StatsCards stats={stats} />
 
       {/* Row 3: Upcoming Activities */}
-      <UpcomingActivities events={upcomingEvents} formatDate={formatDate} />
+      <UpcomingActivities
+        events={events}
+        formatDate={formatDate}
+        onEnroll={triggerEnrollConfirm}
+        onUnenroll={triggerUnenrollConfirm}
+        enrollingId={enrollingId}
+        userId={user?.id}
+      />
+
+      <ConfirmModal
+        isOpen={!!pendingAction}
+        title={pendingAction?.action === 'enroll' ? '¿Confirmar inscripción?' : '¿Cancelar inscripción?'}
+        description={
+          pendingAction?.action === 'enroll'
+            ? `Vas a inscribirte al evento "${pendingAction?.title}". ¿Estás seguro?`
+            : `Vas a cancelar tu inscripción al evento "${pendingAction?.title}". ¿Estás seguro?`
+        }
+        confirmText={pendingAction?.action === 'enroll' ? 'Sí, inscribirme' : 'Sí, cancelar'}
+        cancelText={pendingAction?.action === 'enroll' ? 'Cancelar' : 'Volver'}
+        isDanger={pendingAction?.action === 'unenroll'}
+        onConfirm={handleConfirmAction}
+        onClose={() => setPendingAction(null)}
+      />
     </div>
   );
 }

@@ -10,6 +10,11 @@ export interface BackendEvent {
   day: string;
   link: string;
   createdAt: string;
+  enrolls?: {
+    id: string;
+    eventId: string;
+    professionalId: string;
+  }[];
 }
 
 export interface CreateEventPayload {
@@ -33,6 +38,16 @@ export async function enrollEvent(
 ): Promise<{ message: string }> {
   const res = await api.post<{ message: string }>(
     API_ENDPOINTS.events.enroll(id)
+  );
+  return res.data;
+}
+
+/** 2.2.1 Cancelar inscripción en un evento (PROFESSIONAL) */
+export async function unenrollEvent(
+  id: string
+): Promise<{ message: string }> {
+  const res = await api.post<{ message: string }>(
+    API_ENDPOINTS.events.unenroll(id)
   );
   return res.data;
 }

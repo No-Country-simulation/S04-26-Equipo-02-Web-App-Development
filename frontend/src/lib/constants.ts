@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   events: {
     getAll: `/api/${API_VERSION}/events/get-all`,
     enroll: (id: string) => `/api/${API_VERSION}/events/enroll/${id}`,
+    unenroll: (id: string) => `/api/${API_VERSION}/events/unenroll/${id}`,
     create: `/api/${API_VERSION}/events/create`,
   },
 } as const;
