@@ -10,4 +10,20 @@ export const API_ENDPOINTS = {
   },
   profiles: `/api/${API_VERSION}/profiles`,
   diagnostic: `/api/${API_VERSION}/diagnostic`,
+  hiring: {
+    opportunities: `/api/${API_VERSION}/hiring/opportunities`,
+    offers: `/api/${API_VERSION}/hiring/offers`,
+    createOffer: `/api/${API_VERSION}/hiring/create-offer`,
+    updateOffer: `/api/${API_VERSION}/hiring/update-offer`,
+    deleteOffer: (id: string) => `/api/${API_VERSION}/hiring/delete-offer/${id}`,
+    searchCandidates: `/api/${API_VERSION}/hiring/search-candidates`,
+    preselection: `/api/${API_VERSION}/hiring/preselection`,
+    preselectionStatus: (id: string, status: string) =>
+      `/api/${API_VERSION}/hiring/preselection/${id}/${status}`,
+  },
+  events: {
+    getAll: `/api/${API_VERSION}/events/get-all`,
+    enroll: (id: string) => `/api/${API_VERSION}/events/enroll/${id}`,
+    create: `/api/${API_VERSION}/events/create`,
+  },
 } as const;

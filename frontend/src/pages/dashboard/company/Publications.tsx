@@ -1,197 +1,62 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../hooks/useAuth';
 import { PageMeta } from '../../../hooks/useMeta';
 import {
   Plus,
   Search,
-  MapPin,
-  Users,
-  Eye,
-  Calendar,
-  Clock,
-  MoreHorizontal,
-  Edit3,
-  PauseCircle,
-  XCircle,
   Briefcase,
   Building2,
-  Filter,
   FileText,
-  LayoutGrid,
-  CheckCircle2,
-  AlertCircle,
+  DollarSign,
+  Clock,
+  Edit3,
+  Trash2,
+  X,
+  Loader2,
+  GraduationCap,
+  Target,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { handleApiError } from '@/lib/errors';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { ConfirmDialog } from '../../../components/ConfirmDialog';
+import {
+  getMyOffers,
+  createOffer,
+  updateOffer,
+  deleteOffer,
+  type Offer,
+  type CreateOfferPayload,
+  type UpdateOfferPayload,
+} from '../../../api/hiring';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-type JobStatus = 'Activa' | 'En revisión' | 'Cerrada' | 'Borrador';
-type Modality = 'Remoto' | 'Híbrido' | 'Presencial';
-
-interface JobPosting {
-  id: number;
-  title: string;
-  department: string;
-  location: string;
-  modality: Modality;
-  status: JobStatus;
-  postedDate: string;
-  applicantCount: number;
-  viewsCount: number;
-  expirationDate: string;
-  vacancies: number;
-  daysSincePosted: number;
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 }
 
-interface StatusTab {
-  label: string;
-  key: JobStatus | 'all';
-  count: number;
+function getModalityBadge(modality: string): string {
+  switch (modality) {
+    case 'Remoto':
+      return 'bg-emerald-50 text-emerald-600 border-emerald-200';
+    case 'Presencial':
+      return 'bg-amber-50 text-amber-600 border-amber-200';
+    case 'Híbrido':
+      return 'bg-indigo-50 text-indigo-600 border-indigo-200';
+    default:
+      return 'bg-gray-50 text-gray-500 border-gray-200';
+  }
 }
-
-// ---------------------------------------------------------------------------
-// Mock data
-// ---------------------------------------------------------------------------
-
-const mockPublications: JobPosting[] = [
-  {
-    id: 1,
-    title: 'Senior Frontend Developer',
-    department: 'Desarrollo',
-    location: 'Buenos Aires',
-    modality: 'Híbrido',
-    status: 'Activa',
-    postedDate: '15/04/2026',
-    applicantCount: 12,
-    viewsCount: 320,
-    expirationDate: '15/07/2026',
-    vacancies: 3,
-    daysSincePosted: 36,
-  },
-  {
-    id: 2,
-    title: 'Backend Engineer Node.js',
-    department: 'Tecnología',
-    location: 'Córdoba',
-    modality: 'Remoto',
-    status: 'Activa',
-    postedDate: '20/04/2026',
-    applicantCount: 8,
-    viewsCount: 250,
-    expirationDate: '20/07/2026',
-    vacancies: 2,
-    daysSincePosted: 31,
-  },
-  {
-    id: 3,
-    title: 'Tech Lead React',
-    department: 'Desarrollo',
-    location: 'Capital Federal',
-    modality: 'Híbrido',
-    status: 'En revisión',
-    postedDate: '25/04/2026',
-    applicantCount: 5,
-    viewsCount: 190,
-    expirationDate: '25/07/2026',
-    vacancies: 1,
-    daysSincePosted: 26,
-  },
-  {
-    id: 4,
-    title: 'UX/UI Designer Senior',
-    department: 'Diseño',
-    location: 'Rosario',
-    modality: 'Remoto',
-    status: 'Activa',
-    postedDate: '01/05/2026',
-    applicantCount: 15,
-    viewsCount: 310,
-    expirationDate: '01/08/2026',
-    vacancies: 2,
-    daysSincePosted: 20,
-  },
-  {
-    id: 5,
-    title: 'DevOps Engineer',
-    department: 'Infraestructura',
-    location: 'Buenos Aires',
-    modality: 'Presencial',
-    status: 'Cerrada',
-    postedDate: '10/03/2026',
-    applicantCount: 7,
-    viewsCount: 160,
-    expirationDate: '10/06/2026',
-    vacancies: 2,
-    daysSincePosted: 72,
-  },
-  {
-    id: 6,
-    title: 'Data Analyst',
-    department: 'Datos',
-    location: 'Córdoba',
-    modality: 'Remoto',
-    status: 'Borrador',
-    postedDate: '—',
-    applicantCount: 0,
-    viewsCount: 0,
-    expirationDate: '—',
-    vacancies: 2,
-    daysSincePosted: 0,
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-const statusTabs: StatusTab[] = [
-  { label: 'Todas', key: 'all', count: mockPublications.length },
-  { label: 'Activas', key: 'Activa', count: mockPublications.filter((p) => p.status === 'Activa').length },
-  { label: 'En revisión', key: 'En revisión', count: mockPublications.filter((p) => p.status === 'En revisión').length },
-  { label: 'Cerradas', key: 'Cerrada', count: mockPublications.filter((p) => p.status === 'Cerrada').length },
-  { label: 'Borradores', key: 'Borrador', count: mockPublications.filter((p) => p.status === 'Borrador').length },
-];
-
-const statusColors: Record<JobStatus, { badge: string; dot: string; bg: string }> = {
-  Activa: {
-    badge: 'bg-green-100 text-green-700 border-green-200',
-    dot: 'bg-green-500',
-    bg: 'bg-green-50/50',
-  },
-  'En revisión': {
-    badge: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    dot: 'bg-yellow-500',
-    bg: 'bg-yellow-50/50',
-  },
-  Cerrada: {
-    badge: 'bg-gray-100 text-gray-500 border-gray-200',
-    dot: 'bg-gray-400',
-    bg: 'bg-gray-50/50',
-  },
-  Borrador: {
-    badge: 'bg-slate-100 text-slate-600 border-slate-200',
-    dot: 'bg-slate-400',
-    bg: 'bg-slate-50/50',
-  },
-};
-
-const modalityStyles: Record<Modality, { icon: typeof MapPin; label: string }> = {
-  Remoto: { icon: Building2, label: 'Remoto' },
-  Híbrido: { icon: Building2, label: 'Híbrido' },
-  Presencial: { icon: MapPin, label: 'Presencial' },
-};
-
-function formatViews(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 0)}k`;
-  return String(n);
-}
-
-// ---------------------------------------------------------------------------
-// Animation variants
-// ---------------------------------------------------------------------------
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -210,46 +75,240 @@ const cardVariants = {
   },
 } as const;
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+// ─── Offer Form Modal ─────────────────────────────────────────────────────────
+
+interface OfferFormState {
+  title: string;
+  salaryRange: string;
+  contractType: string;
+  modality: string;
+  description: string;
+  education: string;
+  experience: string;
+}
+
+const EMPTY_FORM: OfferFormState = {
+  title: '',
+  salaryRange: '',
+  contractType: 'Término indefinido',
+  modality: 'Remoto',
+  description: '',
+  education: '',
+  experience: '',
+};
+
+function OfferFormModal({
+  open,
+  onClose,
+  onSaved,
+  initial,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSaved: () => void;
+  initial?: Offer | null;
+}) {
+  const [form, setForm] = useState<OfferFormState>(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (initial) {
+      setForm({
+        title: initial.title,
+        salaryRange: initial.salaryRange,
+        contractType: initial.contractType,
+        modality: initial.modality,
+        description: initial.description,
+        education: initial.education,
+        experience: initial.experience,
+      });
+    } else {
+      setForm(EMPTY_FORM);
+    }
+  }, [initial, open]);
+
+  if (!open) return null;
+
+  const isEditing = !!initial;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title || !form.salaryRange) {
+      toast.error('El título y el rango salarial son obligatorios');
+      return;
+    }
+    setSaving(true);
+    try {
+      if (isEditing && initial) {
+        const payload: UpdateOfferPayload = { id: initial.id, ...form };
+        await updateOffer(payload);
+        toast.success('Oferta actualizada correctamente');
+      } else {
+        const payload: CreateOfferPayload = form;
+        await createOffer(payload);
+        toast.success('Oferta creada correctamente');
+      }
+      onSaved();
+      onClose();
+    } catch (err) {
+      toast.error(handleApiError(err).message);
+    }
+    setSaving(false);
+  };
+
+  const field = (key: keyof OfferFormState, label: string, opts?: { type?: string; placeholder?: string; textarea?: boolean }) => (
+    <div className="space-y-2">
+      <Label className="text-sm font-bold text-gray-700">{label}</Label>
+      {opts?.textarea ? (
+        <textarea
+          value={form[key]}
+          onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+          placeholder={opts.placeholder}
+          rows={3}
+          className="w-full rounded-2xl border border-gray-200 px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-sage/30 focus:border-brand-sage resize-none"
+        />
+      ) : opts?.type === 'select' ? (
+        <select
+          value={form[key]}
+          onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+          className="w-full rounded-2xl border border-gray-200 px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-sage/30 focus:border-brand-sage"
+        >
+          {opts.placeholder?.split(',').map((opt) => (
+            <option key={opt.trim()} value={opt.trim()}>{opt.trim()}</option>
+          ))}
+        </select>
+      ) : (
+        <Input
+          value={form[key]}
+          onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+          placeholder={opts?.placeholder}
+          className="rounded-2xl border-gray-200"
+        />
+      )}
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-3xl p-6 w-full max-w-lg mx-4 shadow-xl border border-gray-100 max-h-[90vh] overflow-y-auto"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-black text-brand-heading">
+            {isEditing ? 'Editar Oferta' : 'Nueva Publicación'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {field('title', 'Título *', { placeholder: 'Ej: Desarrollador Full Stack Node.js' })}
+          {field('salaryRange', 'Rango Salarial *', { placeholder: 'Ej: $1500 - $2000 USD' })}
+
+          <div className="grid grid-cols-2 gap-4">
+            {field('contractType', 'Tipo de Contrato', {
+              type: 'select',
+              placeholder: 'Término indefinido,Freelance',
+            })}
+            {field('modality', 'Modalidad', {
+              type: 'select',
+              placeholder: 'Remoto,Híbrido,Presencial',
+            })}
+          </div>
+
+          {field('description', 'Descripción', { placeholder: 'Describí los detalles de la posición...', textarea: true })}
+          {field('education', 'Formación Requerida', { placeholder: 'Ej: Grado universitario o equivalente' })}
+          {field('experience', 'Experiencia Requerida', { placeholder: 'Ej: Más de 3 años de experiencia' })}
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 rounded-2xl border-gray-200 text-gray-600 font-bold"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={saving}
+              className="flex-1 rounded-2xl bg-brand-sage hover:bg-brand-sage-hover text-white font-bold shadow-md shadow-brand-sage/20"
+            >
+              {saving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : isEditing ? (
+                'Guardar Cambios'
+              ) : (
+                'Crear Oferta'
+              )}
+            </Button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function Publications() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<JobStatus | 'all'>('all');
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingOffer, setEditingOffer] = useState<Offer | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Offer | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Close dropdown on outside click
+  const loadOffers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getMyOffers();
+      setOffers(data);
+    } catch (err) {
+      toast.error(handleApiError(err).message);
+    }
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpenMenuId(null);
-      }
-    }
-    if (openMenuId !== null) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [openMenuId]);
+    loadOffers();
+  }, [loadOffers]);
 
-  // Derived data
-  const totalActivas = mockPublications.filter((p) => p.status === 'Activa').length;
-  const totalPostulantes = mockPublications.reduce((acc, p) => acc + p.applicantCount, 0);
-  const totalVistas = mockPublications.reduce((acc, p) => acc + p.viewsCount, 0);
-
-  const filtered = mockPublications.filter((p) => {
-    const matchesTab = activeTab === 'all' || p.status === activeTab;
+  const filtered = offers.filter((o) => {
+    if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    const matchesSearch =
-      !q ||
-      p.title.toLowerCase().includes(q) ||
-      p.department.toLowerCase().includes(q) ||
-      p.location.toLowerCase().includes(q) ||
-      p.modality.toLowerCase().includes(q);
-    return matchesTab && matchesSearch;
+    return (
+      o.title.toLowerCase().includes(q) ||
+      o.contractType.toLowerCase().includes(q) ||
+      o.modality.toLowerCase().includes(q) ||
+      o.description.toLowerCase().includes(q)
+    );
   });
+
+  const handleSaveOffer = () => {
+    loadOffers();
+  };
+
+  const handleDeleteOffer = async (offer: Offer) => {
+    setDeletingId(offer.id);
+    try {
+      await deleteOffer(offer.id);
+      toast.success('Oferta eliminada correctamente');
+      loadOffers();
+    } catch (err) {
+      toast.error(handleApiError(err).message);
+    }
+    setDeletingId(null);
+    setConfirmDelete(null);
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
@@ -257,9 +316,8 @@ export default function Publications() {
         title={user?.name ? `Publicaciones — ${user.name}` : 'Mis Publicaciones'}
         description="Gestioná tus ofertas laborales activas en Red de Bienestar Laboral."
       />
-      {/* ---------------------------------------------------------------- */}
-      {/* Header */}
-      {/* ---------------------------------------------------------------- */}
+
+      {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-4xl md:text-5xl font-black text-brand-heading tracking-tight">
@@ -269,32 +327,30 @@ export default function Publications() {
             Gestioná tus ofertas laborales activas
           </p>
         </div>
-        <button className="inline-flex items-center gap-2 bg-brand-sage hover:bg-brand-sage-hover text-white px-7 py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg hover:shadow-brand-sage/25 active:scale-95 text-sm">
+        <button
+          onClick={() => { setEditingOffer(null); setShowForm(true); }}
+          className="inline-flex items-center gap-2 bg-brand-sage hover:bg-brand-sage-hover text-white px-7 py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg hover:shadow-brand-sage/25 active:scale-95 text-sm"
+        >
           <Plus className="w-5 h-5" />
           Nueva Publicación
         </button>
       </div>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* Summary Stats Bar */}
-      {/* ---------------------------------------------------------------- */}
+      {/* ── Summary Stats ── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
       >
         {[
-          { label: 'Total Publicaciones', value: mockPublications.length, icon: FileText, color: 'text-brand-sage', bg: 'bg-brand-bg' },
-          { label: 'Activas', value: totalActivas, icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-50' },
-          { label: 'Postulantes Totales', value: totalPostulantes, icon: Users, color: 'text-brand-gold', bg: 'bg-amber-50' },
-          { label: 'Vistas Totales', value: formatViews(totalVistas), icon: Eye, color: 'text-brand-coral', bg: 'bg-red-50' },
+          { label: 'Total Publicaciones', value: offers.length, icon: FileText, color: 'text-brand-sage', bg: 'bg-brand-bg' },
+          { label: 'Vacantes Remotas', value: offers.filter((o) => o.modality === 'Remoto').length, icon: Building2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'Término Indefinido', value: offers.filter((o) => o.contractType === 'Término indefinido').length, icon: Briefcase, color: 'text-brand-gold', bg: 'bg-amber-50' },
         ].map((stat) => (
           <div
             key={stat.label}
-            className={cn(
-              'bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5',
-            )}
+            className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
           >
             <div className={cn('p-3 rounded-xl shrink-0', stat.bg)}>
               <stat.icon className={cn('w-5 h-5', stat.color)} />
@@ -307,282 +363,163 @@ export default function Publications() {
         ))}
       </motion.div>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* Tabs + Search Bar */}
-      {/* ---------------------------------------------------------------- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Tabs */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {statusTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                'relative px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all',
-                activeTab === tab.key
-                  ? 'bg-brand-charcoal text-white shadow-md'
-                  : 'bg-white text-gray-500 border border-gray-200 hover:border-brand-sage/50 hover:text-brand-sage',
-              )}
-            >
-              {tab.label}
-              <span
-                className={cn(
-                  'ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[9px] font-black px-1.5',
-                  activeTab === tab.key
-                    ? 'bg-white/20 text-white'
-                    : 'bg-brand-bg text-gray-500',
-                )}
-              >
-                {tab.count}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Search + Filter */}
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <div className="relative flex-1 md:w-64">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar publicaciones..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 placeholder:text-gray-400 focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/10 outline-none transition-all"
-            />
-          </div>
-          <button className="p-2.5 bg-white border border-gray-200 rounded-xl hover:border-brand-sage/50 hover:text-brand-sage transition-all text-gray-500">
-            <Filter className="w-4 h-4" />
-          </button>
-          <button className="p-2.5 bg-white border border-gray-200 rounded-xl hover:border-brand-sage/50 hover:text-brand-sage transition-all text-gray-500">
-            <LayoutGrid className="w-4 h-4" />
-          </button>
+      {/* ── Search ── */}
+      <div className="flex items-center gap-2 w-full md:w-80">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar publicaciones..."
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 placeholder:text-gray-400 focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/10 outline-none transition-all"
+          />
         </div>
       </div>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* Posting Cards */}
-      {/* ---------------------------------------------------------------- */}
-      {filtered.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
-          <FileText className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-          <h3 className="text-xl font-black text-brand-heading mb-1">No hay publicaciones</h3>
-          <p className="text-gray-400 font-semibold text-sm max-w-xs mx-auto">
-            {searchQuery
-              ? 'Ninguna publicación coincide con tu búsqueda. Probá con otros términos.'
-              : 'Todavía no tenés publicaciones en esta categoría.'}
-          </p>
+      {/* ── Loading ── */}
+      {loading && (
+        <div className="min-h-[30vh] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-brand-sage" />
         </div>
-      ) : (
+      )}
+
+      {/* ── Offer Cards ── */}
+      {!loading && filtered.length === 0 && (
+        <EmptyState
+          icon={searchQuery ? undefined : FileText}
+          title={searchQuery ? 'Sin resultados' : 'No hay publicaciones'}
+          description={
+            searchQuery
+              ? 'Ninguna publicación coincide con tu búsqueda.'
+              : 'Creá tu primera oferta laboral para empezar a recibir postulaciones.'
+          }
+        />
+      )}
+
+      {!loading && filtered.length > 0 && (
         <motion.div
-          key={activeTab + searchQuery}
+          key={searchQuery}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="space-y-5"
         >
-          {filtered.map((job) => {
-            const ModIcon = modalityStyles[job.modality].icon;
-            const isExpired =
-              job.status === 'Cerrada' && job.expirationDate !== '—';
-            const progressPercent =
-              job.vacancies > 0
-                ? Math.min(Math.round((job.applicantCount / (job.vacancies * 5)) * 100), 100)
-                : 0;
-            const progressColor =
-              progressPercent >= 80
-                ? 'bg-brand-coral'
-                : progressPercent >= 50
-                  ? 'bg-brand-gold'
-                  : 'bg-brand-sage';
-
-            return (
-              <motion.div
-                key={job.id}
-                variants={cardVariants}
-                className={cn(
-                  'bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-7 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5',
-                  job.status === 'Borrador' && 'border-dashed opacity-80 hover:opacity-100',
-                )}
-              >
-                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
-                  {/* Left content */}
-                  <div className="flex-1 min-w-0 space-y-4">
-                    {/* Title row + status */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <h3 className="text-xl md:text-2xl font-black text-brand-heading tracking-tight">
-                          {job.title}
-                        </h3>
-                        <p className="text-sm font-bold text-gray-400 mt-0.5 flex items-center gap-1.5">
-                          <Briefcase className="w-3.5 h-3.5" />
-                          {job.department}
-                        </p>
-                      </div>
-                      <span
-                        className={cn(
-                          'shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-wider',
-                          statusColors[job.status].badge,
-                        )}
-                      >
-                        <span className={cn('w-1.5 h-1.5 rounded-full', statusColors[job.status].dot)} />
-                        {job.status}
-                      </span>
-                    </div>
-
-                    {/* Location + modality */}
-                    <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                        {job.location}
-                      </span>
-                      <span className="w-1 h-1 rounded-full bg-gray-300" />
-                      <span className="flex items-center gap-1">
-                        <ModIcon className="w-3.5 h-3.5 text-gray-400" />
-                        {modalityStyles[job.modality].label}
-                      </span>
-                      <span className="w-1 h-1 rounded-full bg-gray-300" />
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                        {job.postedDate !== '—' ? `Publicada ${job.postedDate}` : 'Sin publicar'}
-                      </span>
-                    </div>
-
-                    {/* Stats row */}
-                    <div className="flex flex-wrap items-center gap-5 text-sm">
-                      <div className="flex items-center gap-1.5">
-                        <div className="p-1.5 bg-brand-bg rounded-lg">
-                          <Users className="w-3.5 h-3.5 text-brand-sage" />
-                        </div>
-                        <span className="font-black text-brand-heading">{job.applicantCount}</span>
-                        <span className="text-gray-400 font-semibold text-xs">postulantes</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="p-1.5 bg-amber-50 rounded-lg">
-                          <Eye className="w-3.5 h-3.5 text-brand-gold" />
-                        </div>
-                        <span className="font-black text-brand-heading">{formatViews(job.viewsCount)}</span>
-                        <span className="text-gray-400 font-semibold text-xs">vistas</span>
-                      </div>
-                      {job.daysSincePosted > 0 && (
-                        <div className="flex items-center gap-1.5">
-                          <div className="p-1.5 bg-blue-50 rounded-lg">
-                            <Clock className="w-3.5 h-3.5 text-blue-500" />
-                          </div>
-                          <span className="font-semibold text-gray-500 text-xs">
-                            hace {job.daysSincePosted} días
-                          </span>
-                        </div>
-                      )}
-                    </div>
+          {filtered.map((offer) => (
+            <motion.div
+              key={offer.id}
+              variants={cardVariants}
+              className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-7 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+            >
+              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+                {/* Left content */}
+                <div className="flex-1 min-w-0 space-y-4">
+                  {/* Title */}
+                  <div className="min-w-0">
+                    <h3 className="text-xl md:text-2xl font-black text-brand-heading tracking-tight">
+                      {offer.title}
+                    </h3>
                   </div>
 
-                  {/* Right actions */}
-                  <div className="flex flex-col items-stretch lg:items-end gap-3 shrink-0">
-                    {/* "Ver postulantes" button */}
-                    <button
+                  {/* Meta row: modality + contract */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
                       className={cn(
-                        'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-sm active:scale-95',
-                        job.applicantCount > 0
-                          ? 'bg-brand-sage hover:bg-brand-sage-hover text-white shadow-brand-sage/20'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                        'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border',
+                        getModalityBadge(offer.modality),
                       )}
-                      disabled={job.applicantCount === 0}
                     >
-                      <Users className="w-4 h-4" />
-                      Ver postulantes
-                      {job.applicantCount > 0 && (
-                        <span className="inline-flex items-center justify-center min-w-[20px] h-5 rounded-full bg-white/20 text-[10px] font-black px-1.5">
-                          {job.applicantCount}
-                        </span>
-                      )}
-                    </button>
+                      {offer.modality}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border bg-brand-bg text-brand-heading border-brand-sage/20">
+                      <Briefcase className="w-3 h-3" />
+                      {offer.contractType}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border bg-brand-bg text-brand-heading border-brand-sage/20">
+                      <DollarSign className="w-3 h-3" />
+                      {offer.salaryRange || 'A convenir'}
+                    </span>
+                  </div>
 
-                    {/* Actions dropdown */}
-                    <div className="relative" ref={menuRef}>
-                      <button
-                        onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
-                        className="p-2 bg-white border border-gray-200 rounded-xl hover:border-brand-sage/50 hover:text-brand-sage transition-all text-gray-400"
-                      >
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
+                  {/* Description */}
+                  {offer.description && (
+                    <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
+                      {offer.description}
+                    </p>
+                  )}
 
-                      {openMenuId === job.id && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute right-0 top-full mt-1.5 z-50 w-44 bg-white rounded-2xl border border-gray-100 shadow-xl py-1.5 overflow-hidden"
-                        >
-                          {[
-                            { label: 'Editar', icon: Edit3, onClick: () => {} },
-                            ...(job.status === 'Activa'
-                              ? [{ label: 'Pausar', icon: PauseCircle, onClick: () => {} }]
-                              : []),
-                            ...(job.status !== 'Cerrada'
-                              ? [{ label: 'Cerrar', icon: XCircle, onClick: () => {}, danger: true }]
-                              : []),
-                          ].map((action) => (
-                            <button
-                              key={action.label}
-                              onClick={() => {
-                                action.onClick();
-                                setOpenMenuId(null);
-                              }}
-                              className={cn(
-                                'w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold transition-all text-left',
-                                action.danger
-                                  ? 'text-red-500 hover:bg-red-50'
-                                  : 'text-gray-600 hover:bg-brand-bg hover:text-brand-heading',
-                              )}
-                            >
-                              <action.icon className="w-4 h-4" />
-                              {action.label}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </div>
+                  {/* Experience + Education */}
+                  <div className="flex flex-wrap gap-4 text-xs font-semibold text-gray-400">
+                    {offer.experience && (
+                      <span className="flex items-center gap-1.5">
+                        <Target className="w-3.5 h-3.5" />
+                        {offer.experience}
+                      </span>
+                    )}
+                    {offer.education && (
+                      <span className="flex items-center gap-1.5">
+                        <GraduationCap className="w-3.5 h-3.5" />
+                        {offer.education}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Date */}
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400">
+                    <Clock className="w-3.5 h-3.5" />
+                    Creada {formatDate(offer.createdAt)}
+                    {offer.updatedAt !== offer.createdAt && (
+                      <> · Actualizada {formatDate(offer.updatedAt)}</>
+                    )}
                   </div>
                 </div>
 
-                {/* Progress bar */}
-                {job.status !== 'Borrador' && (
-                  <div className="mt-5 pt-5 border-t border-gray-100">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                        Progreso de postulaciones
-                      </span>
-                      <span className="text-[10px] font-black text-brand-heading">
-                        {job.applicantCount} / {job.vacancies * 5} post.
-                      </span>
-                    </div>
-                    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progressPercent}%` }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                        className={cn('h-full rounded-full', progressColor)}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between mt-1.5">
-                      <span className="text-[9px] text-gray-400 font-semibold">
-                        {job.vacancies} vacante{job.vacancies !== 1 ? 's' : ''}
-                      </span>
-                      {isExpired && (
-                        <span className="text-[9px] text-gray-400 font-semibold flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          Vencida el {job.expirationDate}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
+                {/* Right actions */}
+                <div className="flex flex-row lg:flex-col items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => { setEditingOffer(offer); setShowForm(true); }}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-brand-sage hover:text-brand-sage text-gray-600 text-xs font-bold transition-all"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(offer)}
+                    disabled={deletingId === offer.id}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-red-200 rounded-xl hover:bg-red-50 text-red-500 text-xs font-bold transition-all"
+                  >
+                    {deletingId === offer.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
+      )}
+
+      {/* ── Create / Edit Form Modal ── */}
+      <OfferFormModal
+        open={showForm}
+        onClose={() => { setShowForm(false); setEditingOffer(null); }}
+        onSaved={handleSaveOffer}
+        initial={editingOffer}
+      />
+
+      {/* ── Delete Confirm ── */}
+      {confirmDelete && (
+        <ConfirmDialog
+          open={!!confirmDelete}
+          title="Eliminar oferta"
+          message={`¿Estás seguro de eliminar "${confirmDelete.title}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          onConfirm={() => handleDeleteOffer(confirmDelete)}
+          onCancel={() => setConfirmDelete(null)}
+        />
       )}
     </div>
   );
