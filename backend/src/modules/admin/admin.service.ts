@@ -51,3 +51,37 @@ export const getAllUsersService = async ({ role, email, id }: { role?: Role; ema
 
     return users;
 }
+
+export const toggleUserService = async (id: string, currentUserId: string) => {
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id
+        }
+    });
+
+    if (!user) {
+        throw new Error("Usuario no encontrado");
+    }
+
+    if(user.id === currentUserId) {
+        throw new Error("No puedes desactivar tu propia cuenta");
+    }
+
+    await prisma.user.update({
+        where: {
+            id
+        },
+        data: {
+            isActive: !user.isActive
+        }
+    });
+
+    sendEmail({
+        to: user.email,
+        subject: "Estado de cuenta actualizado",
+        html: `<p>Tu cuenta ha sido ${user.isActive ? 'desactivada' : 'activada'} por un administrador. Si tienes alguna pregunta, por favor contacta al soporte.</p>`
+    });
+
+    return `La cuenta del usuario ha sido ${user.isActive ? 'desactivada' : 'activada'} exitosamente`;
+}

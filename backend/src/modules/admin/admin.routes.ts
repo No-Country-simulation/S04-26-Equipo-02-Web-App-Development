@@ -10,4 +10,6 @@ router.post('/create', tokenMiddleware, refreshToken, AdminRoutes.createAdmin);
 
 router.get('/users', tokenMiddleware, refreshToken, AdminRoutes.getAllUsers);
 
+router.patch('/toggle-user/:id', tokenMiddleware, refreshToken, AdminRoutes.toggleUser);
+
 export default router;
