@@ -9,6 +9,7 @@ import diagnosticRoutes from './modules/diagnostic/diagnostic.routes';
 import hiringRoutes from './modules/hiring/hiring.routes';
 import learningRoutes from './modules/learning/learning.routes';
 import eventsRoutes from './modules/events/events.routes';
+import adminRoutes from './modules/admin/admin.routes';
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.use('/api/v1/diagnostic', diagnosticRoutes);
 app.use('/api/v1/hiring', hiringRoutes);
 app.use('/api/v1/learning', learningRoutes);
 app.use('/api/v1/events', eventsRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);

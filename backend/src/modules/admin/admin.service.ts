@@ -36,3 +36,18 @@ export const createAdminService = async (email: string) => {
     return 'Administrador creado exitosamente';
 
 }
+
+export const getAllUsersService = async ({ role, email, id }: { role?: Role; email?: string; id: string }) => {
+
+    const users = await prisma.user.findMany({
+        where: {
+            ...(role ? { role } : {}),
+            ...(email ? { email: { contains: email, mode: 'insensitive' } } : {}),
+            id: {
+                not: id
+            }
+        }
+    });
+
+    return users;
+}
