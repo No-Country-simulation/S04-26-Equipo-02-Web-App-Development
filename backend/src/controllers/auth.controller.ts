@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import { Request, Response } from "express";
-import { 
+import {
     loginService,
     registerService,
-    verifyEmailService
+    verifyEmailService,
+    logoutService
 } from '../services/auth.service';
 import { Role } from "@prisma/client";
 
@@ -69,19 +70,19 @@ export const loginController = async (req: Request<{}, {}, LoginBody>, res: Resp
 
         if (error instanceof Error) {
 
-            if(error.message === 'USER_NOT_FOUND' || error.message === 'PROVIDER_MISMATCH') {
+            if (error.message === 'USER_NOT_FOUND' || error.message === 'PROVIDER_MISMATCH') {
                 return res.status(404).json({
                     message: 'Usuario no encontrado'
                 });
             }
 
-            if(error.message === 'USER_INACTIVE') {
+            if (error.message === 'USER_INACTIVE') {
                 return res.status(404).json({
                     message: 'Usuario no verificado'
                 });
             }
 
-            if(error.message === 'INVALID_PASSWORD') {
+            if (error.message === 'INVALID_PASSWORD') {
                 return res.status(401).json({
                     message: 'Contraseña incorrecta'
                 });
@@ -98,8 +99,8 @@ export const loginController = async (req: Request<{}, {}, LoginBody>, res: Resp
 
 export const registerController = async (req: Request<{}, {}, RegisterBody>, res: Response) => {
 
-    try{
-        
+    try {
+
         const result = registerSchema.safeParse(req.body);
 
         if (!result.success) {
@@ -110,6 +111,12 @@ export const registerController = async (req: Request<{}, {}, RegisterBody>, res
         }
 
         const { email, password, provider, firstName, lastName, location, phone } = result.data;
+
+        if (provider === Role.ADMIN) {
+            return res.status(403).json({
+                message: 'No se permite registrar usuarios con rol ADMIN'
+            });
+        }
 
         const responseService = await registerService(email, password, provider, firstName, lastName, location, phone);
 
@@ -176,4 +183,26 @@ export const validateSessionController = async (_req: Request, res: Response) =>
     res.status(200).json({
         message: "Sesión válida"
     });
+}
+
+export const logoutController = async (_req: Request, res: Response) => {
+
+    const refreshToken = _req.cookies.refreshToken;
+
+    try {
+
+        const responseService = await logoutService(refreshToken);
+
+        res.clearCookie('token');
+        res.clearCookie('refreshToken');
+
+        return res.status(200).json({
+            message: responseService
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            message: 'Error al cerrar sesión: ' + error
+        });
+    }
 }

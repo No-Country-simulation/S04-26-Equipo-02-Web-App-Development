@@ -1,0 +1,167 @@
+import { Request, Response, NextFunction } from 'express';
+import * as HiringService from './hiring.service';
+import { searchCandidatesSchema, createOfferSchema, updateOfferSchema, searchOpportunitiesSchema, preselectionSchema, avancePreselectionSchema } from './hiring.schema';
+
+export const searchCandidates = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to search candidates" });
+            return;
+        }
+
+        const query = searchCandidatesSchema.parse(req.query);
+
+        const candidates = await HiringService.searchCandidatesService(query);
+
+        res.json(candidates);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const createOffer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const parsed = createOfferSchema.parse(req.body);
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to create an offer" });
+            return;
+        }
+
+        const offer = await HiringService.createOfferService(user.userId, parsed);
+
+        res.json({ message: offer });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const updateOffer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const parsed = updateOfferSchema.parse(req.body);
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to update an offer" });
+            return;
+        }
+
+        const offer = await HiringService.updateOfferService(user.userId, parsed);
+
+        res.json({ message: offer });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const deleteOffer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to delete an offer" });
+            return;
+        }
+
+        const offer = await HiringService.deleteOfferService(req.params.id as string);
+
+        res.json({ message: offer });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getOffers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to view offers" });
+            return;
+        }
+
+        const offers = await HiringService.getOffersService(user.userId);
+
+        res.json(offers);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getOpportunities = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const query = searchOpportunitiesSchema.parse(req.query);
+
+        const opportunities = await HiringService.getOpportunitiesService(query);
+
+        res.json(opportunities);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const preselectionController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to preselect candidates" });
+            return;
+        }
+
+        const companyId = user.userId
+
+        const { userId, notes } = preselectionSchema.parse(req.body);
+
+        const preselection = await HiringService.preselectionService(userId, companyId, notes);
+
+        res.json({message: preselection});
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const avancePreselection = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "COMPANY") {
+            res.status(403).json({ message: "You are not authorized to advance preselection" });
+            return;
+        }
+
+        const {status, id} = avancePreselectionSchema.parse(req.params);
+
+        if(!status || !id) {
+            res.status(400).json({ message: "Missing preselection ID or status" });
+            return;
+        }
+
+        const preselection = await HiringService.avancePreselectionService(id, status);
+
+        res.json({message: preselection});
+
+    } catch (error) {
+        next(error);
+    }
+}
