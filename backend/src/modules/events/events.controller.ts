@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as EventsService from './events.service';
-import { enrollUserInEventSchema } from './events.schema';
+import { enrollUserInEventSchema, createEventSchema } from './events.schema';
 
 export const getAll = async (_req: Request, res: Response, next: NextFunction) => {
 
@@ -37,4 +37,25 @@ export const enrollUser = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 
+}
+
+export const createEvent = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const user = (req as any).user;
+
+        if (!user || user.role !== "ADMIN") {
+            res.status(403).json({ message: "You are not authorized to create an event" });
+            return;
+        }
+
+        const { title, type, day, link } = createEventSchema.parse(req.body);
+
+        const event = await EventsService.createEventService(title, type, day, link);
+
+        res.json({ message: event });
+
+    } catch (error) {
+        next(error);
+    }
 }

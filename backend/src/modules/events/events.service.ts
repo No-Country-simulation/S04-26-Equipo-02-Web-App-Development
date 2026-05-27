@@ -40,3 +40,18 @@ export const enrollUserInEventService = async (userId: string, eventId: string) 
     return 'User enrolled in event successfully';
 
 }
+
+export const createEventService = async (title: string, type: string, day: string, link: string ) => {
+
+    await prisma.event.create({
+        data: {
+            title,
+            type,
+            day,
+            link
+        }
+    });
+
+    return 'Event created successfully';
+
+}

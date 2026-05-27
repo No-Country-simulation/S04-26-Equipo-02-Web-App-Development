@@ -11,4 +11,6 @@ router.get("/get-all", tokenMiddleware, refreshToken, EventsController.getAll);
 
 router.post("/enroll/:id", tokenMiddleware, refreshToken, EventsController.enrollUser);
 
+router.post("/create", tokenMiddleware, refreshToken, EventsController.createEvent);
+
 export default router;
